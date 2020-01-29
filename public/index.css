@@ -1,0 +1,40 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+.marker {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+  background-size: contain;
+  background-position: center;
+}
+
+#driving-button {
+  position: absolute;
+  left: 1rem;
+  top: 150px;
+  z-index: 999;
+  display: block;
+  background-color: rgba(51,155,208,1);
+  color: white;
+  padding: 1rem;
+  border-radius: 2px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 16px;
+  letter-spacing: 2px;
+  font-family: verdana;
+  outline: none;
+}
