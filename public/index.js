@@ -192,13 +192,27 @@ map.on('load', () => {
 
     let start_driving_btn = document.getElementById('driving-button');
 
-    start_driving_btn.addEventListener('click', e => {
-      alert('s');
-    });
-
     const carMarker = new mapboxgl.Marker(marker).setLngLat(geom[0]);
 
     carMarker.addTo(map);
+
+    let currentPosition = geom[0];
+
+    function animateMarker(timestamp) {
+      carMarker.setLngLat(currentPosition);
+
+      currentPosition = [currentPosition[0] + Math.random() / 1000000, currentPosition[1] - Math.random() / 1000000];
+
+      requestAnimationFrame(animateMarker);
+    }
+
+    start_driving_btn.addEventListener('click', e => {
+      requestAnimationFrame(animateMarker);
+    });
+
+    setInterval(() => {
+      console.log(carMarker.getLngLat());
+    }, 10000);
   });
 
   map.addImage('pulsing-dot', pulsingDot, { pixelRatio: 2 });
@@ -228,59 +242,59 @@ map.on('load', () => {
   });
 
   map.addLayer({
-            'id': 'points',
-            'type': 'symbol',
-            'source': {
-                'type': 'geojson',
-                'data': {
-                    'type': 'FeatureCollection',
-                    'features': [
-                        {
-                            'type': 'Feature',
-                            'geometry': {
-                                'type': 'Point',
-                                'coordinates': [-121.505184, 40.58184]
-                            }
-                        }
-                    ]
-                }
-            },
-            'layout': {
-                'icon-image': 'pulsing-dot'
+    'id': 'points',
+    'type': 'symbol',
+    'source': {
+      'type': 'geojson',
+      'data': {
+        'type': 'FeatureCollection',
+        'features': [
+          {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [-121.505184, 40.58184]
             }
-        });
+          }
+        ]
+      }
+    },
+    'layout': {
+      'icon-image': 'pulsing-dot'
+    }
+  });
 
-        map.addLayer({
-'id': '3d-buildings',
-'source': 'composite',
-'source-layer': 'building',
-'filter': ['==', 'extrude', 'true'],
-'type': 'fill-extrusion',
-'minzoom': 15,
-'paint': {
-'fill-extrusion-color': '#aaa',
+  map.addLayer({
+    'id': '3d-buildings',
+    'source': 'composite',
+    'source-layer': 'building',
+    'filter': ['==', 'extrude', 'true'],
+    'type': 'fill-extrusion',
+    'minzoom': 15,
+    'paint': {
+    'fill-extrusion-color': '#aaa',
 
-// use an 'interpolate' expression to add a smooth transition effect to the
-// buildings as the user zooms in
-'fill-extrusion-height': [
-'interpolate',
-['linear'],
-['zoom'],
-15,
-0,
-15.05,
-['get', 'height']
-],
-'fill-extrusion-base': [
-'interpolate',
-['linear'],
-['zoom'],
-15,
-0,
-15.05,
-['get', 'min_height']
-],
-'fill-extrusion-opacity': 0.6
-}
-});
+    // use an 'interpolate' expression to add a smooth transition effect to the
+    // buildings as the user zooms in
+    'fill-extrusion-height': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      15,
+      0,
+      15.05,
+      ['get', 'height']
+    ],
+    'fill-extrusion-base': [
+      'interpolate',
+      ['linear'],
+      ['zoom'],
+      15,
+      0,
+      15.05,
+      ['get', 'min_height']
+    ],
+    'fill-extrusion-opacity': 0.6
+    }
+  });
 });

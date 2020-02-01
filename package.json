@@ -4,21 +4,47 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "prod": "SET \"NODE_ENV=production\" && webpack --mode production",
+    "prod-start": "SET \"NODE_ENV=production\" && webpack --mode production && node server.js",
+    "dev": "SET \"NODE_ENV=development\" && webpack-dev-server --mode development",
+    "server-start": "node ./dist/server.js",
+    "watch-server": "nodemon --watch 'src' -e ts,tsx --exec ts-node ./src/server/server.ts",
+    "start-dev": "concurrently \"npm run watch-server\" \"npm run dev\"",
+    "build-server": "tsc --rootDir ./src/server"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/mapbox-gl": "^1.7.0",
+    "@types/react": "^16.9.19",
+    "@types/react-dom": "^16.9.5",
     "koa": "^2.11.0",
     "koa-body": "^4.1.1",
     "koa-morgan": "^1.0.1",
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
+    "mapbox-gl": "^1.7.0",
     "mongoose": "^5.8.9",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "babel-minify-webpack-plugin": "^0.3.1",
+    "babel-preset-minify": "^0.5.1",
+    "html-loader": "^0.5.5",
+    "html-webpack-plugin": "^3.2.0",
+    "imagemin-webpack": "^5.1.1",
+    "nodemon": "^2.0.2",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
+    "postcss-loader": "^3.0.0",
+    "pug-html-loader": "^1.1.5",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.5",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.10.2",
+    "webpack-merge": "^4.2.2"
   }
 }

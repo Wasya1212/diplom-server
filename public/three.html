@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Add a 3D model</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.js"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v1.7.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; }
+</style>
+</head>
+<body>
+<!-- <script src="https://unpkg.com/three@0.106.2/build/three.min.js"></script> -->
+<!-- <script src="https://unpkg.com/three@0.106.2/examples/js/loaders/GLTFLoader.js"></script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/110/three.js"></script>
+<script src="https://rawgit.com/mrdoob/three.js/master/examples/js/loaders/DDSLoader.js"></script>
+<script src="https://rawgit.com/mrdoob/three.js/master/examples/js/loaders/MTLLoader.js"></script>
+<script src="https://rawgit.com/mrdoob/three.js/master/examples/js/loaders/OBJLoader.js"></script>
+<div id="map"></div>
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1Ijoid2FzeWExMjEyIiwiYSI6ImNrNXRmdDJwYTB2ajQzZW11N21samJ2cnUifQ.7lV47ah1DXWnbVY7JhGg-g';
+
+	var map = (window.map = new mapboxgl.Map({
+		container: 'map',
+		style: 'mapbox://styles/mapbox/light-v10',
+		zoom: 18,
+		center: [24.02668, 49.84172],
+		pitch: 60,
+		antialias: true // create the gl context with MSAA antialiasing, so custom layers are antialiased
+	}));
+
+	// parameters to ensure the model is georeferenced correctly on the map
+	var modelOrigin = [24.02668,49.84172];
+	var modelAltitude = 0;
+	var modelRotate = [Math.PI / 2, 0, 0];
+
+	var modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
+
+	// transformation parameters to position, rotate and scale the 3D model onto the map
+	var modelTransform = {
+		translateX: modelAsMercatorCoordinate.x,
+		translateY: modelAsMercatorCoordinate.y,
+		translateZ: modelAsMercatorCoordinate.z,
+		rotateX: modelRotate[0],
+		rotateY: modelRotate[1],
+		rotateZ: modelRotate[2],
+		/* Since our 3D model is in real world meters, a scale transform needs to be
+		* applied since the CustomLayerInterface expects units in MercatorCoordinates.
+		*/
+		scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+	};
+
+	var THREE = window.THREE;
+
+	// configuration of the custom layer for a 3D model per the CustomLayerInterface
+	var customLayer = {
+		id: '3d-model',
+		type: 'custom',
+		renderingMode: '3d',
+		onAdd: function(map, gl) {
+			this.camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 2000 );
+			this.camera.position.z = 250;
+			this.scene = new THREE.Scene();
+
+			var ambientLight = new THREE.AmbientLight( 0xcccccc, 0.4 );
+			var pointLight = new THREE.PointLight( 0xffffff, 0.8 );
+
+			this.scene.add(ambientLight);
+			this.camera.add(pointLight);
+			this.scene.add(this.camera);
+
+			// create two three.js lights to illuminate the model
+			var directionalLight = new THREE.DirectionalLight(0xffffff);
+			directionalLight.position.set(0, -70, 10).normalize();
+			this.scene.add(directionalLight);
+
+			var directionalLight2 = new THREE.DirectionalLight(0xffffff);
+			directionalLight2.position.set(0, 70, 10).normalize();
+			this.scene.add(directionalLight2);
+
+			var manager = new THREE.LoadingManager();
+			manager.onProgress = function (item, loaded, total) {
+				console.log(item, loaded, total);
+			};
+
+			var textureLoader = new THREE.TextureLoader(manager);
+		  var ddsTextureLoader = new THREE.DDSLoader();
+
+			// model textures
+		  var headTexture = textureLoader.load('assets/orig_02_-_Defaul1noCulling.jpg');
+			var hairTexture = ddsTextureLoader.load('assets/01_-_Default1noCulling.dds');
+		  var bodyTexture = ddsTextureLoader.load('assets/male-02-1noCulling.dds');
+
+			var onProgress = function(xhr) {
+				if (xhr.lengthComputable) {
+					var percentComplete = xhr.loaded / xhr.total * 100;
+					console.log( Math.round(percentComplete, 2) + '% downloaded' );
+				}
+			};
+
+			var onError = function(xhr) {
+				console.error(xhr);
+			};
+
+			var loader = new THREE.OBJLoader( manager );
+
+			loadMesh(loader, this.scene, 'assets/head.obj', headTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/hairobj.obj', hairTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/body.obj', bodyTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/hands.obj', bodyTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/hands2.obj', bodyTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/foot1.obj', bodyTexture, onProgress, onError);
+		  loadMesh(loader, this.scene, 'assets/foot2.obj', bodyTexture, onProgress, onError);
+
+			setInterval(() => {
+				// var newModelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat([0, 0], modelAltitude);
+					var newModelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat([148.98 + Math.random(), -35.39 - Math.random()], modelAltitude);
+					this.scene.getObjectByName('assets/head.obj').children[0].position = new THREE.Vector3(newModelAsMercatorCoordinate.x, newModelAsMercatorCoordinate.y, newModelAsMercatorCoordinate.z);
+					// console.log(this.scene.getObjectByName('assets/head.obj').children[0].position);
+					// this.scene.getObjectByName('assets/head.obj').position.x = newModelAsMercatorCoordinate.x;
+					// this.scene.getObjectByName('assets/head.obj').position.x = 1;
+					// console.log(newModelAsMercatorCoordinate.x);
+					// console.log(this.scene.getObjectByName('assets/head.obj').position);
+			}, 100);
+
+			// var loader = new THREE.OBJLoader();
+			// loader.load('https://s3-us-west-2.amazonaws.com/s.cdpn.io/143273/trooper.obj', object => {
+			// 	this.scene.add(object);
+			// });
+
+			this.map = map;
+
+			// use the Mapbox GL JS map canvas for three.js
+			this.renderer = new THREE.WebGLRenderer({
+				canvas: map.getCanvas(),
+				context: gl,
+				antialias: true
+			});
+
+			this.renderer.autoClear = false;
+		},
+		render: function(gl, matrix) {
+			var rotationX = new THREE.Matrix4().makeRotationAxis(
+				new THREE.Vector3(1, 0, 0),
+				modelTransform.rotateX
+			);
+			var rotationY = new THREE.Matrix4().makeRotationAxis(
+				new THREE.Vector3(0, 1, 0),
+				modelTransform.rotateY
+			);
+			var rotationZ = new THREE.Matrix4().makeRotationAxis(
+				new THREE.Vector3(0, 0, 1),
+				modelTransform.rotateZ
+			);
+
+			var m = new THREE.Matrix4().fromArray(matrix);
+			var l = new THREE.Matrix4()
+				.makeTranslation(
+					modelTransform.translateX,
+					modelTransform.translateY,
+					modelTransform.translateZ
+				)
+				.scale(
+					new THREE.Vector3(
+						modelTransform.scale,
+						-modelTransform.scale,
+						modelTransform.scale
+					)
+				)
+				.multiply(rotationX)
+				.multiply(rotationY)
+				.multiply(rotationZ);
+
+			this.camera.projectionMatrix = m.multiply(l);
+			this.renderer.state.reset();
+			this.renderer.render(this.scene, this.camera);
+			this.map.triggerRepaint();
+		}
+	};
+
+	map.on('style.load', function() {
+		map.addLayer(customLayer, 'waterway-label');
+	});
+
+	function loadMesh(loader, scene, file, texture, onProgress, onError) {
+		loader.load(file, function(object) {
+	    object.traverse(function(child) {
+	      if ( child instanceof THREE.Mesh ) {
+	        child.material.map = texture;
+	      }
+	    });
+
+			object.name = file.toString();
+
+	    object.position.y = -95;
+	    scene.add(object);
+
+		}, onProgress, onError );
+	}
+</script>
+
+</body>
+</html>
