@@ -81,21 +81,48 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'postcss-loader', 'css-loader'],
-      },
-      {
-        test: /\.sass$/,
         use: [
+          "style-loader",
           {
-            loader: 'file-loader',
+            loader: "css-loader",
             options: {
-              name: 'css/[name].css'
+              modules: true
             }
-          },
-          'extract-loader',
-          'css-loader',
-          'sass-loader'
+          }
         ]
+      },
+      // {
+      //   test: /\.sass$/,
+      //   use: [
+      //     // {
+      //     //   loader: 'file-loader',
+      //     //   options: {
+      //     //     name: 'css/[name].css'
+      //     //   }
+      //     // },
+      //     // 'extract-loader',
+      //     'style-loader',
+      //     'css-loader',
+      //     'sass-loader'
+      //   ]
+      // },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
+          },
+        ],
       },
       {
         test: /\.(js|jsx)$/,
@@ -122,7 +149,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs' ],
+    extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs', 'sass', 'css' ],
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
   optimization: {

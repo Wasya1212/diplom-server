@@ -6,6 +6,8 @@ import { ENVIRONMENT } from "../environment";
 
 mapboxgl.accessToken = ENVIRONMENT.mapbox.accessToken;
 
+let map: mapboxgl.Map;
+
 export interface MapState {
   lng: number,
   lat: number,
@@ -36,7 +38,7 @@ export class Map extends Component<MapProps, MapState> {
   }
 
   componentDidMount() {
-    const map = new mapboxgl.Map({
+    map = new mapboxgl.Map({
       container: this.mapContainer,
       style: this.props.mapStyle || 'mapbox://styles/mapbox/streets-v11',
       center: [this.state.lng, this.state.lat],
@@ -65,4 +67,12 @@ export class Map extends Component<MapProps, MapState> {
       <div ref={el => this.mapContainer = el} className="mapContainer" />
     );
   }
+}
+
+export class Layer extends Component {
+
+}
+
+export class Feature extends Component {
+
 }

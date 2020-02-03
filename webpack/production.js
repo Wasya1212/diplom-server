@@ -38,11 +38,11 @@ function getProductionHtmlPlugins(pages) {
 module.exports = merge(common, {
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: false // set to true if you want JS source maps
-      }),
+      // new UglifyJsPlugin({
+      //   cache: true,
+      //   parallel: true,
+      //   sourceMap: false // set to true if you want JS source maps
+      // }),
       new OptimizeCSSAssetsPlugin({})
     ]
   },
