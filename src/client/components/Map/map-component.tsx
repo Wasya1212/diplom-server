@@ -2,6 +2,17 @@ import React, { Component } from "react";
 
 import "./map-style.sass";
 
+import "../../assets/models/cybertruck/scene.gltf";
+import "../../assets/models/cybertruck/scene.bin";
+import "../../assets/models/cybertruck/tesla_ct_export1123.fbx";
+
+import "../../assets/models/cybertruck/textures/tex1_DSP.png";
+import "../../assets/models/cybertruck/textures/tex1.png";
+import "../../assets/models/cybertruck/textures/texLOD1.png";
+import "../../assets/models/cybertruck/textures/texMain_NRM.png";
+import "../../assets/models/cybertruck/textures/texMain_DSP.png";
+import "../../assets/models/cybertruck/textures/texMain.png";
+
 import { ENVIRONMENT } from "../../environment";
 
 import ReactMapboxGl from "react-mapbox-gl";
@@ -14,8 +25,9 @@ import {
   MapContext
 } from "react-mapbox-gl";
 
-import THREE from "three";
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import THREE, { MeshBasicMaterial, LoadingManager, Matrix4, Vector3, Camera, Scene, DirectionalLight, WebGLRenderer, TextureLoader } from "three";
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 
 interface Rotate {
   x: number,
@@ -50,79 +62,92 @@ var modelRotate = {
 
 let modelTransform = getTransformModel(lat, lon, modelAltitude, modelRotate)
 
-let customLayer = {
-  satelite: null,
+let customLayer: any = {
   id: '3d-model',
   type: 'custom',
   renderingMode: '3d',
   onAdd: function(map: any, gl: any) {
-    // @ts-ignore
-    this.camera = new THREE.Camera();
-    // @ts-ignore
-    this.scene = new THREE.Scene();
+    this.camera = new Camera();
+    this.scene = new Scene();
 
     // create two three.js lights to illuminate the model
-    var directionalLight = new THREE.DirectionalLight(0xffffff);
+    const directionalLight = new DirectionalLight(0xffffff);
     directionalLight.position.set(0, -70, 100).normalize();
-    // @ts-ignore
+
     this.scene.add(directionalLight);
 
-    var directionalLight2 = new THREE.DirectionalLight(0xffffff);
+    const directionalLight2 = new DirectionalLight(0xffffff);
     directionalLight2.position.set(0, 70, 100).normalize();
-    // @ts-ignore
+
     this.scene.add(directionalLight2);
 
-    // use the three.js GLTF loader to add the 3D model to the three.js scene
+    const textureLoader = new TextureLoader(new LoadingManager());
 
-    var loader = new GLTFLoader();
-      loader.load(
-      'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
-      function(gltf: any) {
-        gltf.name = 'satelite';
-        // @ts-ignore
-        this.satelite = gltf;
-        // @ts-ignore
-        this.scene.add(gltf.scene);
-      }.bind(this)
+    const vehicleTextureMain1: THREE.Texture = textureLoader.load('img/tex1_DSP.png');
+    const vehicleTextureMain2: THREE.Texture = textureLoader.load('img/tex1.png');
+    const vehicleTextureMain3: THREE.Texture = textureLoader.load('img/texLOD1.png');
+    const vehicleTextureMain4: THREE.Texture = textureLoader.load('img/texMain_DSP.png');
+    const vehicleTextureMain5: THREE.Texture = textureLoader.load('img/texMain.png');
+    const vehicleTextureMain6: THREE.Texture = textureLoader.load('img/texMain_NRM.png');
+
+    // use the three.js GLTF loader to add the 3D model to the three.js scene
+    const loader = new FBXLoader();
+    loader.load(
+      // 'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
+      'assets/models/tesla_ct_export1123.fbx',
+      (model: any) => {
+        model.traverse(function(child: THREE.Mesh) {
+  	      if ( child instanceof THREE.Mesh ) {
+            // @ts-ignore
+  	        child.material = new MeshBasicMaterial({ map: [
+              vehicleTextureMain1,
+              vehicleTextureMain2,
+              vehicleTextureMain3,
+              vehicleTextureMain4,
+              vehicleTextureMain5,
+              vehicleTextureMain6
+            ]});
+  	      }
+  	    });
+        this.scene.add(model);
+      }
     );
-    // @ts-ignore
+
     this.map = map;
 
     // use the Mapbox GL JS map canvas for three.js
-    // @ts-ignore
-    this.renderer = new THREE.WebGLRenderer({
+    this.renderer = new WebGLRenderer({
       canvas: map.getCanvas(),
       context: gl,
       antialias: true
     });
-    // @ts-ignore
+
     this.renderer.autoClear = false;
   },
 
   render: function(gl: any, matrix: any) {
-    var rotationX = new THREE.Matrix4().makeRotationAxis(
-      new THREE.Vector3(1, 0, 0),
+    var rotationX = new Matrix4().makeRotationAxis(
+      new Vector3(1, 0, 0),
       modelTransform.rotateX
     );
-    var rotationY = new THREE.Matrix4().makeRotationAxis(
-      new THREE.Vector3(0, 1, 0),
+    var rotationY = new Matrix4().makeRotationAxis(
+      new Vector3(0, 1, 0),
       modelTransform.rotateY
     );
-    var rotationZ = new THREE.Matrix4().makeRotationAxis(
-      new THREE.Vector3(0, 0, 1),
+    var rotationZ = new Matrix4().makeRotationAxis(
+      new Vector3(0, 0, 1),
       modelTransform.rotateZ
     );
 
-    var m = new THREE.Matrix4().fromArray(matrix);
-    var l = new THREE.Matrix4()
+    var m = new Matrix4().fromArray(matrix);
+    var l = new Matrix4()
       .makeTranslation(
         modelTransform.translateX,
         modelTransform.translateY,
-        // @ts-ignore
-        modelTransform.translateZ
+        modelTransform.translateZ || 0
       )
       .scale(
-      new THREE.Vector3(
+      new Vector3(
         modelTransform.scale,
         -modelTransform.scale,
         modelTransform.scale
@@ -132,13 +157,9 @@ let customLayer = {
       .multiply(rotationY)
       .multiply(rotationZ);
 
-    // @ts-ignore
     this.camera.projectionMatrix = m.multiply(l);
-    // @ts-ignore
     this.renderer.state.reset();
-    // @ts-ignore
     this.renderer.render(this.scene, this.camera);
-    // @ts-ignore
     this.map.triggerRepaint();
   }
 }
@@ -193,7 +214,7 @@ class MapComponent extends Component {
           zoom={[15]}
           pitch={[0]}
           onZoom={this.zoomControl}
-          onStyleDataLoading={(map: any) => {
+          onStyleLoad={(map: any) => {
             console.log("loaded 3D");
             map.addLayer(customLayer, 'waterway-label');
           }}

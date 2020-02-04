@@ -22,6 +22,18 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.(fbx|obj|gltf|bin)$/,
+        use: [
+          {
+            loader: 'file-loader',
+            options: {
+              outputPath: 'assets/models',
+              name: '[name].[ext]'
+            }
+          }
+        ]
+      },
+      {
         test: /\.(svg|gif)$/,
         use: [
           {
@@ -46,10 +58,10 @@ module.exports = {
             loader: 'file-loader',
             options: {
               esModule: false,
-              name: 'img/[name]-[hash].[ext]',
+              name: 'img/[name].[ext]',
             }
           },
-          'webp-loader?{quality: 13}'
+          // 'webp-loader?{quality: 13}'
         ]
       },
       {
@@ -149,7 +161,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs', 'sass', 'css' ],
+    extensions: [ '.tsx', '.ts', '.js', '.jsx', '.mjs', 'sass', 'css', '*' ],
     modules: [path.resolve(__dirname, 'src'), 'node_modules']
   },
   optimization: {
