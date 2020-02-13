@@ -5,6 +5,9 @@ import "./map-style.sass";
 import "../../assets/models/cybertruck/scene.gltf";
 import "../../assets/models/cybertruck/scene.bin";
 import "../../assets/models/cybertruck/tesla_ct_export1123.fbx";
+import "../../assets/models/cybertruck/car.fbx";
+import "../../assets/models/cybertruck/untitled.fbx";
+import "../../assets/models/cybertruck/SHC Free Cybertruck.obj";
 
 import "../../assets/models/cybertruck/textures/tex1_DSP.png";
 import "../../assets/models/cybertruck/textures/tex1.png";
@@ -12,6 +15,8 @@ import "../../assets/models/cybertruck/textures/texLOD1.png";
 import "../../assets/models/cybertruck/textures/texMain_NRM.png";
 import "../../assets/models/cybertruck/textures/texMain_DSP.png";
 import "../../assets/models/cybertruck/textures/texMain.png";
+
+
 
 import { ENVIRONMENT } from "../../environment";
 
@@ -28,6 +33,7 @@ import {
 import THREE, { MeshBasicMaterial, LoadingManager, Matrix4, Vector3, Camera, Scene, DirectionalLight, WebGLRenderer, TextureLoader } from "three";
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
 interface Rotate {
   x: number,
@@ -81,33 +87,72 @@ let customLayer: any = {
 
     this.scene.add(directionalLight2);
 
-    const textureLoader = new TextureLoader(new LoadingManager());
+    const oldTextures = [
+      './texLOD1_NRM.png'
+    ];
+    const newTextures = [
+      './img/texMain_NRM.png'
+    ];
 
-    const vehicleTextureMain1: THREE.Texture = textureLoader.load('img/tex1_DSP.png');
-    const vehicleTextureMain2: THREE.Texture = textureLoader.load('img/tex1.png');
-    const vehicleTextureMain3: THREE.Texture = textureLoader.load('img/texLOD1.png');
-    const vehicleTextureMain4: THREE.Texture = textureLoader.load('img/texMain_DSP.png');
-    const vehicleTextureMain5: THREE.Texture = textureLoader.load('img/texMain.png');
-    const vehicleTextureMain6: THREE.Texture = textureLoader.load('img/texMain_NRM.png');
+    const manager = new LoadingManager();
+    manager.onProgress = function (item, loaded, total) {
+      console.log("load texture:", item, loaded, total);
+    };
+    manager.setURLModifier((url: string): string => {
+      console.log(url);
+      if (url == oldTextures[0]) {
+        url = newTextures[0];
+      }
+
+      return url;
+    });
+
+    const textureLoader = new TextureLoader(manager);
+
+    const vehicleTextureMain1: THREE.Texture = textureLoader.load('/img/tex1_DSP.png');
+    const vehicleTextureMain2: THREE.Texture = textureLoader.load('/img/tex1.png');
+    const vehicleTextureMain3: THREE.Texture = textureLoader.load('/img/texLOD1.png');
+    const vehicleTextureMain4: THREE.Texture = textureLoader.load('/img/texMain_DSP.png');
+    const vehicleTextureMain5: THREE.Texture = textureLoader.load('/img/texMain.png');
+    const vehicleTextureMain6: THREE.Texture = textureLoader.load('/img/texMain_NRM.png');
 
     // use the three.js GLTF loader to add the 3D model to the three.js scene
     const loader = new FBXLoader();
     loader.load(
       // 'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
-      'assets/models/tesla_ct_export1123.fbx',
+      'models/car.fbx',
       (model: any) => {
-        model.traverse(function(child: THREE.Mesh) {
-  	      if ( child instanceof THREE.Mesh ) {
+        model.traverse(function(child: THREE.Object3D) {
+  	      // if ( child instanceof THREE.Mesh ) {
+            console.log(child.children);
+            try {
+              // child.children.forEach((c) => {
+              //   // @ts-ignore
+              //   c.material.map = [
+              //     vehicleTextureMain1,
+              //     vehicleTextureMain2,
+              //     vehicleTextureMain3,
+              //     vehicleTextureMain4,
+              //     vehicleTextureMain5,
+              //     vehicleTextureMain6
+              //   ];
+              // });
+            } catch (err) {}
             // @ts-ignore
-  	        child.material = new MeshBasicMaterial({ map: [
-              vehicleTextureMain1,
-              vehicleTextureMain2,
-              vehicleTextureMain3,
-              vehicleTextureMain4,
-              vehicleTextureMain5,
-              vehicleTextureMain6
-            ]});
-  	      }
+            // child.material.map.image = "https://lh3.googleusercontent.com/proxy/6-7XPDzvcj_yGXjZgHMmvdl4Gb6eVabJ-3Cow3wVDNNUux2Jt7-5by-4bdEIq5Xre2VWcYvW6AI6DixQDISV1EUFEcCNg9C8HaNlHmleeVDqap-SCNDGGxEu5DUSJh4JWsXv1kZ6lgKQbYCuiKB3zS1XnLCzaArc75u8sdKAR3qosOBMNe2XP6tk"
+          //   // @ts-ignore
+  	      //   // child.material.map = [
+          //   //   vehicleTextureMain1,
+          //   //   vehicleTextureMain2,
+          //   //   vehicleTextureMain3,
+          //   //   vehicleTextureMain4,
+          //   //   vehicleTextureMain5,
+          //   //   vehicleTextureMain6
+          //   // ];
+          //   // child.material.map = vehicleTextureMain1;
+          //   // // @ts-ignore
+          //   // child.material.needsUpdate = true;
+  	      // }
   	    });
         this.scene.add(model);
       }
@@ -119,7 +164,8 @@ let customLayer: any = {
     this.renderer = new WebGLRenderer({
       canvas: map.getCanvas(),
       context: gl,
-      antialias: true
+      antialias: true,
+      alpha: true
     });
 
     this.renderer.autoClear = false;
