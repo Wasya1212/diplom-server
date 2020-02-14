@@ -2,7 +2,7 @@
   "name": "diplom-server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "prod": "SET \"NODE_ENV=production\" && webpack --mode production",
     "prod-start": "SET \"NODE_ENV=production\" && webpack --mode production && node server.js",
