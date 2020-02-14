@@ -10,7 +10,8 @@
     "server-start": "node ./dist/server.js",
     "watch-server": "nodemon --watch 'src' -e ts,tsx --exec ts-node ./src/server/server.ts",
     "start-dev": "concurrently \"npm run watch-server\" \"npm run dev\"",
-    "build-server": "tsc --rootDir ./src/server"
+    "build-server": "tsc --rootDir ./src/server",
+    "start": "node index"
   },
   "author": "",
   "license": "ISC",
