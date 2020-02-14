@@ -12,7 +12,7 @@ const HTTPS_PORT = process.env.PORT + 1 || 3001;
 const HttpServer = Http.createServer(Server.callback());
 const HttpsServer = Https.createServer(Server.callback());
 
-HttpServer.listen(HTTP_PORT, HOST, listeningReporter);
+HttpServer.listen(HTTP_PORT, listeningReporter);
 // HttpsServer.listen(HTTPS_PORT, HOST, listeningReporter);
 
 Mongoose.connect();
