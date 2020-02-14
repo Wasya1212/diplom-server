@@ -17,7 +17,7 @@ app.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 });
 
-app.use(Serve(__dirname + '/public/'));
+app.use(Serve(__dirname + '/dist/public/'));
 app.use(Morgan('combined', { stream: Logger.stream }));
 app.use(ErrorHandler({ errorLogger: Logger, logMethodName: 'error' }));
 app.use(BodyParser({

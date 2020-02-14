@@ -14,6 +14,13 @@ router.get('/', async (ctx, next) => {
   await next();
 });
 
+router.get('/map', async (ctx, next) => {
+  ctx.type = 'html';
+  ctx.body = Fs.createReadStream(Path.resolve(__dirname, '../dist/public/html/index.html'));
+
+  await next();
+});
+
 router.get('/ddd', async (ctx, next) => {
   ctx.type = 'html';
   ctx.body = Fs.createReadStream(Path.resolve(__dirname, '../public/demo.html'));

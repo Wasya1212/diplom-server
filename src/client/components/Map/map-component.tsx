@@ -8,6 +8,7 @@ import "../../assets/models/cybertruck/tesla_ct_export1123.fbx";
 import "../../assets/models/cybertruck/car.fbx";
 import "../../assets/models/cybertruck/untitled.fbx";
 import "../../assets/models/cybertruck/SHC Free Cybertruck.obj";
+import "../../assets/models/audi/RS7.obj";
 
 import "../../assets/models/cybertruck/textures/tex1_DSP.png";
 import "../../assets/models/cybertruck/textures/tex1.png";
@@ -15,8 +16,6 @@ import "../../assets/models/cybertruck/textures/texLOD1.png";
 import "../../assets/models/cybertruck/textures/texMain_NRM.png";
 import "../../assets/models/cybertruck/textures/texMain_DSP.png";
 import "../../assets/models/cybertruck/textures/texMain.png";
-
-
 
 import { ENVIRONMENT } from "../../environment";
 
@@ -35,11 +34,17 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 
+import { Object3D as ModelLoader, Object3D } from "../../utils/Object3D";
+import { Object3DMapComponent, Object3DCoordinates } from "../../utils/object3DMapComponent";
+
 interface Rotate {
   x: number,
   y: number,
   z: number
 }
+
+
+
 // mapboxgl.LngLat
 function getTransformModel(lat: number, lon: number, modelAltitude: number, modelRotate: Rotate) {
   const modelAsMercatorCoordinate = MercatorCoordinate.fromLngLat([lat, lon], modelAltitude);
@@ -68,147 +73,230 @@ var modelRotate = {
 
 let modelTransform = getTransformModel(lat, lon, modelAltitude, modelRotate)
 
+let CarModel = new ModelLoader({
+  model: 'models/RS7.obj',
+  onLoadProgress: (item: string, loaded: number, total: number) => {
+    console.log("load texture:", item, loaded, total);
+  },
+  setLoadURLModifier: (url: string): string => (`${url}`),
+  textures: ['/img/tex1_DSP.png', '/img/tex1.png', '/img/texLOD1.png', '/img/texMain_DSP.png', '/img/texMain.png', '/img/texMain_NRM.png']
+});
+
+class Object3DLayer {
+  private _model: Object3D;
+  private _modelController: Object3DMapComponent | any;
+  private _coordinates: Object3DCoordinates;
+
+  private _camera: THREE.Camera | any;
+  private _scene: THREE.Scene | any;
+  private _renderer: THREE.WebGLRenderer | any;
+
+  public id: string;
+  public type: string;
+
+  protected map?: any;
+  protected renderingContext?: WebGLRenderingContext;
+
+  readonly renderingMode: string = '3d';
+
+  constructor(opts: { id: string, type: string, model: Object3D, coordinates: Object3DCoordinates }) {
+    this._model = opts.model;
+    this.id = opts.id;
+    this.type = opts.type;
+    this._coordinates = opts.coordinates;
+  }
+
+  get model() {
+    return this._model;
+  }
+
+  get modelController() {
+    return this._modelController;
+  }
+
+  get coordinates() {
+    return this._coordinates;
+  }
+
+  public setCoordinates(newCoordinates: Object3DCoordinates) {
+    this._coordinates = newCoordinates;
+  }
+
+  public onAdd(map: any, gl: WebGLRenderingContext) {
+    this._modelController =  new Object3DMapComponent({
+      coordinates: this._coordinates,
+      rotation: { x: Math.PI / 2, y: 0, z: 0 },
+      renderingContext: gl,
+      canvas: map.getCanvas(),
+      lights: [
+        { position: {x: 0, y: -70, z: 100}, color: 0xffffff },
+        { position: {x: 0, y: 70, z: 100}, color: 0xffffff }
+      ]
+    });
+
+    this.map = map;
+    this.renderingContext = gl;
+
+    this._camera = this._modelController.camera;
+    this._scene = this._modelController.scene;
+    this._renderer = this._modelController.renderer;
+
+    this.loadModel();
+  }
+
+  protected loadModel() {
+    this._model.load((model) => {
+      try {
+        this._scene.add(model);
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+
+  public render(gl: WebGLRenderingContext, matrix: number[]) {
+    this._modelController.setTransformModel(this._coordinates);
+    this._modelController.setTranslateModel(matrix);
+
+    this._renderer.state.reset();
+    this._renderer.render(this._scene, this._camera);
+    this.map.triggerRepaint();
+  }
+}
+
+let car3DModelLayer = new Object3DLayer({
+  model: CarModel,
+  id: '3d-model',
+  type: 'custom',
+  coordinates: { lat: 24.03862, lng: 49.83498 }
+});
+
+setInterval(() => {
+  const { lat, lng } = car3DModelLayer.modelController.coordinates;
+
+  car3DModelLayer.setCoordinates({ lat: lat + 0.00001, lng: lng + 0.00001 });
+
+  console.log({ lat: lat + 0.00001, lng: lng + 0.00001 });
+}, 100);
+
 let customLayer: any = {
   id: '3d-model',
   type: 'custom',
   renderingMode: '3d',
   onAdd: function(map: any, gl: any) {
-    this.camera = new Camera();
-    this.scene = new Scene();
-
-    // create two three.js lights to illuminate the model
-    const directionalLight = new DirectionalLight(0xffffff);
-    directionalLight.position.set(0, -70, 100).normalize();
-
-    this.scene.add(directionalLight);
-
-    const directionalLight2 = new DirectionalLight(0xffffff);
-    directionalLight2.position.set(0, 70, 100).normalize();
-
-    this.scene.add(directionalLight2);
-
-    const oldTextures = [
-      './texLOD1_NRM.png'
-    ];
-    const newTextures = [
-      './img/texMain_NRM.png'
-    ];
-
-    const manager = new LoadingManager();
-    manager.onProgress = function (item, loaded, total) {
-      console.log("load texture:", item, loaded, total);
-    };
-    manager.setURLModifier((url: string): string => {
-      console.log(url);
-      if (url == oldTextures[0]) {
-        url = newTextures[0];
-      }
-
-      return url;
+    this.carModelController = new Object3DMapComponent({
+      coordinates: { lat: lat, lng: lon },
+      rotation: { x: Math.PI / 2, y: 0, z: 0 },
+      renderingContext: gl,
+      canvas: map.getCanvas(),
+      lights: [
+        { position: {x: 0, y: -70, z: 100}, color: 0xffffff },
+        { position: {x: 0, y: 70, z: 100}, color: 0xffffff }
+      ]
     });
-
-    const textureLoader = new TextureLoader(manager);
-
-    const vehicleTextureMain1: THREE.Texture = textureLoader.load('/img/tex1_DSP.png');
-    const vehicleTextureMain2: THREE.Texture = textureLoader.load('/img/tex1.png');
-    const vehicleTextureMain3: THREE.Texture = textureLoader.load('/img/texLOD1.png');
-    const vehicleTextureMain4: THREE.Texture = textureLoader.load('/img/texMain_DSP.png');
-    const vehicleTextureMain5: THREE.Texture = textureLoader.load('/img/texMain.png');
-    const vehicleTextureMain6: THREE.Texture = textureLoader.load('/img/texMain_NRM.png');
-
-    // use the three.js GLTF loader to add the 3D model to the three.js scene
-    const loader = new FBXLoader();
-    loader.load(
-      // 'https://docs.mapbox.com/mapbox-gl-js/assets/34M_17/34M_17.gltf',
-      'models/car.fbx',
-      (model: any) => {
-        model.traverse(function(child: THREE.Object3D) {
-  	      // if ( child instanceof THREE.Mesh ) {
-            console.log(child.children);
-            try {
-              // child.children.forEach((c) => {
-              //   // @ts-ignore
-              //   c.material.map = [
-              //     vehicleTextureMain1,
-              //     vehicleTextureMain2,
-              //     vehicleTextureMain3,
-              //     vehicleTextureMain4,
-              //     vehicleTextureMain5,
-              //     vehicleTextureMain6
-              //   ];
-              // });
-            } catch (err) {}
-            // @ts-ignore
-            // child.material.map.image = "https://lh3.googleusercontent.com/proxy/6-7XPDzvcj_yGXjZgHMmvdl4Gb6eVabJ-3Cow3wVDNNUux2Jt7-5by-4bdEIq5Xre2VWcYvW6AI6DixQDISV1EUFEcCNg9C8HaNlHmleeVDqap-SCNDGGxEu5DUSJh4JWsXv1kZ6lgKQbYCuiKB3zS1XnLCzaArc75u8sdKAR3qosOBMNe2XP6tk"
-          //   // @ts-ignore
-  	      //   // child.material.map = [
-          //   //   vehicleTextureMain1,
-          //   //   vehicleTextureMain2,
-          //   //   vehicleTextureMain3,
-          //   //   vehicleTextureMain4,
-          //   //   vehicleTextureMain5,
-          //   //   vehicleTextureMain6
-          //   // ];
-          //   // child.material.map = vehicleTextureMain1;
-          //   // // @ts-ignore
-          //   // child.material.needsUpdate = true;
-  	      // }
-  	    });
-        this.scene.add(model);
-      }
-    );
 
     this.map = map;
+    this.camera = this.carModelController.camera;
+    this.scene = this.carModelController.scene;
+    this.renderer = this.carModelController.renderer;
 
-    // use the Mapbox GL JS map canvas for three.js
-    this.renderer = new WebGLRenderer({
-      canvas: map.getCanvas(),
-      context: gl,
-      antialias: true,
-      alpha: true
-    });
-
-    this.renderer.autoClear = false;
+    CarModel.load((model) => { this.scene.add(model); });
+    console.log(this)
   },
 
-  render: function(gl: any, matrix: any) {
-    var rotationX = new Matrix4().makeRotationAxis(
-      new Vector3(1, 0, 0),
-      modelTransform.rotateX
-    );
-    var rotationY = new Matrix4().makeRotationAxis(
-      new Vector3(0, 1, 0),
-      modelTransform.rotateY
-    );
-    var rotationZ = new Matrix4().makeRotationAxis(
-      new Vector3(0, 0, 1),
-      modelTransform.rotateZ
-    );
+  render: function(gl: WebGLRenderingContext, matrix: number[]) {
+    this.carModelController.setTransformModel({ lat: 24.03862, lng: 49.83498 }, modelRotate);
+    this.carModelController.setTranslateModel(matrix);
 
-    var m = new Matrix4().fromArray(matrix);
-    var l = new Matrix4()
-      .makeTranslation(
-        modelTransform.translateX,
-        modelTransform.translateY,
-        modelTransform.translateZ || 0
-      )
-      .scale(
-      new Vector3(
-        modelTransform.scale,
-        -modelTransform.scale,
-        modelTransform.scale
-      )
-      )
-      .multiply(rotationX)
-      .multiply(rotationY)
-      .multiply(rotationZ);
-
-    this.camera.projectionMatrix = m.multiply(l);
     this.renderer.state.reset();
     this.renderer.render(this.scene, this.camera);
     this.map.triggerRepaint();
   }
 }
+
+// let customLayer: any = {
+//   id: '3d-model',
+//   type: 'custom',
+//   renderingMode: '3d',
+//   onAdd: function(map: any, gl: any) {
+//     this.camera = new Camera();
+//     this.scene = new Scene();
+//
+//     // create two three.js lights to illuminate the model
+//     const directionalLight = new DirectionalLight(0xffffff);
+//     directionalLight.position.set(0, -70, 100).normalize();
+//
+//     this.scene.add(directionalLight);
+//
+//     const directionalLight2 = new DirectionalLight(0xffffff);
+//     directionalLight2.position.set(0, 70, 100).normalize();
+//
+//     this.scene.add(directionalLight2);
+//
+//     let CarModel = new ModelLoader({
+//       model: 'models/RS7.obj',
+//       onLoadProgress: (item: string, loaded: number, total: number) => {
+//         console.log("load texture:", item, loaded, total);
+//       },
+//       setLoadURLModifier: (url: string): string => (`${url}`),
+//       textures: ['/img/tex1_DSP.png', '/img/tex1.png', '/img/texLOD1.png', '/img/texMain_DSP.png', '/img/texMain.png', '/img/texMain_NRM.png']
+//     });
+//
+//     CarModel.load((model) => { this.scene.add(model); });
+//
+//     this.map = map;
+//
+//     console.log(map)
+//
+//     // use the Mapbox GL JS map canvas for three.js
+//     this.renderer = new WebGLRenderer({
+//       canvas: map.getCanvas(),
+//       context: gl,
+//       antialias: true,
+//       alpha: true
+//     });
+//
+//     this.renderer.autoClear = false;
+//   },
+//
+//   render: function(gl: any, matrix: any) {
+//     var rotationX = new Matrix4().makeRotationAxis(
+//       new Vector3(1, 0, 0),
+//       modelTransform.rotateX
+//     );
+//     var rotationY = new Matrix4().makeRotationAxis(
+//       new Vector3(0, 1, 0),
+//       modelTransform.rotateY
+//     );
+//     var rotationZ = new Matrix4().makeRotationAxis(
+//       new Vector3(0, 0, 1),
+//       modelTransform.rotateZ
+//     );
+//
+//     var m = new Matrix4().fromArray(matrix);
+//     var l = new Matrix4()
+//       .makeTranslation(
+//         modelTransform.translateX,
+//         modelTransform.translateY,
+//         modelTransform.translateZ || 0
+//       )
+//       .scale(
+//       new Vector3(
+//         modelTransform.scale,
+//         -modelTransform.scale,
+//         modelTransform.scale
+//       )
+//       )
+//       .multiply(rotationX)
+//       .multiply(rotationY)
+//       .multiply(rotationZ);
+//
+//     this.camera.projectionMatrix = m.multiply(l);
+//     this.renderer.state.reset();
+//     this.renderer.render(this.scene, this.camera);
+//     this.map.triggerRepaint();
+//   }
+// }
 
 const Map = ReactMapboxGl({
   accessToken: ENVIRONMENT.mapbox.accessToken
@@ -233,7 +321,7 @@ const BuildingsLayer3DComponent = () => (
 
 class MapComponent extends Component {
 
-  zoomControl = (map: mapboxgl.Map) => {
+  zoomControl = (map: any) => {
     if (map.getZoom() <= 16) {
       map.flyTo({
         pitch: 0,
@@ -256,13 +344,13 @@ class MapComponent extends Component {
             height: '100%',
             width: '100%'
           }}
-          center={[24.03862, 49.83498]}
-          zoom={[15]}
+          center={[car3DModelLayer.coordinates.lat, car3DModelLayer.coordinates.lng]}
+          zoom={[17]}
           pitch={[0]}
           onZoom={this.zoomControl}
           onStyleLoad={(map: any) => {
             console.log("loaded 3D");
-            map.addLayer(customLayer, 'waterway-label');
+            map.addLayer(car3DModelLayer, 'waterway-label');
           }}
         >
         <MapContext.Consumer>

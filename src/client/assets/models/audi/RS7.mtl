@@ -1,0 +1,195 @@
+# MTL written from C:\Users\Ghost\Desktop\RS7.obj
+newmtl Default
+Kd 0.8 0.8 0.8
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl black2
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl blackroof
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl blackuniversal
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl brake_032disk
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+map_Kd E:\dst\Audi RS7 Performance\rs7tex\radialspec.jpg
+map_Bump E:\dst\Audi RS7 Performance\rs7tex\Car.Brake-Disk.BMP.png
+newmtl brake_032disk_0322
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+map_Kd E:\dst\Audi RS7 Performance\rs7tex\radialspec.jpg
+newmtl brake_032support
+Kd 0.0506329 0.0506329 0.0506329
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl carbonfiber
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.04 0.04 0.04
+map_Bump E:\dst\Audi RS7 Performance\3242551ddd6a2d02587430d006a7ec6a--texture.jpg
+newmtl chrome
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl chromehead
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl glass
+Kd 0 0 0
+Ns 256
+d 0
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl grill
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.03 0.03 0.03
+newmtl headglass
+Kd 0 0 0
+Ns 256
+d 0
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl light
+Kd 0.48 0.48 0.48
+Ns 256
+d 1
+illum 2
+Ka 2 2 2
+Ks 0.04 0.04 0.04
+newmtl main
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0 0 0
+newmtl main4
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0 0 0
+newmtl mirror
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl redgl2
+Kd 0.784 0.024 0.024
+Ns 256
+d 0
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl redglass
+Kd 0.8 0 0
+Ns 256
+d 0
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl redlight
+Kd 0.784 0.024 0.024
+Ns 256
+d 1
+illum 2
+Ka 2 0 0
+Ks 0.2 0.2 0.2
+newmtl riminside
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl rs7
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+map_Kd E:\dst\Audi RS7 Performance\rs7tex\rs7_logo.png
+newmtl taillight
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl tire
+Kd 0.0227848 0.0227848 0.0227848
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl wheel_032black
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl wheel_032chrome
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2
+newmtl wheellock
+Kd 0 0 0
+Ns 256
+d 1
+illum 2
+Ka 0 0 0
+Ks 0.2 0.2 0.2

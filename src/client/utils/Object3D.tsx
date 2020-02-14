@@ -36,12 +36,14 @@ export class Object3D {
 
   private loadingManager: THREE.LoadingManager;
   private textureLoader: THREE.TextureLoader;
-  private textures: THREE.Texture[] | THREE.Texture;
+  public textures: THREE.Texture[] | THREE.Texture;
 
   constructor(opts: Object3DOptions) {
     this.model = opts.model;
 
-    switch (opts.format) {
+    const MODEL_FORMAT: string = ((/([a-z]+)$/g).exec(opts.model) || ['']).pop() || '';
+
+    switch (opts.format || MODEL_FORMAT.toUpperCase()) {
       case FORMATS.fbx: this.loader = new FBXLoader(); break;
       case FORMATS.gltf: this.loader = new GLTFLoader(); break;
       case FORMATS.obj: this.loader = new OBJLoader(); break;
@@ -67,11 +69,7 @@ export class Object3D {
     }
   }
 
-  private load(callback: (obj: THREE.Object3D) => void) {
-    this.loader.load(this.model, (model: any) => {
-      model.traverse((child: THREE.Object3D) => {
-        callback(child);
-      });
-    });
+  public load(callback: (obj: any | THREE.Group) => void) {
+    this.loader.load(this.model, callback);
   }
 }
