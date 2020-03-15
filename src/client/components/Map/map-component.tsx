@@ -20,6 +20,7 @@ import "../../assets/models/cybertruck/textures/texMain.png";
 import "../../assets/images/map-marker-icon.png";
 
 import { ENVIRONMENT } from "../../environment";
+import { ICONS } from "../../data";
 
 import mapboxgl from "mapbox-gl";
 import ReactMapboxGl from "react-mapbox-gl";
@@ -37,6 +38,7 @@ import RoutingForm from "./map-routing-form-component";
 
 import { Object3D as ModelLoader } from "../../utils/Object3D";
 import { Object3DLayer } from "../../utils/Object3DMapLayer";
+import { WaypointController } from "../../utils/waypointMapController";
 
 // import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
 
@@ -99,7 +101,8 @@ interface MapControllerProps {
   getCoords?: ({lng, lat}: {lng: number, lat: number}) => any,
   onStyleLoad?: (map: any) => void,
   onLoad?: (map: any) => void,
-  onMouseMove?: (map: any) => void
+  onMouseMove?: (map: any) => void,
+  waypoints?: Coordinates[]
 }
 
 class MapController extends Component<MapControllerProps> {
@@ -117,8 +120,21 @@ class MapController extends Component<MapControllerProps> {
     }
   }
 
-  shouldComponentUpdate() {
-    return false
+  shouldComponentUpdate(nextProps) {
+    if (!this.props.waypoints) {
+      return false;
+    }
+
+    if (this.props.waypoints.length != nextProps.waypoints.length) {
+      // Map = ReactMapboxGl({
+      //   accessToken: ENVIRONMENT.mapbox.accessToken
+      // });
+      return true;
+    } else {
+      return false;
+    }
+
+    return false;
   }
 
   render() {
@@ -138,7 +154,6 @@ class MapController extends Component<MapControllerProps> {
           onStyleLoad={this.props.onStyleLoad}
           onMouseMove={this.props.onMouseMove}
         >
-          <div>{this.props.children}</div>
           <MapContext.Consumer>
             {(map: any): any => {
               this.props.onLoad ? this.props.onLoad(map) : null;
@@ -146,6 +161,7 @@ class MapController extends Component<MapControllerProps> {
           </MapContext.Consumer>
           <ScaleControl position="top-right"/>
           <BuildingsLayer3DComponent />
+          <div>{this.props.children}</div>
         </Map>
       </div>
     );
@@ -160,10 +176,13 @@ interface Coordinates {
 interface MapComponentState {
   currentCoordinates?: Coordinates,
   checkedCoordinates: Coordinates,
-  waypoints: Coordinates[]
+  waypoints: Coordinates[],
+  map?: any
 }
 
 class MapComponent extends Component<{}, MapComponentState> {
+  private _waypointController: WaypointController | any = {};
+
   state = {
     checkedCoordinates: { lng: 0, lat: 0 },
     waypoints: [{lat: 24.03862, lng: 49.83498}]
@@ -185,7 +204,11 @@ class MapComponent extends Component<{}, MapComponentState> {
   }
 
   add3DObject(object: Object3DLayer, map: any) {
-    map.addLayer(object, "waterway-label");
+    try {
+      map.addLayer(object, "waterway-label");
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   getRoute() {
@@ -199,21 +222,11 @@ class MapComponent extends Component<{}, MapComponentState> {
       })
   }
 
-  declareIcon(opts: { path: string, title: string}, map: any) {
-    map.loadImage(opts.path, (err, image) => {
-      if (err) {
-        console.error(err);
-      } else {
-
-      }
-      map.addImage(opts.title, image);
-    });
-  }
-
   handleMapClick(map: any) {
     map.on('mousedown', (e: any) => {
       try {
         this.setState({ checkedCoordinates: e.lngLat.wrap() });
+        this._waypointController.waypoints = this.state.waypoints;
       } catch (err) {
         console.error(err);
       }
@@ -225,19 +238,27 @@ class MapComponent extends Component<{}, MapComponentState> {
   }
 
   handleMapLoad = (map: any) => {
-    this.declareIcon({path: '/img/map-marker-icon.png', title: 'map-marker-icon'}, map);
+    this._waypointController = new WaypointController({
+      map: map,
+      icons: ICONS
+    });
+
     this.handleMapClick(map);
+    this.setState({map});
   }
 
   handleMapStyleClick = (map: any) => {
-    this.add3DObject(car3DModelLayer, map);
+    try {
+      this.add3DObject(car3DModelLayer, map);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   render() {
     return(
       <div>
-        <MapController onStyleLoad={this.handleMapStyleClick} onLoad={this.handleMapLoad} getCoords={this.getCoords}>
-          <Checkpoint textColor="#ffffff" icon="map-marker-icon" iconScale={0.15} points={this.state.waypoints} />
+        <MapController waypoints={this.state.waypoints} onStyleLoad={this.handleMapStyleClick} onLoad={this.handleMapLoad} getCoords={this.getCoords}>
         </MapController>
         <RoutingForm handleClick={this.addWaypoint} lat={this.state.checkedCoordinates.lat} lng={this.state.checkedCoordinates.lng} />
       </div>

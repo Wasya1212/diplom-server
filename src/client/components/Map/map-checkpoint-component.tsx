@@ -33,7 +33,6 @@ export default class Checkpoint extends Component<CheckpointProps, CheckpointSta
   }
 
   componentDidUpdate(prevProps) {
-    console.log("upldate!")
     if (this.props.points != prevProps.points) {
       this.setState({
         sourceOptions: this.getSourceOptions(),
