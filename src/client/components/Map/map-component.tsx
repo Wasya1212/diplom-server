@@ -61,12 +61,6 @@ let car3DModelLayer = new Object3DLayer({
   coordinates: { lat: 24.03862, lng: 49.83498 }
 });
 
-setInterval(() => {
-  const { lat, lng } = car3DModelLayer.coordinates;
-
-  car3DModelLayer.setCoordinates({ lat: lat + 0.00001, lng: lng + 0.00001 });
-}, 100);
-
 let Map = ReactMapboxGl({
   accessToken: ENVIRONMENT.mapbox.accessToken
 });
@@ -186,7 +180,19 @@ class MapComponent extends Component<{}, MapComponentState> {
         this.setState({ waypoints: [this.state.checkedCoordinates] });
       }
 
-      this._waypointController.getRoute();
+      this._waypointController
+        .getRoute()
+        .then(route => {
+          let index = 0;
+
+          const fullRoute = route.map(coord => ({ lat: coord[0], lng: coord[1] }));
+
+          setInterval(() => {
+            car3DModelLayer.setCoordinates(fullRoute[index]);
+            fullRoute.length > index + 1 ? index++ : index = 0;
+          }, 100);
+          console.log("route:", route);
+        });
     }
   }
 

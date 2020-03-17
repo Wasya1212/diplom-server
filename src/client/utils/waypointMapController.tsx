@@ -154,7 +154,7 @@ export class WaypointController {
     WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
   }
 
-  public getRoute() {
+  public async getRoute() {
     if (this._waypoints.length < 2) {
       return;
     }
@@ -164,61 +164,57 @@ export class WaypointController {
       return;
     }
 
-    axios
-      .get(`https://api.mapbox.com/optimized-trips/v1/mapbox/walking/${this._waypoints.map((waypoint: Waypoint) => (`${waypoint.lng},${waypoint.lat}`)).join(';')}?access_token=${ENVIRONMENT.mapbox.accessToken}`)
-      .then(({data}) => {
-        const geom = polyline.decode(data.trips[0].geometry.toString()).map(el => ([el[1], el[0]]));
+    let routeData = await axios.get(`https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${this._waypoints.map((waypoint: Waypoint) => (`${waypoint.lng},${waypoint.lat}`)).join(';')}?access_token=${ENVIRONMENT.mapbox.accessToken}`).then(({data}) => data);
+    let routeWay = polyline.decode(routeData.trips[0].geometry.toString()).map(el => ([el[1], el[0]]));
 
-        if (this._map.getLayer('layer-route') !== undefined) {
-          this._map.removeLayer('layer-route');
-        }
-        if (this._map.getSource('source-route') !== undefined) {
-          this._map.removeSource('source-route');
-        }
+    if (this._map.getLayer('layer-route') !== undefined) {
+      this._map.removeLayer('layer-route');
+    }
+    if (this._map.getSource('source-route') !== undefined) {
+      this._map.removeSource('source-route');
+    }
 
-        this._map.addSource('source-route', {
-          type: 'geojson',
-          lineMetrics: true,
-          data: {
-            type: 'FeatureCollection',
-            features: [
-              {
-                type: 'Feature',
-                properties: {},
-                geometry: {
-                  coordinates: geom,
-                  type: 'LineString'
-                }
-              }
-            ]
+    this._map.addSource('source-route', {
+      type: 'geojson',
+      lineMetrics: true,
+      data: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              coordinates: routeWay,
+              type: 'LineString'
+            }
           }
-        });
+        ]
+      }
+    });
 
-        this._map.addLayer({
-          type: 'line',
-          source: 'source-route',
-          id: 'layer-route',
-          paint: {
-            'line-color': 'red',
-            'line-width': 14,
-            // 'line-gradient' must be specified using an expression
-            // with the special 'line-progress' property
-            'line-gradient': [
-              'interpolate',
-              ['linear'],
-              ['line-progress'],
-              0, 'yellow',
-              1, 'red'
-            ]
-          },
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          }
-        });
-      })
-      .catch(err => {
-        console.error(err);
-      })
+    this._map.addLayer({
+      type: 'line',
+      source: 'source-route',
+      id: 'layer-route',
+      paint: {
+        'line-color': 'red',
+        'line-width': 14,
+        // 'line-gradient' must be specified using an expression
+        // with the special 'line-progress' property
+        'line-gradient': [
+          'interpolate',
+          ['linear'],
+          ['line-progress'],
+          0, 'yellow',
+          1, 'red'
+        ]
+      },
+      layout: {
+        'line-cap': 'round',
+        'line-join': 'round'
+      }
+    });
+
+    return routeWay;
   }
 }
