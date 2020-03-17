@@ -161,9 +161,13 @@ interface MapComponentState {
 class MapComponent extends Component<{}, MapComponentState> {
   private _waypointController: WaypointController | any = {};
 
-  state = {
-    checkedCoordinates: { lng: 0, lat: 0 },
-    waypoints: [{lat: 24.03862, lng: 49.83498}]
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      checkedCoordinates: { lng: 0, lat: 0 },
+      waypoints: []
+    }
   }
 
   getCoords = (coords: {lat: number, lng: number}) => {
@@ -174,9 +178,15 @@ class MapComponent extends Component<{}, MapComponentState> {
     if (this.state.checkedCoordinates.lng == 0 && this.state.checkedCoordinates.lat == 0) {
       alert("Enter norm coordinates!");
     } else {
-      this.setState({
-        waypoints: this.state.waypoints.concat(this.state.checkedCoordinates)
-      });
+      if (this.state.waypoints.length > 0) {
+        this.setState({
+          waypoints: this.state.waypoints.concat(this.state.checkedCoordinates)
+        });
+      } else {
+        this.setState({ waypoints: [this.state.checkedCoordinates] });
+      }
+
+      this._waypointController.getRoute();
     }
   }
 

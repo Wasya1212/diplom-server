@@ -1,4 +1,8 @@
 import { Icon } from "../data";
+import { ENVIRONMENT } from "../environment";
+
+import axios from "axios";
+const polyline = require('@mapbox/polyline');
 
 export interface Waypoint {
   lat: number,
@@ -101,7 +105,7 @@ export class WaypointController {
           },
           properties: {
             icon: iconProps.name,
-            title: iconProps.text ? index.toString() : ''
+            title: iconProps.text ? `${index + 1}` : ''
           }
         }))
       }
@@ -148,5 +152,73 @@ export class WaypointController {
 
   private addSourceLayer() {
     WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
+  }
+
+  public getRoute() {
+    if (this._waypoints.length < 2) {
+      return;
+    }
+
+    if (this._waypoints.length > 12) {
+      alert("Maximum waypoints!");
+      return;
+    }
+
+    axios
+      .get(`https://api.mapbox.com/optimized-trips/v1/mapbox/walking/${this._waypoints.map((waypoint: Waypoint) => (`${waypoint.lng},${waypoint.lat}`)).join(';')}?access_token=${ENVIRONMENT.mapbox.accessToken}`)
+      .then(({data}) => {
+        const geom = polyline.decode(data.trips[0].geometry.toString()).map(el => ([el[1], el[0]]));
+
+        if (this._map.getLayer('layer-route') !== undefined) {
+          this._map.removeLayer('layer-route');
+        }
+        if (this._map.getSource('source-route') !== undefined) {
+          this._map.removeSource('source-route');
+        }
+
+        this._map.addSource('source-route', {
+          type: 'geojson',
+          lineMetrics: true,
+          data: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  coordinates: geom,
+                  type: 'LineString'
+                }
+              }
+            ]
+          }
+        });
+
+        this._map.addLayer({
+          type: 'line',
+          source: 'source-route',
+          id: 'layer-route',
+          paint: {
+            'line-color': 'red',
+            'line-width': 14,
+            // 'line-gradient' must be specified using an expression
+            // with the special 'line-progress' property
+            'line-gradient': [
+              'interpolate',
+              ['linear'],
+              ['line-progress'],
+              0, 'yellow',
+              1, 'red'
+            ]
+          },
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          }
+        });
+      })
+      .catch(err => {
+        console.error(err);
+      })
   }
 }
