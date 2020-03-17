@@ -18,6 +18,7 @@ import "../../assets/models/cybertruck/textures/texMain_DSP.png";
 import "../../assets/models/cybertruck/textures/texMain.png";
 
 import "../../assets/images/map-marker-icon.png";
+import "../../assets/images/map-current-marker-icon.png";
 
 import { ENVIRONMENT } from "../../environment";
 import { ICONS } from "../../data";
@@ -40,19 +41,9 @@ import { Object3D as ModelLoader } from "../../utils/Object3D";
 import { Object3DLayer } from "../../utils/Object3DMapLayer";
 import { WaypointController } from "../../utils/waypointMapController";
 
-// import MapboxDirections from '@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions';
-
 import MapboxDirections from "../../utils/direction";
 
 import axios from "axios";
-
-// console.log(MapboxDirections)
-
-// let directions = new MapboxDirections({
-//   accessToken: ENVIRONMENT.mapbox.accessToken,
-//   unit: 'metric',
-//   profile: 'mapbox/cycling'
-// });
 
 let CarModel = new ModelLoader({
   model: 'models/RS7.obj',
@@ -120,20 +111,7 @@ class MapController extends Component<MapControllerProps> {
     }
   }
 
-  shouldComponentUpdate(nextProps) {
-    if (!this.props.waypoints) {
-      return false;
-    }
-
-    if (this.props.waypoints.length != nextProps.waypoints.length) {
-      // Map = ReactMapboxGl({
-      //   accessToken: ENVIRONMENT.mapbox.accessToken
-      // });
-      return true;
-    } else {
-      return false;
-    }
-
+  shouldComponentUpdate() {
     return false;
   }
 
@@ -189,7 +167,6 @@ class MapComponent extends Component<{}, MapComponentState> {
   }
 
   getCoords = (coords: {lat: number, lng: number}) => {
-    console.log("hui")
     this.setState({ checkedCoordinates: coords });
   }
 
@@ -223,24 +200,49 @@ class MapComponent extends Component<{}, MapComponentState> {
   }
 
   handleMapClick(map: any) {
-    map.on('mousedown', (e: any) => {
+    map.on('click', (e: any) => {
       try {
-        this.setState({ checkedCoordinates: e.lngLat.wrap() });
-        this._waypointController.waypoints = this.state.waypoints;
+        const currentCheckedCoordinates = e.lngLat.wrap();
+
+        WaypointController.addIcon(
+          map,
+          {
+            name: ICONS[1].title,
+            scale: 0.17
+          },
+          'current-marker',
+          currentCheckedCoordinates
+        );
+
+        this.setState({ checkedCoordinates: currentCheckedCoordinates });
       } catch (err) {
         console.error(err);
       }
     });
   }
 
+  componentWillUpdate(nextProps, nextState) {
+    if (this.state.waypoints !== nextState.waypoints) {
+      this._waypointController.waypoints = nextState.waypoints;
+    }
+  }
+
   componentDidUpdate() {
-    console.log(this.state.waypoints);
+    // console.log(this.state.waypoints);
   }
 
   handleMapLoad = (map: any) => {
     this._waypointController = new WaypointController({
       map: map,
-      icons: ICONS
+      icons: ICONS,
+      waypointIconStyle: {
+        name: ICONS[0].title,
+        scale: 0.17,
+        text: {
+          color: '#ffffff',
+          size: 40
+        }
+      }
     });
 
     this.handleMapClick(map);

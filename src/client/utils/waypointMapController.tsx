@@ -8,11 +8,29 @@ export interface Waypoint {
 export interface WaypointControllerOptions {
   map: any,
   icons?: Icon[],
-  waypoints?: Waypoint[]
+  waypoints?: Waypoint[],
+  waypointIconStyle?: IconProperties
+}
+
+export interface IconTextProperties {
+  color?: string,
+  size?: number,
+  lineHeight?: number,
+  translate?: number[],
+  offset?: number[]
+}
+
+export interface IconProperties {
+  scale?: number,
+  text?: IconTextProperties,
+  name: string,
+  offset?: { x: number, y: number }
 }
 
 export class WaypointController {
   private _map: any;
+
+  private _waypointIconStyle: IconProperties;
 
   private _icons: Icon[];
   private _waypoints: Waypoint[];
@@ -21,6 +39,14 @@ export class WaypointController {
     this._map = opts.map;
     this._icons = opts.icons || [];
     this._waypoints = opts.waypoints || [];
+
+    if (opts.waypointIconStyle) {
+      this._waypointIconStyle = opts.waypointIconStyle;
+    } else if (opts.icons) {
+      this._waypointIconStyle = { name: this._icons[0].title };
+    } else {
+      this._waypointIconStyle = { name: 'marker-15' };
+    }
 
     this.init();
   }
@@ -53,42 +79,74 @@ export class WaypointController {
     }
   }
 
-  set waypoints(waypoints: Waypoint[]) {
-    this._waypoints = waypoints;
-
-    this.addSourceLayer();
-  }
-
-  private addSourceLayer() {
-    if (this._map.getLayer('points') !== undefined) {
-      this._map.removeLayer('points');
+  public static addIcon(map: any, iconProps: IconProperties, id: string, coordinates: Waypoint | Waypoint[]) {
+    if (map.getLayer('layer-' + id) !== undefined) {
+      map.removeLayer('layer-' + id);
     }
-    if (this._map.getSource('point') !== undefined) {
-      this._map.removeSource('point');
+    if (map.getSource('source-' + id) !== undefined) {
+      map.removeSource('source-' +id);
     }
 
-    this._map.addSource('point', {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': this._waypoints.map((waypoint: Waypoint) => ({
-          'type': 'Feature',
-          'geometry': {
-            'type': 'Point',
-            'coordinates': [waypoint.lng, waypoint.lat]
+    let coordinatesList: Waypoint[] = Array.isArray(coordinates) ? coordinates : [coordinates];
+
+    map.addSource('source-' + id, {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: coordinatesList.map((waypoint: Waypoint, index: number) => ({
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [waypoint.lng, waypoint.lat]
+          },
+          properties: {
+            icon: iconProps.name,
+            title: iconProps.text ? index.toString() : ''
           }
         }))
       }
     });
 
-    this._map.addLayer({
-      'id': 'points',
-      'type': 'symbol',
-      'source': 'point',
-      'layout': {
-      'icon-image': 'map-marker-icon',
-      'icon-size': 0.25
+    map.addLayer({
+      paint: {
+        'text-color': iconProps.text ? iconProps.text.color || '#000000' : '#000000',
+        'text-translate': iconProps.text ? iconProps.text.translate || [0, 0] : [0, 0]
+      },
+      id: 'layer-' + id,
+      type: 'symbol',
+      source: 'source-' + id,
+      layout: {
+        'icon-anchor': 'bottom',
+        'text-line-height': iconProps.text ? iconProps.text.lineHeight || 1.2 : 1.2,
+        'icon-offset': iconProps.offset ? [iconProps.offset.x, iconProps.offset.y] : [0, 0],
+        'icon-size': iconProps.scale || 1,
+        'text-field': ['get', 'title'],
+        'text-size': iconProps.text ? iconProps.text.size || 40 : 40,
+        'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+        'text-offset': iconProps.text ? iconProps.text.offset || [0, -1.2] : [0, -1.2],
+        'icon-ignore-placement': true,
+        'icon-image': ['concat', ['get', 'icon'], ''],
+        'text-allow-overlap': true,
+        'symbol-placement': 'point'
       }
     });
+  }
+
+  set waypoints(waypoints: Waypoint[]) {
+    this._waypoints = waypoints;
+
+    WaypointController.addIcon(this._map, this._waypointIconStyle, 'checkpoint', this._waypoints);
+  }
+
+  public addMarker(id: string, iconProps: IconProperties, coordinates: Waypoint) {
+    WaypointController.addIcon(this._map, iconProps, id, coordinates);
+  }
+
+  public addMarkers(id: string, iconProps: IconProperties, coordinates: Waypoint[]) {
+    WaypointController.addIcon(this._map, iconProps, id, coordinates);
+  }
+
+  private addSourceLayer() {
+    WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
   }
 }
