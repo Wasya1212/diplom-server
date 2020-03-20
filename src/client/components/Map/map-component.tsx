@@ -23,6 +23,11 @@ import "../../assets/images/map-current-marker-icon.png";
 import { ENVIRONMENT } from "../../environment";
 import { ICONS } from "../../data";
 
+import {
+  calculateDistance,
+  parseToCoordsObject
+} from "../../utils/mapCalc";
+
 import mapboxgl from "mapbox-gl";
 import ReactMapboxGl from "react-mapbox-gl";
 import {
@@ -44,6 +49,8 @@ import { WaypointController } from "../../utils/waypointMapController";
 import MapboxDirections from "../../utils/direction";
 
 import axios from "axios";
+
+// console.log(calculateDistance({ lat: 77.1539, lng: -139.398}, { lat: -77.1804, lng: -139.55}));
 
 let CarModel = new ModelLoader({
   model: 'models/RS7.obj',
@@ -154,6 +161,7 @@ interface MapComponentState {
 
 class MapComponent extends Component<{}, MapComponentState> {
   private _waypointController: WaypointController | any = {};
+  private timer: any;
 
   constructor(props) {
     super(props);
@@ -179,20 +187,6 @@ class MapComponent extends Component<{}, MapComponentState> {
       } else {
         this.setState({ waypoints: [this.state.checkedCoordinates] });
       }
-
-      this._waypointController
-        .getRoute()
-        .then(route => {
-          let index = 0;
-
-          const fullRoute = route.map(coord => ({ lat: coord[0], lng: coord[1] }));
-
-          setInterval(() => {
-            car3DModelLayer.setCoordinates(fullRoute[index]);
-            fullRoute.length > index + 1 ? index++ : index = 0;
-          }, 100);
-          console.log("route:", route);
-        });
     }
   }
 
@@ -243,9 +237,38 @@ class MapComponent extends Component<{}, MapComponentState> {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps, prevState) {
     // console.log(this.state.waypoints);
+
+    if (prevState.waypoints != this.state.waypoints) {
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+
+      this._waypointController
+        .getRoute()
+        .then(route => {
+          console.log(calculateDistance(
+            parseToCoordsObject(route[0]),
+            parseToCoordsObject(route[1])
+          ));
+
+          return route;
+        })
+        .then(route => {
+          let index = 0;
+
+          const fullRoute = route.map(coord => ({ lat: coord[0], lng: coord[1] }));
+
+          this.timer = setInterval(() => {
+            car3DModelLayer.setCoordinates(fullRoute[index]);
+            fullRoute.length > index + 1 ? index++ : index = 0;
+          }, 100);
+          console.log("route:", route);
+        });
+    }
   }
+
 
   handleMapLoad = (map: any) => {
     this._waypointController = new WaypointController({
