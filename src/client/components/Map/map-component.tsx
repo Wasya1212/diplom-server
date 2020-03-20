@@ -45,6 +45,7 @@ import RoutingForm from "./map-routing-form-component";
 import { Object3D as ModelLoader } from "../../utils/Object3D";
 import { Object3DLayer } from "../../utils/Object3DMapLayer";
 import { WaypointController } from "../../utils/waypointMapController";
+import { Object3DMapController } from "../../utils/object3DMapController";
 
 import MapboxDirections from "../../utils/direction";
 
@@ -65,7 +66,8 @@ let car3DModelLayer = new Object3DLayer({
   model: CarModel,
   id: '3d-model',
   type: 'custom',
-  coordinates: { lat: 24.03862, lng: 49.83498 }
+  coordinates: { lat: 24.03862, lng: 49.83498 },
+  scale: 0.2
 });
 
 let Map = ReactMapboxGl({
@@ -162,6 +164,7 @@ interface MapComponentState {
 class MapComponent extends Component<{}, MapComponentState> {
   private _waypointController: WaypointController | any = {};
   private timer: any;
+  private _car3DModelController: Object3DMapController | any = {};
 
   constructor(props) {
     super(props);
@@ -256,14 +259,20 @@ class MapComponent extends Component<{}, MapComponentState> {
           return route;
         })
         .then(route => {
-          let index = 0;
+          const fullRoute = route.map((coord: number[]) => ({ lat: coord[0], lng: coord[1] }));
 
-          const fullRoute = route.map(coord => ({ lat: coord[0], lng: coord[1] }));
+          this._car3DModelController.move(fullRoute[0], fullRoute[1]);
 
-          this.timer = setInterval(() => {
-            car3DModelLayer.setCoordinates(fullRoute[index]);
-            fullRoute.length > index + 1 ? index++ : index = 0;
-          }, 100);
+          // console.log(Object3DMapController.getAngle(fullRoute[0], fullRoute[1]));
+
+          // let index = 0;
+
+          // const fullRoute = route.map(coord => ({ lat: coord[0], lng: coord[1] }));
+          //
+          // this.timer = setInterval(() => {
+          //   car3DModelLayer.setCoordinates(fullRoute[index]);
+          //   fullRoute.length > index + 1 ? index++ : index = 0;
+          // }, 100);
           console.log("route:", route);
         });
     }
@@ -283,6 +292,8 @@ class MapComponent extends Component<{}, MapComponentState> {
         }
       }
     });
+
+    this._car3DModelController = new Object3DMapController(map, car3DModelLayer);
 
     this.handleMapClick(map);
     this.setState({map});

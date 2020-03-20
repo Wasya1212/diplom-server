@@ -5,6 +5,7 @@ export class Object3DLayer {
   private _model: Object3D;
   private _modelController: Object3DMapComponent | any;
   private _coordinates: Object3DCoordinates;
+  private _scale?: number;
 
   private _camera: THREE.Camera | any;
   private _scene: THREE.Scene | any;
@@ -18,11 +19,12 @@ export class Object3DLayer {
 
   readonly renderingMode: string = '3d';
 
-  constructor(opts: { id: string, type: string, model: Object3D, coordinates: Object3DCoordinates }) {
+  constructor(opts: { id: string, type: string, model: Object3D, coordinates: Object3DCoordinates, scale?: number }) {
     this._model = opts.model;
     this.id = opts.id;
     this.type = opts.type;
     this._coordinates = opts.coordinates;
+    this._scale = opts.scale;
   }
 
   get model() {
@@ -50,7 +52,8 @@ export class Object3DLayer {
       lights: [
         { position: {x: 0, y: -70, z: 100}, color: 0xffffff },
         { position: {x: 0, y: 70, z: 100}, color: 0xffffff }
-      ]
+      ],
+      scale: this._scale
     });
 
     this.map = map;

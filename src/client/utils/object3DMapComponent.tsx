@@ -16,7 +16,8 @@ export interface Object3DMapComponentOptions {
   alpha?: boolean,
   antialias?: boolean,
   coordinates: Object3DCoordinates,
-  rotation?: Object3DRotate
+  rotation?: Object3DRotate,
+  scale?: number
 }
 
 export interface Light {
@@ -62,6 +63,8 @@ export class Object3DMapComponent {
 
   private _transformModel: Object3DTransformModel;
 
+  private _scale: number;
+
   constructor(opts: Object3DMapComponentOptions) {
     this._camera = new Camera();
     this._scene = new Scene();
@@ -84,8 +87,9 @@ export class Object3DMapComponent {
 
     this._rotation = opts.rotation || { x: 0, y: 0, z: 0 };
     this._coordinates = opts.coordinates;
+    this._scale = opts.scale || 1;
 
-    this._transformModel = Object3DMapComponent.getTransformModel(this._coordinates, 0, this._rotation);
+    this._transformModel = Object3DMapComponent.getTransformModel(this._coordinates, 0, this._rotation, this._scale);
   }
 
   get renderer() {
@@ -112,6 +116,10 @@ export class Object3DMapComponent {
     return this._rotation;
   }
 
+  get scale(): number {
+    return this._scale;
+  }
+
   public setLight(light: Light): DirectionalLight {
     let directionalLight: THREE.DirectionalLight = new DirectionalLight(light.color);
 
@@ -128,7 +136,7 @@ export class Object3DMapComponent {
     this._coordinates = coordinates;
     modelRotate ? this._rotation = modelRotate : null;
 
-    this._transformModel = Object3DMapComponent.getTransformModel(coordinates, modelAltitude || 0, modelRotate || this._rotation);
+    this._transformModel = Object3DMapComponent.getTransformModel(coordinates, modelAltitude || 0, modelRotate || this._rotation, this._scale);
   }
 
   public setTranslateModel(matrix: number[]) {
@@ -137,7 +145,7 @@ export class Object3DMapComponent {
     this._camera.projectionMatrix = translateModel.m.multiply(translateModel.l);
   }
 
-  public static getTransformModel(coordinates: Object3DCoordinates, modelAltitude: number, modelRotate: Object3DRotate): Object3DTransformModel {
+  public static getTransformModel(coordinates: Object3DCoordinates, modelAltitude: number, modelRotate: Object3DRotate, scale?: number): Object3DTransformModel {
     const modelAsMercatorCoordinate: MercatorCoordinate = MercatorCoordinate.fromLngLat([coordinates.lat, coordinates.lng], modelAltitude);
 
     return {
@@ -147,7 +155,7 @@ export class Object3DMapComponent {
       rotateX: modelRotate.x,
       rotateY: modelRotate.y,
       rotateZ: modelRotate.z,
-      scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+      scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits() * (scale || 1)
     };
   }
 
