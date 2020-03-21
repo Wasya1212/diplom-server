@@ -39,6 +39,9 @@ export class WaypointController {
   private _icons: Icon[];
   private _waypoints: Waypoint[];
 
+  private _layerId?: string;
+  private _sourceId?: string;
+
   constructor(opts: WaypointControllerOptions) {
     this._map = opts.map;
     this._icons = opts.icons || [];
@@ -67,6 +70,14 @@ export class WaypointController {
 
   get map() {
     return this._map;
+  }
+
+  get sourceId() {
+    return this._sourceId;
+  }
+
+  get layerId() {
+    return this._layerId;
   }
 
   public static declareIcon(map: any, icon: Icon) {
@@ -139,6 +150,9 @@ export class WaypointController {
   set waypoints(waypoints: Waypoint[]) {
     this._waypoints = waypoints;
 
+    this._layerId = 'layer-' + 'checkpoint';
+    this._sourceId = 'source-' + 'checkpoint';
+
     WaypointController.addIcon(this._map, this._waypointIconStyle, 'checkpoint', this._waypoints);
   }
 
@@ -151,6 +165,9 @@ export class WaypointController {
   }
 
   private addSourceLayer() {
+    this._layerId = 'layer-' + 'checkpoint';
+    this._sourceId = 'source-' + 'checkpoint';
+    
     WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
   }
 

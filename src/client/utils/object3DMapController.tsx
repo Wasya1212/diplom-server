@@ -25,27 +25,27 @@ export class Object3DMapController {
     return this._object3D;
   }
 
-  public async move(from: Object3DCoordinates, to: Object3DCoordinates, speed: number = DEFAULT_SPEED) {
-    if (this._timer) {
-      clearInterval(this._timer);
-    }
-
-    const points: Object3DCoordinates[] = Object3DMapController.breakRouteToPoints(from, to);
-
-    let pointIndex = 0;
-
-    this._timer = setInterval(() => {
-      ++pointIndex;
-
-      if (pointIndex + 1 == points.length && this._timer) {
+  public move(from: Object3DCoordinates, to: Object3DCoordinates, speed: number = DEFAULT_SPEED) {
+    return new Promise((resolve, reject) => {
+      if (this._timer) {
         clearInterval(this._timer);
       }
 
-      console.log(points[pointIndex])
+      const points: Object3DCoordinates[] = Object3DMapController.breakRouteToPoints(from, to);
 
-      this._object3D.setCoordinates(points[pointIndex]);
-    }, 1000);
+      let pointIndex = 0;
 
+      this._timer = setInterval(() => {
+        ++pointIndex;
+
+        if (pointIndex + 1 == points.length && this._timer) {
+          clearInterval(this._timer);
+          resolve(true);
+        }
+
+        this._object3D.setCoordinates(points[pointIndex]);
+      }, 100);
+    });
   }
 
   public async stopMove() {
@@ -54,9 +54,13 @@ export class Object3DMapController {
     }
   }
 
+  public setRotation(rotate: number) {
+    this._object3D.setRotation(rotate);
+  }
+
   public static breakRouteToPoints(start: Object3DCoordinates, end: Object3DCoordinates): Object3DCoordinates[] {
     const distance: number = calculateDistance(start, end);
-    const pointsCount: number = distance / DEFAULT_METERS_SPLITTER;
+    const pointsCount: number = distance / (DEFAULT_METERS_SPLITTER / 3);
 
     console.log("pointsCount:", pointsCount)
 

@@ -1,11 +1,13 @@
 import { Object3D } from "./Object3D";
 import { Object3DMapComponent, Object3DCoordinates } from "./object3DMapComponent";
+import {MathUtils} from "three";
 
 export class Object3DLayer {
   private _model: Object3D;
   private _modelController: Object3DMapComponent | any;
   private _coordinates: Object3DCoordinates;
   private _scale?: number;
+  private _rotation?: number;
 
   private _camera: THREE.Camera | any;
   private _scene: THREE.Scene | any;
@@ -39,8 +41,28 @@ export class Object3DLayer {
     return this._coordinates;
   }
 
+  get rotation(): number | undefined {
+    return this._rotation;
+  }
+
+  set rotation(rotation: number | undefined) {
+    this._rotation = MathUtils.degToRad(rotation || 0);
+  }
+
+  set scale(scale: number) {
+    this._scale = scale;
+  }
+
   public setCoordinates(newCoordinates: Object3DCoordinates) {
     this._coordinates = newCoordinates;
+  }
+
+  public setScale(scale: number) {
+    this._scale = scale;
+  }
+
+  public setRotation(rotation: number) {
+    this._rotation = MathUtils.degToRad(rotation);
   }
 
   public onAdd(map: any, gl: WebGLRenderingContext) {
@@ -77,7 +99,9 @@ export class Object3DLayer {
   }
 
   public render(gl: WebGLRenderingContext, matrix: number[]) {
-    this._modelController.setTransformModel(this._coordinates);
+    console.log("rrr", this._scale);
+
+    this._modelController.setTransformModel(this._coordinates, undefined, { x: Math.PI / 2, y: this._rotation || 0, z: 0 }, this._scale || 1);
     this._modelController.setTranslateModel(matrix);
 
     this._renderer.state.reset();

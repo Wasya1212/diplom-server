@@ -132,11 +132,11 @@ export class Object3DMapComponent {
     return directionalLight;
   }
 
-  public setTransformModel(coordinates: Object3DCoordinates, modelAltitude?: number, modelRotate?: Object3DRotate) {
+  public setTransformModel(coordinates: Object3DCoordinates, modelAltitude?: number, modelRotate?: Object3DRotate, scale?: number) {
     this._coordinates = coordinates;
     modelRotate ? this._rotation = modelRotate : null;
 
-    this._transformModel = Object3DMapComponent.getTransformModel(coordinates, modelAltitude || 0, modelRotate || this._rotation, this._scale);
+    this._transformModel = Object3DMapComponent.getTransformModel(coordinates, modelAltitude || 0, modelRotate || this._rotation, scale || this._scale);
   }
 
   public setTranslateModel(matrix: number[]) {

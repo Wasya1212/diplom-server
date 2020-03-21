@@ -50,6 +50,8 @@ import { Object3DMapController } from "../../utils/object3DMapController";
 
 import MapboxDirections from "../../utils/direction";
 
+var promiseWaterfall = require('promise.waterfall');
+
 import axios from "axios";
 
 // console.log(calculateDistance({ lat: 77.1539, lng: -139.398}, { lat: -77.1804, lng: -139.55}));
@@ -97,24 +99,11 @@ interface MapControllerProps {
   onStyleLoad?: (map: any) => void,
   onLoad?: (map: any) => void,
   onMouseMove?: (map: any) => void,
-  waypoints?: Coordinates[]
+  waypoints?: Coordinates[],
+  onZoom?: (map: any) => void
 }
 
 class MapController extends Component<MapControllerProps> {
-  zoomControl = (map: any) => {
-    if (map.getZoom() <= 16) {
-      map.flyTo({
-        pitch: 0,
-        bearing: 0
-      });
-    } else {
-      map.flyTo({
-        pitch: 65,
-        bearing: 20
-      });
-    }
-  }
-
   shouldComponentUpdate() {
     return false;
   }
@@ -131,8 +120,8 @@ class MapController extends Component<MapControllerProps> {
           center={[car3DModelLayer.coordinates.lat, car3DModelLayer.coordinates.lng]}
           zoom={[17]}
           pitch={[65]}
-          bearing={[20]}
-          onZoom={this.zoomControl}
+          bearing={[0]}
+          onZoom={this.props.onZoom}
           onStyleLoad={this.props.onStyleLoad}
           onMouseMove={this.props.onMouseMove}
         >
@@ -166,6 +155,7 @@ class MapComponent extends Component<{}, MapComponentState> {
   private _waypointController: WaypointController | any = {};
   private timer: any;
   private _car3DModelController: Object3DMapController | any = {};
+  private _map: any;
 
   constructor(props) {
     super(props);
@@ -173,6 +163,38 @@ class MapComponent extends Component<{}, MapComponentState> {
     this.state = {
       checkedCoordinates: { lng: 0, lat: 0 },
       waypoints: []
+    }
+  }
+
+  handleMapZoom = (map: any) => {
+    if (map.getZoom() <= 16) {
+      map.flyTo({
+        pitch: 0,
+        bearing: 0
+      });
+    } else {
+      map.flyTo({
+        pitch: 65,
+        bearing: 0
+      });
+    }
+
+    console.log("zoom", map.getZoom())
+
+    if (map.getZoom() >= 16) {
+      this._map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
+      try {
+        this._car3DModelController.object.scale = 0.2;
+      } catch(err) { console.error(err); }
+    } else if (map.getZoom() >= 13.5) {
+      this._map.setLayoutProperty('3d-buildings', 'visibility', 'none');
+      try {
+        this._car3DModelController.object.scale = 2.2;
+      } catch(err) { console.error(err); }
+    } else if (map.getZoom() >= 12.2) {
+      try {
+        this._car3DModelController.object.scale = 10;
+      } catch(err) { console.error(err); }
     }
   }
 
@@ -252,22 +274,76 @@ class MapComponent extends Component<{}, MapComponentState> {
       this._waypointController
         .getRoute()
         .then(route => {
-          console.log(calculateDistance(
-            parseToCoordsObject(route[0]),
-            parseToCoordsObject(route[1])
-          ));
+          this._waypointController.map.moveLayer(this._waypointController.layerId);
+          // console.log(calculateDistance(
+          //   parseToCoordsObject(route[0]),
+          //   parseToCoordsObject(route[1])
+          // ));
+          //
+          // let rotationAngle = calculateAngle(
+          //   parseToCoordsObject(route[0]),
+          //   parseToCoordsObject(route[1])
+          // );
+          //
+          //
+          //
+          // console.log("rotation angle:", rotationAngle);
+          //
+          // rotationAngle = rotationAngle > 30 ? rotationAngle - 15 : rotationAngle;
+          //
+          // this._car3DModelController.setRotation(-rotationAngle - 15);
+          // this._car3DModelController.setRotation(-rotationAngle);
 
-          console.log("angle:", calculateAngle(
-            parseToCoordsObject(route[0]),
-            parseToCoordsObject(route[1])
-          ));
+          // let i = 0;
+          //
+          // let t = setInterval(() => {
+          //   // this._car3DModelController.setRotation(-50 - i);
+          //   i++;
+          //   // if ((i + 50) == rotationAngle) {
+          //   //   clearInterval(t);
+          //   // }
+          //   console.log("i", -(i + 50));
+          //   console.log("angle", -rotationAngle);
+          // }, 100);
 
           return route;
         })
-        .then(route => {
-          const fullRoute = route.map((coord: number[]) => ({ lat: coord[0], lng: coord[1] }));
+        .then((route) => {
+          let driveImitation: any = [];
 
-          this._car3DModelController.move(fullRoute[0], fullRoute[1]);
+          route.forEach((point: number[], index: number) => {
+            if (index + 1 == route.length) {
+              return;
+            }
+
+            let currentPoint = parseToCoordsObject(point);
+            let nextPoint = parseToCoordsObject(route[index + 1]);
+
+            let routeDistance = calculateDistance(currentPoint, nextPoint);
+            let routeRotationAngle = calculateAngle(currentPoint, nextPoint);
+            routeRotationAngle = routeRotationAngle > 30 ? routeRotationAngle - 15 : routeRotationAngle;
+
+            driveImitation.push({
+              from: currentPoint,
+              to: nextPoint,
+              distance: routeDistance,
+              angle: routeRotationAngle
+            });
+          });
+
+          return { route, driveImitation };
+        })
+        .then(({driveImitation}) => {
+          promiseWaterfall(
+            driveImitation.map((route, index) => (() => {
+              this._car3DModelController.setRotation(-driveImitation[index].angle);
+              return this._car3DModelController.move(driveImitation[index].from, driveImitation[index].to);
+            }))
+          )
+
+          // const fullRoute = route.map((coord: number[]) => ({ lat: coord[0], lng: coord[1] }));
+
+          // this._car3DModelController.move(fullRoute[0], fullRoute[1]);
 
           // console.log(Object3DMapController.getAngle(fullRoute[0], fullRoute[1]));
 
@@ -279,13 +355,19 @@ class MapComponent extends Component<{}, MapComponentState> {
           //   car3DModelLayer.setCoordinates(fullRoute[index]);
           //   fullRoute.length > index + 1 ? index++ : index = 0;
           // }, 100);
-          console.log("route:", route);
+          // console.log("route:", route);
+        })
+        .then(() => {
+          this.add3DObject(car3DModelLayer, this._map);
+          this._map.moveLayer("3d-model");
         });
     }
   }
 
 
   handleMapLoad = (map: any) => {
+    this._map = map;
+
     this._waypointController = new WaypointController({
       map: map,
       icons: ICONS,
@@ -307,7 +389,7 @@ class MapComponent extends Component<{}, MapComponentState> {
 
   handleMapStyleClick = (map: any) => {
     try {
-      this.add3DObject(car3DModelLayer, map);
+      // this.add3DObject(car3DModelLayer, map);
     } catch (err) {
       console.error(err);
     }
@@ -316,7 +398,7 @@ class MapComponent extends Component<{}, MapComponentState> {
   render() {
     return(
       <div>
-        <MapController waypoints={this.state.waypoints} onStyleLoad={this.handleMapStyleClick} onLoad={this.handleMapLoad} getCoords={this.getCoords}>
+        <MapController onZoom={this.handleMapZoom} waypoints={this.state.waypoints} onStyleLoad={this.handleMapStyleClick} onLoad={this.handleMapLoad} getCoords={this.getCoords}>
         </MapController>
         <RoutingForm handleClick={this.addWaypoint} lat={this.state.checkedCoordinates.lat} lng={this.state.checkedCoordinates.lng} />
       </div>
