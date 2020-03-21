@@ -52,3 +52,37 @@ export function calculateDistance(fcoord: Coordinates, lcoord: Coordinates): num
 
   return dist;
 }
+
+export function calculateAngle(point1: Coordinates, point2: Coordinates): number {
+  let a = calculateDistance(point1, { lat: point1.lat, lng: point2.lng });
+  let c = calculateDistance(point1, point2);
+
+  console.log("distance1", c);
+  console.log("distance2", a);
+
+  let angleA = (180 / Math.PI) * Math.asin(a/c);
+
+  console.log("real angle:", angleA);
+
+  if (point1.lat <= point2.lat && point1.lng <= point2.lng) { // I
+    angleA = 90 - angleA;
+    console.log("I");
+  }
+
+  if (point1.lat <= point2.lat && point1.lng >= point2.lng) { // II
+    angleA = 90 + angleA;
+    console.log("II");
+  }
+
+  if (point1.lat >= point2.lat && point1.lng <= point2.lng) { // IV
+    angleA = 270 + angleA;
+    console.log("IV");
+  }
+
+  if (point1.lat >= point2.lat && point1.lng >= point2.lng) { // III
+    angleA = 180 + angleA;
+    console.log("III");
+  }
+
+  return angleA;
+}

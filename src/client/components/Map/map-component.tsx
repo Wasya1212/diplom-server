@@ -25,7 +25,8 @@ import { ICONS } from "../../data";
 
 import {
   calculateDistance,
-  parseToCoordsObject
+  parseToCoordsObject,
+  calculateAngle
 } from "../../utils/mapCalc";
 
 import mapboxgl from "mapbox-gl";
@@ -252,6 +253,11 @@ class MapComponent extends Component<{}, MapComponentState> {
         .getRoute()
         .then(route => {
           console.log(calculateDistance(
+            parseToCoordsObject(route[0]),
+            parseToCoordsObject(route[1])
+          ));
+
+          console.log("angle:", calculateAngle(
             parseToCoordsObject(route[0]),
             parseToCoordsObject(route[1])
           ));

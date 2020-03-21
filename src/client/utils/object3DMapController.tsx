@@ -82,8 +82,4 @@ export class Object3DMapController {
 
     return points;
   }
-
-  public static getAngle(point1: Object3DCoordinates, point2: Object3DCoordinates): number {
-    return Math.atan((Math.cos(point2.lat) * Math.sin(point2.lng - point1.lng)) / (Math.cos(point1.lat) * Math.sin(point2.lat) - Math.cos(point2.lat) * Math.sin(point1.lat) * Math.cos(point2.lng - point1.lng)));
-  }
 }
