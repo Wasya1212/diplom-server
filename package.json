@@ -8,7 +8,7 @@
     "prod-start": "SET \"NODE_ENV=production\" && webpack --mode production && node server.js",
     "dev": "SET \"NODE_ENV=development\" && webpack-dev-server --mode development",
     "server-start": "node ./dist/server.js",
-    "watch-server": "nodemon --watch 'src' -e ts,tsx --exec ts-node ./src/server/server.ts",
+    "watch-server": "nodemon ./src/server/index.js",
     "start-dev": "concurrently \"npm run watch-server\" \"npm run dev\"",
     "build-server": "tsc --rootDir ./src/server",
     "start": "node index"
@@ -32,6 +32,9 @@
     "mapbox-gl": "^1.7.0",
     "mapbox-gl-directions": "^3.0.3",
     "mongoose": "^5.8.9",
+    "mongoose-type-email": "^1.0.12",
+    "mongoose-type-phone": "^1.0.1",
+    "mongoose-type-url": "^1.0.6",
     "promise.waterfall": "^3.2.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
