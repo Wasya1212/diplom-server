@@ -2,11 +2,12 @@ const Koa = require('koa');
 const Morgan = require('koa-morgan');
 const BodyParser = require('koa-body');
 const Serve = require('koa-static');
+const Cors = require('@koa/cors');
 
 const Logger = require('./middleware/logger');
 const ErrorHandler = require('./middleware/error-handler');
 
-const { UserRouter } = require('./routes');
+const { UserRouter, AuthRouter } = require('./routes');
 
 const app = new Koa();
 
@@ -17,6 +18,7 @@ app.use(async (ctx, next) => {
   ctx.set('X-Response-Time', `${ms}ms`);
 });
 
+app.use(Cors());
 app.use(Serve(__dirname + '/dist/public/'));
 app.use(Morgan('combined', { stream: Logger.stream }));
 app.use(ErrorHandler({ errorLogger: Logger, logMethodName: 'error' }));
@@ -30,6 +32,8 @@ app.use(BodyParser({
 }));
 app.use(UserRouter.routes());
 app.use(UserRouter.allowedMethods());
+app.use(AuthRouter.routes());
+app.use(AuthRouter.allowedMethods());
 
 app.on('error', (err, ctx) => {
   if (err.statusCode !== 500) {
