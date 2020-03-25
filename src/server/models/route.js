@@ -1,20 +1,8 @@
-const Mongoose = require('mongoose');
+const { Schema, Model, Types } = require('../middleware/mongoose');
 
-const routeSchema = new Mongoose.Schema({
-  title:  String,
-  user: {
-    type: Mongoose.Types.ObjectId,
-    required: false
-  },
-  date: { type: Date, default: Date.now }
-}, {
-  timestamps: true
-});
-
-module.exports = Mongoose.model('Route', routeSchema);
-
-
-{ // додай маршрути в окрему таблицю
+const routeSchema = new Schema({
+  user: { required: true, type: Types.ObjectId },
+  title: { required: true, type: Types.String },
   date: Types.Date,
   waypoints: [{ lat: Types.Number, lng: Types.Number }],
   plannedRoute: { required: false, type: Types.String },
@@ -26,4 +14,10 @@ module.exports = Mongoose.model('Route', routeSchema);
     speed: { required: false, type: Types.Number }
   }],
   car: Types.ObjectId
-}
+}, {
+  timestamps: true
+});
+
+const routeModel = new Model('Route', routeSchema)
+
+module.exports = routeModel.create();

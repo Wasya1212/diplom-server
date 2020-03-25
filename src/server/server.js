@@ -6,7 +6,7 @@ const Serve = require('koa-static');
 const Logger = require('./middleware/logger');
 const ErrorHandler = require('./middleware/error-handler');
 
-const MainRoute = require('./routes/main');
+const { UserRouter } = require('./routes');
 
 const app = new Koa();
 
@@ -28,8 +28,8 @@ app.use(BodyParser({
   multipart: true,
   urlencoded: true
 }));
-app.use(MainRoute.routes());
-app.use(MainRoute.allowedMethods());
+app.use(UserRouter.routes());
+app.use(UserRouter.allowedMethods());
 
 app.on('error', (err, ctx) => {
   if (err.statusCode !== 500) {

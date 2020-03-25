@@ -1,4 +1,4 @@
-const { Schema, Types } = require('../middleware/mongoose');
+const { Schema, Model, Types } = require('../middleware/mongoose');
 
 const userSchema = new Schema({
   name: {
@@ -10,6 +10,7 @@ const userSchema = new Schema({
   password: { required: true, type: Types.String },
   phone: { required: true, type: Types.Phone, uniqe: true },
   photo: { required: true, type: Types.Url, uniqe: true },
+  accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
   presonalInfo: {
     birthDate: { required: true, type: Types.Date },
     childrens: { required: true, type: Types.Boolean },
@@ -33,11 +34,15 @@ const userSchema = new Schema({
     workDays: [{ required: false, type: Types.String, uppercase: true, trim: true }],
     aviabilityOfVacation: { required: true, type: Types.Boolean, default: false },
     statistics: {
-      routes: [ Types.ObjectId ],
-      unpredictableSituations: [ Types.ObjectId ]
+      routes: [{ required: false, type: Types.ObjectId }],
+      unpredictableSituations: [{ required: false, type: Types.ObjectId }]
     },
     additionalInfo: { required: false, type: Types.Mixed }
   }
 }, { timestamps: true });
 
 // need to add validations
+
+const userModel = new Model('User', userSchema);
+
+module.exports = userModel.create();

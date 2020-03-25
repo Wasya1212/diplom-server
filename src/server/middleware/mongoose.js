@@ -32,6 +32,28 @@ module.exports.closeConnection = async () => {
 
 module.exports.Schema = mongoose.Schema;
 
+module.exports.Model = class Model {
+  _name = '';
+  _schema = null;
+
+  constructor(name, schema) {
+    this._name = name;
+    this._schema = schema;
+  }
+
+  get name() {
+    return this._name;
+  }
+
+  get schema() {
+    return this._schema;
+  }
+
+  create() {
+    return mongoose.model(this._name, this._schema);
+  }
+};
+
 module.exports.Types = Object.assign(
   {
     String,
