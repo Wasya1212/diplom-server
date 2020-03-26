@@ -2,7 +2,13 @@ import React, { Component } from "react";
 
 import { Link } from 'react-router-dom';
 
-class Header extends Component<{}, {}> {
+import { connect } from "react-redux";
+
+interface HeaderProps {
+  store: any
+}
+
+class Header extends Component<any, {}> {
   constructor(props) {
     super(props);
   }
@@ -16,9 +22,18 @@ class Header extends Component<{}, {}> {
           <li><Link to="/login">Login</Link></li>
           <li><Link to="/sign-up">Sign up</Link></li>
         </nav>
+        <div>
+          username: {this.props.store.user.username}
+        </div>
       </header>
     );
   }
 }
 
-export default Header;
+function mapStateToProps(state) {
+  return {
+    store: state
+  }
+}
+
+export default connect(mapStateToProps, () => ({}))(Header);

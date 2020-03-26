@@ -11,7 +11,8 @@ module.exports.connect = () => {
     'mongodb+srv://wasya1212:wasya1212@cluster0-v4ayb.mongodb.net/test?retryWrites=true&w=majority',
     {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true
     },
     (err, client) => { mongoClient = client }
   );

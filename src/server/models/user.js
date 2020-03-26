@@ -6,28 +6,28 @@ const userSchema = new Schema({
     mName: { required: true, type: Types.String, max: 70, lowercase: true, trim: true },
     lName: { required: true, type: Types.String, max: 50, lowercase: true, trim: true }
   },
-  email: { required: true, type: Types.Email, uniqe: true },
+  email: { required: true, type: Types.Email, unique: true },
   password: { required: true, type: Types.String },
-  phone: { required: true, type: Types.Phone, uniqe: true },
-  photo: { required: true, type: Types.Url, uniqe: true },
+  phone: { required: true, type: Types.Phone, unique: true },
+  photo: { required: false, type: Types.Url },
   accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
   presonalInfo: {
-    birthDate: { required: true, type: Types.Date },
-    childrens: { required: true, type: Types.Boolean },
-    childrensCount: { required: false, default: 0, type: Types.Number },
-    married: { required: true, type: Types.Boolean },
+    birthDate: { required: false, type: Types.Date },
+    childrens: { required: true, type: Types.Boolean, default: false },
+    childrensCount: { required: false, default: 0, type: Types.Number, default: 0 },
+    married: { required: true, type: Types.Boolean, default: false },
     address: {
-      coutry: { required: true, type: Types.String, max: 70, lowercase: true, trim: true },
-      city: { required: true, type: Types.String, max: 100, lowercase: true, trim: true },
-      street: { required: true, type: Types.String, max: 150, lowercase: true, trim: true },
-      apartments: { required: true, type: Types.String, max: 50, lowercase: true, trim: true }
+      coutry: { required: false, type: Types.String, max: 70, lowercase: true, trim: true },
+      city: { required: false, type: Types.String, max: 100, lowercase: true, trim: true },
+      street: { required: false, type: Types.String, max: 150, lowercase: true, trim: true },
+      apartments: { required: false, type: Types.String, max: 50, lowercase: true, trim: true }
     },
     criminalRecords: [{ required: false, type: Types.String }],
     additionalInfo: { required: false, type: Types.Mixed }
   },
   workInfo: {
-    post: { required: true, type: Types.String, max: 255, lowercase: true, trim: true },
-    hired: { required: true, type: Types.Date },
+    post: { required: false, type: Types.String, max: 255, lowercase: true, trim: true },
+    hired: { required: false, type: Types.Date },
     fired: { required: false, type: Types.Date },
     currentSalary: { required: false, type: Types.Number },
     currentStatus: { required: false, type: Types.String }, // vacation, work...

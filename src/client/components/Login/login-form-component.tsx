@@ -8,7 +8,8 @@ interface LoginFormState {
 }
 
 interface LoginFormProps {
-
+  success: () => void,
+  getUser?: (any) => void
 }
 
 export class LoginForm extends Component<LoginFormProps, LoginFormState> {
@@ -24,6 +25,12 @@ export class LoginForm extends Component<LoginFormProps, LoginFormState> {
       .post('http://localhost:5000/login', this.state)
       .then(({ data }) => {
         console.log(data);
+
+        if (this.props.getUser) {
+          this.props.getUser(data);
+        }
+
+        this.props.success();
       })
       .catch(err => {
         console.error(err);
