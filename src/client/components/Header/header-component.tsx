@@ -23,7 +23,7 @@ class Header extends Component<any, {}> {
           <li><Link to="/sign-up">Sign up</Link></li>
         </nav>
         <div>
-          username: {this.props.store.user.username}
+          username: {this.props.store.user ? this.props.store.user.name.fName : ''}
         </div>
       </header>
     );

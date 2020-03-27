@@ -12,7 +12,7 @@ router.post('/login', async (ctx, next) => {
   if (user.password !== password) {
     ctx.throw(404, "user not found");
   } else {
-    ctx.body = { username: `${user.name.fName} ${user.name.mName} ${user.name.lName}` };
+    ctx.body = user;
   }
 
   await next();

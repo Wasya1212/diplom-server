@@ -14,8 +14,15 @@ router.get('/users', async (ctx, next) => {
 });
 
 router.post('/user', async (ctx, next) => {
-  
 
+
+  await next();
+});
+
+router.put('/user', async (ctx, next) => {
+  console.log(ctx.request.files);
+  console.log(ctx.request.body);
+  ctx.body = {};
   await next();
 });
 

@@ -24,7 +24,7 @@ app.use(Morgan('combined', { stream: Logger.stream }));
 app.use(ErrorHandler({ errorLogger: Logger, logMethodName: 'error' }));
 app.use(BodyParser({
   formidable: {
-    uploadDir: './uploads',
+    uploadDir: __dirname + '/uploads',
     keepExtensions: true
   },
   multipart: true,

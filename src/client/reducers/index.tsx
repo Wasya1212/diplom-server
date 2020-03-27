@@ -1,7 +1,5 @@
 const initialState = {
-  user: {
-    username: "hui"
-  }
+  
 };
 
 export default function(state = initialState, action) {
