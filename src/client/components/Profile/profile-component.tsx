@@ -23,33 +23,65 @@ function MergeRecursive(obj1, obj2) {
 }
 
 class Profile extends Component<any, any> {
-  state = {
-    picture: "",
-    name: this.props.store.user.name
+  state: any = {
+    user: {},
+    usernameEdit: this.props.store.user.name ? false : true,
+    userPictureEdit: this.props.store.user.photo ? false : true,
+    userPhoneEdit: this.props.store.user.phone ? false : true,
+    userBirthEdit: this.props.store.user.presonalInfo.birthDate ? false : true
+  }
+
+  clearState() {
+    this.setState({
+      user: {},
+      usernameEdit: false,
+      userPictureEdit: false,
+      userPhoneEdit: false,
+      userBirthEdit: false
+    });
+  }
+
+  chooseEdit = (e) => {
+    const obj = {};
+    obj[`${e.currentTarget.name}Edit`] = true;
+
+    this.clearState();
+    this.setState(obj);
   }
 
   handleSubmit = (e) => {
     e.preventDefault();
 
     const data = new FormData();
-    data.append(name, this.state.picture);
+
+    Object.keys(this.state.user).forEach((prop: string) => {
+      if (this.state.user[prop].lastModified || typeof this.state.user[prop] !== 'object') {
+        data.append(prop, this.state.user[prop]);
+      } else {
+        data.append(prop, JSON.stringify(this.state.user[prop]));
+      }
+    });
+
+    data.append("userId", this.props.store.user._id);
+
+    console.log('log', this.state.user)
 
     axios
-      // .put(`/user/${this.props.store.user._id}`, data)
-      .put('/user', data)
+      .put('/update/user', data)
       .then(({data}) => {
-        console.log(data)
+        this.props.onAddUser(data);
+        this.clearState();
       })
       .catch(err => {
         console.error(err);
-      })
+      });
   }
 
   handleFileChange = (e) => {
     let obj = {};
     obj[e.target.name] = e.target.files[0];
 
-    this.setState(obj);
+    this.setState({ user: obj });
   }
 
   handleTextChange = (e) => {
@@ -62,7 +94,9 @@ class Profile extends Component<any, any> {
 
     let obj = JSON.parse(jsonObj);
 
-    this.setState(MergeRecursive(this.state, obj));
+    console.log("sdfsdfsdf", JSON.stringify(obj));
+
+    this.setState({ user: MergeRecursive(this.state.user, obj) });
   }
 
   render() {
@@ -74,22 +108,53 @@ class Profile extends Component<any, any> {
       return (
         <main>
           {
-            this.props.store.user.photo
-              ? <img className="user-avatar-img" src={this.props.store.user.photo} />
+            (this.props.store.user.photo && !this.state.userPictureEdit)
+              ? <div>
+                  <img className="user-avatar-img" src={this.props.store.user.photo} />
+                  <button name="userPicture" onClick={this.chooseEdit}>Edit</button>
+                </div>
               : (
                   <form onSubmit={this.handleSubmit}>
-                    <input onChange={this.handleFileChange} name="picture" type="file" />
+                    <input onChange={this.handleFileChange} name="photo" type="file" />
                     <button type="submit">upload</button>
                   </form>
                 )
           }
           {
-            (!this.props.store.user.name)
-              ? <p>{this.props.store.user.name.fName} {this.props.store.user.name.mName} {this.props.store.user.name.lName}</p>
+            (this.props.store.user.name && !this.state.usernameEdit)
+              ? <div>
+                  <p>{this.props.store.user.name.fName} {this.props.store.user.name.mName} {this.props.store.user.name.lName}</p>
+                  <button name="username" onClick={this.chooseEdit}>Edit</button>
+                </div>
               : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} value={this.state.name.fName} name="name.fName" type="text" />
-                  <input onChange={this.handleTextChange} value={this.state.name.mName} name="name.mName" type="text" />
-                  <input onChange={this.handleTextChange} value={this.state.name.lName} name="name.lName" type="text" />
+                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.fName || "first name"} name="name.fName" type="text" />
+                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.mName || "middle name"} name="name.mName" type="text" />
+                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.lName || "last name"} name="name.lName" type="text" />
+                  <button type="submit">upload</button>
+                </form>
+          }
+          {
+            <div><p>Email: {this.props.store.user.email}</p></div>
+          }
+          {
+            (this.props.store.user.phone && !this.state.userPhoneEdit)
+              ? <div>
+                  <p>Phone: {this.props.store.user.phone}</p>
+                  <button name="userPhone" onClick={this.chooseEdit}>Edit</button>
+                </div>
+              : <form onSubmit={this.handleSubmit}>
+                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.phone || "phone number"} name="phone" type="text" />
+                  <button type="submit">upload</button>
+                </form>
+          }
+          {
+            (this.props.store.user.presonalInfo.birthDate && !this.state.userBirthEdit)
+              ? <div>
+                  <p>Birth date: {this.props.store.user.presonalInfo.birthDate}</p>
+                  <button name="userBirth" onClick={this.chooseEdit}>Edit</button>
+                </div>
+              : <form onSubmit={this.handleSubmit}>
+                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.presonalInfo.birthDate} name="presonalInfo.birthDate" type="date" />
                   <button type="submit">upload</button>
                 </form>
           }
@@ -105,4 +170,12 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, () => ({}))(Profile);
+function mapDispatchToProps(dispatch) {
+  return {
+    onAddUser: (user) => {
+      dispatch({ type: "ADD_USER", payload: user });
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

@@ -6,6 +6,8 @@ require('mongoose-type-url');
 
 let mongoClient = null;
 
+mongoose.set('useFindAndModify', false);
+
 module.exports.connect = () => {
   mongoose.connect(
     'mongodb+srv://wasya1212:wasya1212@cluster0-v4ayb.mongodb.net/test?retryWrites=true&w=majority',
