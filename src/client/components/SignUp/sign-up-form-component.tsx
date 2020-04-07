@@ -13,7 +13,7 @@ interface SignUpFormState {
 }
 
 interface SignUpFormProps {
-
+  isWorker: boolean
 }
 
 export class SignUpForm extends Component<SignUpFormProps, SignUpFormState> {
@@ -31,7 +31,7 @@ export class SignUpForm extends Component<SignUpFormProps, SignUpFormState> {
     e.preventDefault();
 
     axios
-      .post('http://localhost:5000/sign-up', this.state)
+      .post('http://localhost:5000/sign-up', Object.assign(this.state, { isWorker: this.props.isWorker }))
       .then(({ data }) => {
         console.log(data);
       })

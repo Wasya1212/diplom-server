@@ -2,14 +2,18 @@ const Koa = require('koa');
 const Morgan = require('koa-morgan');
 const BodyParser = require('koa-body');
 const Serve = require('koa-static');
+const Session = require('koa-session');
 const Cors = require('@koa/cors');
 
 const Logger = require('./middleware/logger');
+const Passport = require('./middleware/passport');
 const ErrorHandler = require('./middleware/error-handler');
 
 const { UserRouter, AuthRouter } = require('./routes');
 
 const app = new Koa();
+
+app.keys = ['secret'];
 
 app.use(async (ctx, next) => {
   const start = new Date();
@@ -30,6 +34,12 @@ app.use(BodyParser({
   multipart: true,
   urlencoded: true
 }));
+
+app.use(Session({}, app));
+
+app.use(Passport.initialize())
+app.use(Passport.session())
+
 app.use(UserRouter.routes());
 app.use(UserRouter.allowedMethods());
 app.use(AuthRouter.routes());

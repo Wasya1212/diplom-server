@@ -11,13 +11,13 @@ const userSchema = new Schema({
   phone: { required: true, type: Types.Phone, unique: true },
   photo: { required: false, type: Types.Url },
   accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
-  presonalInfo: {
+  personalInfo: {
     birthDate: { required: false, type: Types.Date },
     childrens: { required: true, type: Types.Boolean, default: false },
     childrensCount: { required: false, default: 0, type: Types.Number, default: 0 },
     married: { required: true, type: Types.Boolean, default: false },
     address: {
-      coutry: { required: false, type: Types.String, max: 70, lowercase: true, trim: true },
+      country: { required: false, type: Types.String, max: 70, lowercase: true, trim: true },
       city: { required: false, type: Types.String, max: 100, lowercase: true, trim: true },
       street: { required: false, type: Types.String, max: 150, lowercase: true, trim: true },
       apartments: { required: false, type: Types.String, max: 50, lowercase: true, trim: true }
