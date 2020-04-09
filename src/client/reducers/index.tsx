@@ -1,5 +1,5 @@
 const initialState = {
-  
+
 };
 
 export default function(state = initialState, action) {
@@ -9,7 +9,13 @@ export default function(state = initialState, action) {
         ...state,
         user: action.payload
       };
-    }
+    } break;
+    case "AUTHENTICATE": {
+      return {
+        ...state,
+        auth_token: action.payload
+      };
+    } break;
   }
 
   return state;

@@ -9,7 +9,8 @@ interface LoginFormState {
 
 interface LoginFormProps {
   success: () => void,
-  getUser?: (any) => void
+  getUser?: (any: any) => void,
+  getToken?: (any: any) => void
 }
 
 export class LoginForm extends Component<LoginFormProps, LoginFormState> {
@@ -22,12 +23,16 @@ export class LoginForm extends Component<LoginFormProps, LoginFormState> {
     e.preventDefault();
 
     axios
-      .post('http://localhost:5000/login', this.state)
+      .post('http://localhost:5000/login', { email: this.state.login, password: this.state.password })
       .then(({ data }) => {
-        console.log(data);
+        console.log("user", data);
 
         if (this.props.getUser) {
-          this.props.getUser(data);
+          this.props.getUser(data.user);
+        }
+
+        if (this.props.getToken) {
+          this.props.getToken(data.token);
         }
 
         this.props.success();

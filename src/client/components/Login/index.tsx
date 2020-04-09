@@ -16,7 +16,7 @@ interface LoginProps {
 
 class Login extends Component<any, LoginState> {
   state = {
-    loggedIn: false
+    loggedIn: this.props.store.user ? true : false
   }
 
   logIn = () => {
@@ -29,10 +29,16 @@ class Login extends Component<any, LoginState> {
         {
           this.state.loggedIn
             ? <Redirect to={this.props.successRedirect} />
-            : <LoginForm getUser={this.props.onAddUser} success={this.logIn}/>
+            : <LoginForm getUser={this.props.onAddUser} getToken={this.props.authenticate} success={this.logIn} />
         }
       </main>
     );
+  }
+}
+
+function mapStateToProps(state) {
+  return {
+    store: state
   }
 }
 
@@ -40,8 +46,11 @@ function mapDispatchToProps(dispatch) {
   return {
     onAddUser: (user) => {
       dispatch({ type: "ADD_USER", payload: user});
+    },
+    authenticate: (token) => {
+      dispatch({ type: "AUTHENTICATE", payload: token });
     }
   };
 }
 
-export default connect(() => ({}), mapDispatchToProps)(Login);
+export default connect(mapStateToProps, mapDispatchToProps)(Login);

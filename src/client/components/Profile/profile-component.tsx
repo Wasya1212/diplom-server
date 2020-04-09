@@ -70,10 +70,14 @@ class Profile extends Component<any, any> {
 
     data.append("userId", this.props.store.user._id);
 
-    console.log('log', this.state.user)
+    console.log('log', this.props.store.auth_token)
 
     axios
-      .put('/update/user', data)
+      .put('/update/user', data, {
+        headers: {
+          authorization: this.props.store.auth_token
+        }
+      })
       .then(({data}) => {
         this.props.onAddUser(data);
         this.clearState();

@@ -14,19 +14,23 @@ class Header extends Component<any, {}> {
   }
 
   render() {
-    return (
-      <header>
-        <nav>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/map">Map</Link></li>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/sign-up">Sign up</Link></li>
-        </nav>
-        <div>
-          username: {this.props.store.user ? this.props.store.user.name.fName : ''}
-        </div>
-      </header>
-    );
+    if (this.props.store.user && this.props.store.user != {}) {
+      return (
+        <header>
+          <nav>
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/map">Map</Link></li>
+            <li><Link to="/login">Login</Link></li>
+            <li><Link to="/sign-up">Sign up</Link></li>
+          </nav>
+          <div>
+            username: {this.props.store.user ? this.props.store.user.name.fName : ''}
+          </div>
+        </header>
+      );
+    } else {
+      return null;
+    }
   }
 }
 

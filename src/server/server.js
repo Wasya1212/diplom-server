@@ -23,27 +23,32 @@ app.use(async (ctx, next) => {
 });
 
 app.use(Cors());
-app.use(Serve(__dirname + '/dist/public/'));
+app.use(Serve(__dirname + '../../../dist/public/'));
 app.use(Morgan('combined', { stream: Logger.stream }));
 app.use(ErrorHandler({ errorLogger: Logger, logMethodName: 'error' }));
 app.use(BodyParser({
   formidable: {
-    uploadDir: __dirname + '/uploads',
+    uploadDir: __dirname + '/uploads', // будь-який дєбіл може надіслати тонну файликів і сервак ляже, навіть якщо він не авторизований. ВИПРАВИТИ!
     keepExtensions: true
   },
   multipart: true,
   urlencoded: true
 }));
 
-app.use(Session({}, app));
+app.use(Session({
+  key: 'ppa:ogloni.igs',
+  maxAge: 86400000,
+  httpOnly: true,
+  overwrite: true
+}, app));
 
 app.use(Passport.initialize())
 app.use(Passport.session())
 
-app.use(UserRouter.routes());
-app.use(UserRouter.allowedMethods());
 app.use(AuthRouter.routes());
 app.use(AuthRouter.allowedMethods());
+app.use(UserRouter.routes());
+app.use(UserRouter.allowedMethods());
 
 app.on('error', (err, ctx) => {
   if (err.statusCode !== 500) {

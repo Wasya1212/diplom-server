@@ -23,9 +23,11 @@ router.post('/user', async (ctx, next) => {
 });
 
 router.put('/update/user', async (ctx, next) => {
+
+
   // console.log(ctx.request.body)
   // console.log(ctx.request.files)
-  const filesKeys = Object.keys(ctx.request.files);
+  const filesKeys = Object.keys(ctx.request.files || {});
   // console.log(ctx.request.body);
 
   let query = {};
@@ -38,7 +40,16 @@ router.put('/update/user', async (ctx, next) => {
     }
   });
 
-  console.log(query)
+  if (!query.userId) {
+    ctx.throw(404, "Any user not found!");
+  }
+
+  // const newUser = await User.findByIdAndUpdate(query.userId, query, { new: true });
+  //
+  // console.log(newUser);
+  // ctx.body = {user: newUser};
+
+  // console.log(query)
 
   for (let i = 0; i < filesKeys.length; i++) {
     // console.log(User.schema.obj.hasOwnProperty(filesKeys[i]))
@@ -51,36 +62,23 @@ router.put('/update/user', async (ctx, next) => {
     }
   }
 
-  const updatedUser = await User.findByIdAndUpdate(ctx.request.body.userId, query, { new: true });
-
   filesKeys.forEach((file, i) => {
-    fs.unlink(ctx.request.files[file].path, (err) => {
+    fs.unlinkSync(ctx.request.files[file].path, (err) => {
       if (err) {
         console.error(err);
       }
     });
   });
 
-  ctx.body = updatedUser;
+  // console.log('findUser')
+  // const users =  await User.find({});
+  // console.log('users', users)
+  // ctx.body = await User.findByIdAndUpdate(query.userId, query, { new: true });
 
-  // if (files.indexOf('picture') !== -1) {
-  //   // const updatedUser = await User.update({ _id: ctx.request.body.userId }, ctx.request.body);
-  //   const picture = await Cloudinary.uploadImage(ctx.request.files.picture.path);
-  //   const updatedUser = await User.findByIdAndUpdate(ctx.request.body.userId, { photo: picture.secure_url }, { new: true });
+  const newUser = await User.findByIdAndUpdate(query.userId, query, { new: true });
   //
-  //   files.forEach((file, i) => {
-  //     fs.unlink(ctx.request.files[file].path, (err) => {
-  //       if (err) {
-  //         console.error(err);
-  //       }
-  //     });
-  //   });
-  //
-  //   ctx.status = 200;
-  //   ctx.body = updatedUser;
-  // } else {
-  //   ctx.throw("Can`t update user! Try again...")
-  // }
+  // console.log(newUser);
+  ctx.body = newUser;
 
   await next();
 });
