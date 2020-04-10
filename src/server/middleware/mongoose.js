@@ -1,4 +1,8 @@
 const mongoose = require('mongoose');
+const mongodb = require('mongodb')
+// const MongoStore = require("koa-session2-mongostore/index.mongoose");
+// const MongoStore = require('../libs/session-store');
+const MongoStore = require('koa-session2-mongostore');
 
 require('mongoose-type-email');
 require('mongoose-type-phone');
@@ -7,6 +11,29 @@ require('mongoose-type-url');
 let mongoClient = null;
 
 mongoose.set('useFindAndModify', false);
+
+module.exports.createStore = () => {
+  return new MongoStore({
+      url: "mongodb+srv://wasya1212:wasya1212@cluster0-v4ayb.mongodb.net/test?retryWrites=true&w=majority",
+      dbName: "test"
+  });
+};
+
+module.exports.destroySession = async (sid) => {
+  return new Promise((resolve, reject) => {
+    mongoose.connection.db.collection('mongod__session', (err, collection) => {
+      collection.deleteOne({ sid: sid }, (err, data) => {
+        if (err) {
+          reject(err);
+        }
+        resolve(data);
+      });
+    });
+  });
+
+  // console.log("connection:", .find({}));
+  // return await mongoose.connection.db.db('Cluster0').collection('mongod_session').find({});
+};
 
 module.exports.connect = () => {
   mongoose.connect(

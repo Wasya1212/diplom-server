@@ -2,12 +2,13 @@ const Koa = require('koa');
 const Morgan = require('koa-morgan');
 const BodyParser = require('koa-body');
 const Serve = require('koa-static');
-const Session = require('koa-session');
+const Session = require('koa-session2');
 const Cors = require('@koa/cors');
 
 const Logger = require('./middleware/logger');
 const Passport = require('./middleware/passport');
 const ErrorHandler = require('./middleware/error-handler');
+const Mongoose = require('./middleware/mongoose');
 
 const { UserRouter, AuthRouter } = require('./routes');
 
@@ -37,10 +38,12 @@ app.use(BodyParser({
 
 app.use(Session({
   key: 'ppa:ogloni.igs',
-  maxAge: 86400000,
+  maxAge: 24 * 60 * 60 * 1000,
   httpOnly: true,
-  overwrite: true
-}, app));
+  overwrite: true,
+  signed: true,
+  store: Mongoose.createStore()
+}));
 
 app.use(Passport.initialize())
 app.use(Passport.session())

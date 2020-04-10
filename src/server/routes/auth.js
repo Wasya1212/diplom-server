@@ -33,15 +33,14 @@ const jwtsecret = "mysecretkey";
 //   })(ctx, next);
 // });
 
-router.post('/login', passport.login);
+router.post('/login', async (ctx) => {
+  await passport.login(ctx);
+});
 
 router.get('/login', async (ctx, next) => {
   await passport.checkAuthentication(ctx, next, {
     success: () => {
       ctx.redirect('/profile');
-    },
-    failure: () => {
-      next();
     }
   });
 }, async (ctx) => {
@@ -83,7 +82,7 @@ router.post('/authenticate', async (ctx, next) => {
 //   } )(ctx, next);
 // });
 
-router.post('/sign-up', async (ctx, next) => {
+router.post('/sign-up', async (ctx) => {
   const {
     fName,
     mName,
@@ -105,8 +104,6 @@ router.post('/sign-up', async (ctx, next) => {
   });
 
   ctx.body = newUser;
-
-  await next();
 });
 
 router.get('/ss', async (ctx, next) => {
@@ -118,6 +115,14 @@ router.get('/ss', async (ctx, next) => {
       console.log("err", err) // получаю вывод только здесь
     }
   } )(ctx, next);
+});
+
+router.get('/logout', async (ctx, next) => {
+  await passport.logout(ctx);
+
+  console.log('REDIRECT')
+  ctx.redirect('/login');
+  await next();
 });
 
 router.all('/*', async (ctx, next) => {
@@ -136,8 +141,6 @@ router.all('/*', async (ctx, next) => {
     }
   });
 });
-
-router.get('logout', passport.logout);
 
 router.get('/profile', async (ctx) => {
   ctx.type = "html";

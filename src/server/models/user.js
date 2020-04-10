@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+
 const { Schema, Model, Types } = require('../middleware/mongoose');
 
 const userSchema = new Schema({
@@ -7,7 +9,7 @@ const userSchema = new Schema({
     lName: { required: true, type: Types.String, max: 50, lowercase: true, trim: true }
   },
   email: { required: true, type: Types.Email, unique: true },
-  password: { required: true, type: Types.String },
+  passwordHash: { required: false, type: Types.String },
   phone: { required: true, type: Types.Phone, unique: true },
   photo: { required: false, type: Types.Url },
   accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
@@ -42,6 +44,25 @@ const userSchema = new Schema({
 }, { timestamps: true });
 
 // need to add validations
+
+userSchema.virtual('password')
+  .set(function (password) {
+    console.log("voirtual password SET!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    this.passwordHash = bcrypt.hashSync(password, 10);
+  })
+  .get(function () {
+    return this.password;
+  });
+
+userSchema.methods.checkPassword = function (password) {
+  if (!password) return false;
+  if (!this.passwordHash) return false;
+
+  console.log("CURRENT USER PASSWORD", password);
+  console.log("CURRENT HASHED PASSWORD", this.passwordHash);
+
+  return bcrypt.compareSync(password, this.passwordHash);
+};
 
 const userModel = new Model('User', userSchema);
 

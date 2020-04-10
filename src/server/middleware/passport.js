@@ -3,6 +3,8 @@ const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local');
 const jwt = require('jsonwebtoken');
+const Session = require('koa-session2');
+const { destroySession } = require('./mongoose');
 
 const jwtsecret = "mysecretkey";
 
@@ -25,8 +27,11 @@ Passport.use(new LocalStrategy({
         return done(err);
       }
 
-      // if (!user || !user.checkPassword(password)) {
-      if (!user) {
+      console.log("USER CHECK PASSWORD VALID:", user.checkPassword(password))
+
+      if (!user || !user.checkPassword(password)) {
+      // if (!user) {
+        console.log('Нет такого пользователя или пароль неверен.')
         return done(null, false, {message: 'Нет такого пользователя или пароль неверен.'});
       }
       return done(null, user);
@@ -68,7 +73,8 @@ module.exports = {
   },
   login: async (ctx, next) => {
     await Passport.authenticate('local', function (err, user) {
-      if (user == false) {
+      if (user == false || !user) {
+        ctx.status = 404;
         ctx.body = "Login failed";
       } else {
         const token = jwt.sign({ id: user._id, email: user.email }, jwtsecret);
@@ -82,9 +88,14 @@ module.exports = {
     })(ctx, next);
   },
   logout: async (ctx) => {
-    console.log('destroy session'); // add blacklist in mongodb чистити чорний список токенів кожного дня
-    ctx.session.destroy('ppa:ogloni.igs');
-    ctx.status = 200;
+    const sid = ctx.cookies.get('ppa:ogloni.igs');
+
+    if (sid) {
+      await destroySession(sid)
+        .then(() => {
+          ctx.cookies.set('ppa:ogloni.igs', null, {expires: 0});
+        });
+    }
   },
   checkAuthentication: async (ctx, next, opts = {}) => {
     const { success, failure } = opts;
@@ -127,8 +138,8 @@ module.exports = {
       }
     }
 
-    if (ctx.method !== "GET") {
+    // if (ctx.method !== "GET") {
       await next();
-    }
+    // }
   }
 };
