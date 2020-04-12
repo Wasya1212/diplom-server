@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const jwt = require('jsonwebtoken');
 const fs = require('fs');
 const path = require('path');
+const uuidv4 = require('uuid').v4;
 
 const passport = require('../middleware/passport');
 
@@ -32,6 +33,10 @@ const jwtsecret = "mysecretkey";
 //     }
 //   })(ctx, next);
 // });
+
+router.post('/workers', async (ctx, next) => {
+  
+});
 
 router.post('/login', async (ctx) => {
   await passport.login(ctx);
@@ -100,7 +105,7 @@ router.post('/sign-up', async (ctx) => {
     email,
     password,
     phone,
-    workInfo: isWorker ? { additionalInfo: { worker: true } } : undefined
+    workInfo: isWorker ? { additionalInfo: { worker: true, workerID: uuidv4() } } : undefined
   });
 
   ctx.body = newUser;

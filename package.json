@@ -57,6 +57,7 @@
     "react-router-dom": "^5.1.2",
     "redux": "^4.0.5",
     "three": "^0.113.2",
+    "uuid": "^7.0.3",
     "winston": "^3.2.1"
   },
   "devDependencies": {

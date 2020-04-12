@@ -6,6 +6,7 @@ import { Greeter } from "./components/Greeter";
 import { Map } from "./components/Map";
 import Header from "./components/Header";
 import Login from "./components/Login";
+import Feed from "./components/Feed";
 import { SignUp } from "./components/Signup";
 import { Profile } from "./components/Profile";
 
@@ -57,7 +58,7 @@ class App extends Component<any, {}> {
             <Header />
             <Switch>
               <Route exact path="/">
-                <Greeter>Hello beaches</Greeter>
+                <Feed></Feed>
               </Route>
               <Route path="/login">
                 <Login successRedirect="/profile" />
