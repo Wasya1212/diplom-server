@@ -3233,3 +3233,71 @@
 {"message":"::ffff:127.0.0.1 - - [12/Apr/2020:19:55:46 +0000] \"GET /login HTTP/1.1\" 200 297 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
 {"message":"::ffff:127.0.0.1 - - [12/Apr/2020:21:21:29 +0000] \"GET /eb2b4e1895ff4c4964d4.hot-update.json HTTP/1.1\" 302 43 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
 {"message":"::ffff:127.0.0.1 - - [12/Apr/2020:21:21:30 +0000] \"GET /login HTTP/1.1\" 200 297 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"401 - Unauthorized - /authenticate - POST - ::ffff:127.0.0.1","level":"error"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:20 +0000] \"POST /authenticate HTTP/1.1\" 401 12 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:20 +0000] \"GET /login HTTP/1.1\" 200 297 \"http://localhost:3000/\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"401 - Unauthorized - /authenticate - POST - ::ffff:127.0.0.1","level":"error"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:20 +0000] \"POST /authenticate HTTP/1.1\" 401 12 \"http://localhost:3000/login\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:20 +0000] \"GET /favicon.ico HTTP/1.1\" 302 43 \"http://localhost:3000/login\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:20 +0000] \"GET /login HTTP/1.1\" 200 297 \"http://localhost:3000/login\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:49 +0000] \"GET /favicon.ico HTTP/1.1\" 302 43 \"-\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::ffff:127.0.0.1 - - [13/Apr/2020:18:18:49 +0000] \"GET /login HTTP/1.1\" 200 297 \"-\" \"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 YaBrowser/20.3.2.242 Yowser/2.5 Yptp/1.23 Safari/537.36\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:23:31 +0000] \"GET /workers HTTP/1.1\" 302 43 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:23:31 +0000] \"GET /login HTTP/1.1\" 200 297 \"http://localhost:5000/workers\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:23:45 +0000] \"POST /workers HTTP/1.1\" 200 1693 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:26:40 +0000] \"POST /workers HTTP/1.1\" 200 2 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:26:54 +0000] \"POST /workers HTTP/1.1\" 200 1693 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:20:30:08 +0000] \"POST /workers HTTP/1.1\" 200 636 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:52:55 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:06 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=wasya1212 HTTP/1.1\" 404 12 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:10 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 404 12 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:36 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 404 12 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:41 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 404 12 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:52 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 200 740 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:53:59 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:55:26 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:55:35 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 200 740 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:55:41 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:55:52 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 200 740 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:55:59 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:56:15 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:56:41 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:21:56:59 +0000] \"POST /project/create HTTP/1.1\" 404 9 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"500 - Project validation failed: name: Path `name` is required. - /project/create - POST - ::1","level":"error"}
+{"message":"::1 - - [13/Apr/2020:22:25:04 +0000] \"POST /project/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:22:26:14 +0000] \"POST /project/create HTTP/1.1\" 200 149 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"500 - E11000 duplicate key error collection: test.projects index: name_1 dup key: { name: \"project1\" } - /project/create - POST - ::1","level":"error"}
+{"message":"::1 - - [13/Apr/2020:22:26:26 +0000] \"POST /project/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:22:40:34 +0000] \"POST /project/create HTTP/1.1\" 200 461 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:22:16 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:22:37 +0000] \"POST /login?email=leonardo.1212@yandex.ua&password=1212 HTTP/1.1\" 200 807 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:22:43 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:23:28 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:23:45 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:25:47 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:26:12 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:26:53 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:27:17 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:27:45 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:29:15 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"500 - project is not defined - /worker/create - POST - ::1","level":"error"}
+{"message":"::1 - - [13/Apr/2020:23:29:20 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:29:26 +0000] \"POST /worker/create HTTP/1.1\" 200 7 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:29:38 +0000] \"POST /worker/create HTTP/1.1\" 200 7 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:30:02 +0000] \"POST /worker/create HTTP/1.1\" 200 7 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:30:10 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:30:28 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"500 - project is not defined - /worker/create - POST - ::1","level":"error"}
+{"message":"::1 - - [13/Apr/2020:23:30:59 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:32:23 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:33:06 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:33:35 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:06 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:38 +0000] \"POST /worker/create HTTP/1.1\" 200 176 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:51 +0000] \"POST /worker/create HTTP/1.1\" 200 176 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:53 +0000] \"POST /worker/create HTTP/1.1\" 200 176 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:56 +0000] \"POST /worker/create HTTP/1.1\" 200 176 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:34:59 +0000] \"POST /worker/create HTTP/1.1\" 200 176 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"::1 - - [13/Apr/2020:23:39:18 +0000] \"POST /worker/create HTTP/1.1\" 200 1144 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}
+{"message":"500 - E11000 duplicate key error collection: test.features index: featureTitle_1 dup key: { featureTitle: \"feature-5e94ea624df6c229b845c30e-5e92ff4e00d4ad15e021f9c9\" } - /worker/create - POST - ::1","level":"error"}
+{"message":"::1 - - [13/Apr/2020:23:39:46 +0000] \"POST /worker/create HTTP/1.1\" 500 21 \"-\" \"PostmanRuntime/7.24.1\"\n","level":"info"}

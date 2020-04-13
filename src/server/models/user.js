@@ -12,6 +12,7 @@ const userSchema = new Schema({
   passwordHash: { required: false, type: Types.String },
   phone: { required: true, type: Types.Phone, unique: true },
   photo: { required: false, type: Types.Url },
+  projects: [{ required: false, type: Types.ObjectId }],
   accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
   personalInfo: {
     birthDate: { required: false, type: Types.Date },

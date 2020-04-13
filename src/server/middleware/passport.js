@@ -83,12 +83,15 @@ module.exports = {
           ctx.session.token = token;
         }
 
+        ctx.state.user = user;
         ctx.body = { user: user, token: token };
       }
     })(ctx, next);
   },
   logout: async (ctx) => {
     const sid = ctx.cookies.get('ppa:ogloni.igs');
+
+    delete ctx.state.user;
 
     if (sid) {
       await destroySession(sid)
@@ -100,14 +103,13 @@ module.exports = {
   checkAuthentication: async (ctx, next, opts = {}) => {
     const { success, failure } = opts;
 
-    console.log(ctx.headers)
-
     if (!ctx.session || ctx.headers.authorization) {
       console.log("JWT AUTH///...")
       await Passport.authenticate('jwt', { session: false }, function (err, user) {
         if (user) {
           // ctx.body = "hello " + user.email;
           if (success) {
+            ctx.state.user = user;
             success(user);
           }
         } else {
@@ -130,6 +132,7 @@ module.exports = {
         }
 
         // console.log("TOKEN:", jwt.verify(ctx.session.token, jwtsecret));
+        ctx.state.user = user;
         success(user);
       }
     } else {

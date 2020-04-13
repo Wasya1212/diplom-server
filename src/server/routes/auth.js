@@ -6,7 +6,7 @@ const uuidv4 = require('uuid').v4;
 
 const passport = require('../middleware/passport');
 
-const { User, Feature } = require('../models/index');
+const { User, Feature, Project } = require('../models/index');
 
 const router = new Router();
 
@@ -34,9 +34,6 @@ const jwtsecret = "mysecretkey";
 //   })(ctx, next);
 // });
 
-router.post('/workers', async (ctx, next) => {
-  
-});
 
 router.post('/login', async (ctx) => {
   await passport.login(ctx);
@@ -152,7 +149,59 @@ router.get('/profile', async (ctx) => {
   ctx.body = fs.readFileSync(path.resolve(__dirname, '../../../dist/public/html/index.html'));
 });
 
+router.get('/workers', async (ctx) => {
+  ctx.body = await User.find({ "workInfo.additionalInfo.worker": true });
+});
 
+router.post('/worker/create', async (ctx) => {
+  const worker = await User.findOne({
+    "workInfo.additionalInfo.worker": true,
+    "workInfo.additionalInfo.workerID": ctx.request.body.workerId,
+  });
+
+  const project = await Project.findOneAndUpdate({
+    name: ctx.request.body.projectName,
+    owner: ctx.state.user.id
+  }, {
+    $addToSet: { users: worker._id }
+  }, {
+    new: true
+  });
+
+  const feature = await Feature.create({
+    featureTitle: `feature-${project._id}-${worker._id}`,
+    featureOwner: ctx.state.user.id,
+    user: worker._id,
+    permissions: {
+      userEdit: false,
+      userStatistics: false,
+      userMoving: false,
+      userRoutes: false
+    }
+  });
+
+  ctx.body = {worker, project, feature};
+});
+
+router.post('/project/create', async (ctx) => {
+  console.log(ctx.state.user.id);
+  const newProject = await Project.create({
+    owner: ctx.state.user.id,
+    name: ctx.request.body.name,
+    users: [ctx.state.user.id],
+    description: ctx.request.body.description
+  });
+
+  const newFeature = await Feature.create({
+    featureTitle: `feature-${newProject._id}-${ctx.state.user.id}`,
+    featureOwner: ctx.state.user.id,
+    user: ctx.state.user.id
+  });
+
+  await User.findByIdAndUpdate(ctx.state.user.id, { $push: { projects: newProject._id } });
+
+  ctx.body = {newProject, newFeature};
+});
 
 // router.post('/login', async (ctx, next) => {
 //   const { login, password } = ctx.request.body;
