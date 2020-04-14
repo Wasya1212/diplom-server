@@ -19,27 +19,34 @@ export class LoginForm extends Component<LoginFormProps, LoginFormState> {
     password: ""
   }
 
-  handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axios
-      .post('http://localhost:5000/login', { email: this.state.login, password: this.state.password })
-      .then(({ data }) => {
-        console.log("user", data);
+    const userResponse = await axios.post('/login', { email: this.state.login, password: this.state.password });
+    const userProjectsResponse = await axios({
+      method: 'GET',
+      url: '/user/projects',
+      headers: { 'authorization': userResponse.data.token }
+    });
 
-        if (this.props.getUser) {
-          this.props.getUser(data.user);
-        }
+    // console.log("ASDAS", userResponse.data)
 
-        if (this.props.getToken) {
-          this.props.getToken(data.token);
-        }
+    const {user} = userResponse.data;
+    user.projects = userProjectsResponse.data;
 
-        this.props.success();
-      })
-      .catch(err => {
-        console.error(err);
-      });
+    // if (userProjectsResponse.data && Array.isArray(userProjectsResponse)) {
+    //   this.props.chooseProject();
+    // }
+    //
+    if (this.props.getUser) {
+      this.props.getUser(user);
+    }
+    //
+    // if (this.props.getToken) {
+    //   this.props.getToken(userResponse.data.token);
+    // }
+
+    this.props.success();
   }
 
   handleChange = (e: React.FormEvent<HTMLInputElement>) => {

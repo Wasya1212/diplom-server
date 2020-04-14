@@ -23,27 +23,61 @@ class App extends Component<any, {}> {
     super(props);
   }
 
-  componentDidMount() {
-    axios
-      .post('/authenticate', {})
-      .then(({data}) => {
-        this.props.addUser(data);
+  componentDidMount = async () => {
+    try {
+      const authResponse: any = await axios.post('/authenticate', {});
+      const {user, token} = authResponse.data;
 
-        if (data == {} || data == "") {
-          this.props.addUser(null);
+      const userProjectsResponse: any = await axios.get('/user/projects');
+      user.projects = userProjectsResponse.data;
 
-          if (window.location.pathname !== "/sign-up") {
-            window.location.replace("/login");
-          }
-        } else if (window.location.pathname == "/login") {
-          window.location.replace("/profile");
-        }
-      })
-      .catch(err => {
-        if (window.location.pathname !== "/login" && window.location.pathname !== "/sign-up") {
+      this.props.addUser(user);
+      this.props.chooseProject(user.projects[0]);
+      this.props.authenticate(token);
+
+      if (authResponse.data == {} || authResponse.data == "") {
+        this.props.addUser(null);
+
+        if (window.location.pathname !== "/sign-up") {
           window.location.replace("/login");
         }
-      });
+      } else if (window.location.pathname == "/login") {
+        window.location.replace("/profile");
+      }
+    } catch (err) {
+      if (window.location.pathname !== "/login" && window.location.pathname !== "/sign-up") {
+        window.location.replace("/login");
+      }
+    }
+    // axios
+    //   .post('/authenticate', {})
+    //   .then(({data}) => {
+    //     console.log("AUTHORIZE:", data)
+    //     this.props.addUser(data.user);
+    //     this.props.authenticate(data.token);
+    //
+    //     axios.get
+    //
+    //     // if (data._id) {
+    //     //
+    //     // }
+    //     // this.props.chooseProject();
+    //
+    //     if (data == {} || data == "") {
+    //       this.props.addUser(null);
+    //
+    //       if (window.location.pathname !== "/sign-up") {
+    //         window.location.replace("/login");
+    //       }
+    //     } else if (window.location.pathname == "/login") {
+    //       window.location.replace("/profile");
+    //     }
+    //   })
+    //   .catch(err => {
+    //     if (window.location.pathname !== "/login" && window.location.pathname !== "/sign-up") {
+    //       window.location.replace("/login");
+    //     }
+    //   });
   }
 
   render() {
@@ -90,6 +124,12 @@ function mapDispatchToProps(dispatch) {
   return {
     addUser: (user) => {
       dispatch({ type: "ADD_USER", payload: user});
+    },
+    chooseProject: (project) => {
+      dispatch({ type: "CHOOSE_PROJECT", payload: project })
+    },
+    authenticate: (token) => {
+      dispatch({ type: "AUTHENTICATE", payload: token });
     }
   };
 }

@@ -23,13 +23,24 @@ class Login extends Component<any, LoginState> {
     this.setState({ loggedIn: true });
   }
 
+  storeUser = (user) => {
+    console.log("USER data:", user);
+
+    this.props.onAddUser(user);
+    this.props.authenticate(user.token);
+
+    if (user.projects && user.projects.length > 0) {
+      this.props.chooseProject(user.projects[0]);
+    }
+  }
+
   render() {
     return (
       <main className="login-component">
         {
           this.state.loggedIn
             ? <Redirect to={this.props.successRedirect} />
-            : <LoginForm getUser={this.props.onAddUser} getToken={this.props.authenticate} success={this.logIn} />
+            : <LoginForm getUser={this.storeUser} success={this.logIn} />
         }
       </main>
     );
@@ -49,6 +60,9 @@ function mapDispatchToProps(dispatch) {
     },
     authenticate: (token) => {
       dispatch({ type: "AUTHENTICATE", payload: token });
+    },
+    chooseProject: (project) => {
+      dispatch({ type: "CHOOSE_PROJECT", payload: project })
     }
   };
 }

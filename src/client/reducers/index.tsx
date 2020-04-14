@@ -16,6 +16,12 @@ export default function(state = initialState, action) {
         auth_token: action.payload
       };
     } break;
+    case "CHOOSE_PROJECT": {
+      return {
+        ...state,
+        current_project: action.payload
+      };
+    } break;
   }
 
   return state;

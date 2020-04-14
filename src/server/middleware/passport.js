@@ -43,6 +43,7 @@ Passport.use(new LocalStrategy({
 Passport.use(new JwtStrategy(jwtOptions, function (payload, done) {
   console.log("payload:", payload)
     User.findById(payload.id, (err, user) => {
+      console.log("PAYLOAD:", payload)
       if (err) {
         return done(err)
       }
@@ -103,14 +104,14 @@ module.exports = {
   checkAuthentication: async (ctx, next, opts = {}) => {
     const { success, failure } = opts;
 
-    if (!ctx.session || ctx.headers.authorization) {
-      console.log("JWT AUTH///...")
+    if (!ctx.session || ctx.headers.authorization && ctx.headers.authorization != 'undefined') {
+      console.log("JWT AUTH///...", ctx.headers.authorization)
       await Passport.authenticate('jwt', { session: false }, function (err, user) {
         if (user) {
           // ctx.body = "hello " + user.email;
           if (success) {
             ctx.state.user = user;
-            success(user);
+            success({user, token: ctx.session.token});
           }
         } else {
           // ctx.body = "No such user";
@@ -133,7 +134,7 @@ module.exports = {
 
         // console.log("TOKEN:", jwt.verify(ctx.session.token, jwtsecret));
         ctx.state.user = user;
-        success(user);
+        success({user, token: ctx.session.token});
       }
     } else {
       if (failure) {

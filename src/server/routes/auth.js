@@ -144,13 +144,20 @@ router.all('/*', async (ctx, next) => {
   });
 });
 
+router.get('/user/projects', async (ctx, next) => {
+  console.log("USDA", ctx.state.user)
+  ctx.body = await Project.find({ owner: ctx.state.user._id });
+});
+
 router.get('/profile', async (ctx) => {
   ctx.type = "html";
   ctx.body = fs.readFileSync(path.resolve(__dirname, '../../../dist/public/html/index.html'));
 });
 
-router.get('/workers', async (ctx) => {
-  ctx.body = await User.find({ "workInfo.additionalInfo.worker": true });
+router.post('/project/workers', async (ctx) => {
+  console.log(ctx.request.body);
+  ctx.body = await Project.agregate
+  // ctx.body = await User.find({ "workInfo.additionalInfo.worker": true });
 });
 
 router.post('/worker/create', async (ctx) => {
@@ -160,7 +167,7 @@ router.post('/worker/create', async (ctx) => {
   });
 
   const project = await Project.findOneAndUpdate({
-    name: ctx.request.body.projectName,
+    _id: ctx.request.body.projectId,
     owner: ctx.state.user.id
   }, {
     $addToSet: { users: worker._id }
