@@ -155,9 +155,20 @@ router.get('/profile', async (ctx) => {
 });
 
 router.post('/project/workers', async (ctx) => {
-  console.log(ctx.request.body);
-  ctx.body = await Project.agregate
-  // ctx.body = await User.find({ "workInfo.additionalInfo.worker": true });
+  if (!ctx.request.body.projectId) {
+    ctx.throw(404, "Project not found!");
+  }
+
+  let project = await Project.findById(ctx.request.body.projectId);
+
+  // if (ctx.state.user) {
+  //   console.log('ctx.state.user', ctx.state.user)
+  //   project.users = project.users.filter(worker => worker.toString() != ctx.state.user._id.toString());
+  // }
+
+  let workers = await User.find({ _id: { $in: project.users, $ne: ctx.state.user._id } });
+
+  ctx.body = workers;
 });
 
 router.post('/worker/create', async (ctx) => {

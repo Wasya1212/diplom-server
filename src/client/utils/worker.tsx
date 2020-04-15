@@ -29,6 +29,7 @@ export class Worker {
   private _parameters: WorkerParameters;
 
   protected declare(parameters: any): WorkerParameters {
+    console.log("PARAMETERS:", parameters);
     return {
       id: parameters._id || undefined,
       fullName: parameters.name.fName + ' ' + parameters.name.mName + ' ' + parameters.name.lName,
@@ -102,9 +103,10 @@ export class Worker {
     });
 
     console.log("NEW WORKER:", response.data);
+    console.log("created WORKER:", new Worker(response.data.worker, opts))
 
     try {
-      worker = new Worker(response.data, opts);
+      worker = new Worker(response.data.worker, opts);
     } catch(err) {
       throw new Error(err);
     }

@@ -12,9 +12,17 @@ interface WorkerComponentState {
 }
 
 class WorkerComponent extends Component<any, WorkerComponentState> {
+  workerIdInputRef: React.RefObject<HTMLInputElement>;
+
   state = {
     workers: [],
     addWorkerModal: false
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.workerIdInputRef = React.createRef<HTMLInputElement>();
   }
 
   componentDidMount() {
@@ -37,12 +45,15 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
       });
   }
 
-  addWorker = (e) => {
+  addWorker = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    const workerInput: HTMLInputElement = this.workerIdInputRef.current || new HTMLInputElement();
+
     Worker
       .addWorker(
-        "",
-        "",
+        this.props.store.current_project._id,
+        workerInput.value,
         {
           connection: {
             headers: [
@@ -52,16 +63,36 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
         }
       )
       .then((worker: Worker) => {
+        console.log("gfsdgdsfg", worker)
         this.setState({ workers: [ worker, ...this.state.workers ] });
+      })
+      .then(() => {
+        workerInput.value = "";
+        this.closeModal();
       })
       .catch(err => {
         console.error(err);
       });
   }
 
+  closeModal = () => {
+    this.setState({
+      addWorkerModal: false
+    });
+  }
+
+  showModal = () => {
+    this.setState({
+      addWorkerModal: true
+    });
+  }
+
   render() {
     return (
       <div className="workers">
+        <article className="workers__control">
+          <button onClick={this.showModal}>Add worker</button>
+        </article>
         <article className="workers__list">
           <ul>
             {
@@ -92,8 +123,9 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
             }
           </ul>
         </article>
-        <Modal isOpen={this.state.addWorkerModal}>
+        <Modal isOpen={this.state.addWorkerModal} onClose={this.closeModal}>
           <form onSubmit={this.addWorker}>
+            <input type="text" ref={this.workerIdInputRef} name="workerId" placeholder="Worker ID" />
             <button>confirm</button>
           </form>
         </Modal>

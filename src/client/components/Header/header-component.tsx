@@ -25,6 +25,7 @@ class Header extends Component<any, {}> {
           </nav>
           <div>
             username: {this.props.store.user ? this.props.store.user.name.fName : ''}
+            userId: {this.props.store.user ? this.props.store.user._id : ''}
           </div>
         </header>
       );
