@@ -10,7 +10,7 @@ const Passport = require('./middleware/passport');
 const ErrorHandler = require('./middleware/error-handler');
 const Mongoose = require('./middleware/mongoose');
 
-const { UserRouter, AuthRouter } = require('./routes');
+const { UserRouter, AuthRouter, ProductRouter, OrderRouter } = require('./routes');
 
 const app = new Koa();
 
@@ -52,6 +52,10 @@ app.use(AuthRouter.routes());
 app.use(AuthRouter.allowedMethods());
 app.use(UserRouter.routes());
 app.use(UserRouter.allowedMethods());
+app.use(ProductRouter.routes());
+app.use(ProductRouter.allowedMethods());
+app.use(OrderRouter.routes());
+app.use(OrderRouter.allowedMethods());
 
 app.on('error', (err, ctx) => {
   if (err.statusCode !== 500) {

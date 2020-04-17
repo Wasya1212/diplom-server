@@ -4,6 +4,9 @@ const CarModel = require('./car');
 const UnpredictableSituationModel = require('./unpredictableSituation');
 const FeatureModel = require('./feature');
 const ProjectModel = require('./project');
+const ProductModel = require('./product');
+const ProductCategoryModel = require('./productCategory');
+const OrderModel = require('./order');
 
 module.exports = {
   User: UserModel,
@@ -11,5 +14,8 @@ module.exports = {
   Car: CarModel,
   UnpredictableSituation: UnpredictableSituationModel,
   Feature: FeatureModel,
-  Project: ProjectModel
+  Project: ProjectModel,
+  Product: ProductModel,
+  ProductCategory: ProductCategoryModel,
+  Order: OrderModel
 };

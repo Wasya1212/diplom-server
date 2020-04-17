@@ -96,7 +96,7 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
         <article className="workers__list">
           <ul>
             {
-              this.state.workers.length == 1
+              this.state.workers.length > 0
                 ? (
                   <li className="workers__list__title">
                     <div>name</div>
