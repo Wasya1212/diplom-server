@@ -11,7 +11,7 @@
     "watch-server": "nodemon ./src/server/index.js",
     "start-dev": "concurrently \"npm run watch-server\" \"npm run dev\"",
     "build-server": "tsc --rootDir ./src/server",
-    "start": "node index"
+    "start": "node ./src/server/index.js"
   },
   "author": "",
   "license": "MIT",
