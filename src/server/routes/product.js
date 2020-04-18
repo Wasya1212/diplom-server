@@ -27,6 +27,7 @@ router.all('/*', async (ctx, next) => {
 });
 
 router.get('/products', async (ctx) => {
+  console.log('ctx.request.query.projectId', ctx.request.query.projectId)
   ctx.body = await Product.find({ project: ctx.request.query.projectId });
 });
 
@@ -53,7 +54,7 @@ router.post('/product/add', async (ctx) => {
 
   console.log(newProduct)
 
-  ctx.body = newProduct;
+  ctx.body = { product: newProduct };
 });
 
 module.exports = router;

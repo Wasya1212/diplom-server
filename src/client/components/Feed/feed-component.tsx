@@ -4,7 +4,7 @@ import WorkerComponent from "./feed-workers-component";
 import { OrderComponent } from "./feed-orders-component";
 import { RouteComponent } from "./feed-routes-component";
 import { StatisticComponent } from "./feed-statistics-component";
-import { WarehouseComponent } from "./feed-warehouse-component";
+import WarehouseComponent from "./feed-warehouse-component";
 
 interface Item {
   to: string,
