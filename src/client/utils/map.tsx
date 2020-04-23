@@ -150,7 +150,7 @@ export interface MapProps {
   bearing?: number,
   router?: MapPropsRoute,
   checkpoints?: boolean,
-  cars?: Coordinates[]
+  cars?: MapPropsCars[]
 }
 
 export interface MapPropsRoute {
@@ -199,28 +199,87 @@ export class MapComponent extends Component<MapProps, MapState> {
     }
   }
 
+  private changeCarCoordinates(car: Object3DMapController, newCoordinates: Coordinates) {
+    try {
+      car.object.setCoordinates(newCoordinates);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  private createCarLayer(car: MapPropsCars, id: string): Object3DLayer {
+    return new Object3DLayer({
+      model: this._carModel,
+      id: id,
+      type: 'custom',
+      coordinates: car.position,
+      scale: 20
+    })
+  }
+
+  private createCarController(layer: Object3DLayer) {
+    return new Object3DMapController(this.state._map, layer)
+  }
+
+  private addCarLayerToMap(layer: Object3DLayer) {
+    try {
+      this.state._map.addLayer(layer, "waterway-label");
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    const oldPropsCars: MapPropsCars[] = (this.props.cars || []);
+    const newPropsCars: MapPropsCars[] = (nextProps.cars || []);
+    const currentStateCars: Object3DMapController[] = (this.state.cars || []);
+
+    if (oldPropsCars != newPropsCars) {
+      if (currentStateCars.length < newPropsCars.length) {
+        oldPropsCars.forEach((car: MapPropsCars, index: number) => {
+          if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
+            this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+          }
+        });
+
+        let newCarLayers: Object3DLayer[] = [];
+        let newCarControllers: Object3DMapController[] = [];
+
+        for (let i = currentStateCars.length; i <  newPropsCars.length; i++) {
+          newCarLayers.push(this.createCarLayer(newPropsCars[i], `3d-model-${i + 1}`));
+          newCarControllers.push(this.createCarController(newCarLayers[newCarLayers.length - 1]));
+        }
+
+        newCarLayers.forEach(layer => {
+          this.addCarLayerToMap(layer);
+        });
+
+        this.setState({
+          cars: [...currentStateCars, ...newCarControllers]
+        });
+      }
+      if (this.state.cars && this.state.cars.length > nextProps.cars.length) {
+
+      }
+      if (this.state.cars && this.state.cars.length == nextProps.cars.length) {
+
+      }
+    }
+  }
+
   componentDidUpdate(prevProps, prevState) {
     if (this.state._map != undefined && this.state._map != prevState._map) {
       if (this.props.cars) {
-        let carLayers: Object3DLayer[] = this.props.cars.map((carPosition: Coordinates, index: number) => {
-          return new Object3DLayer({
-            model: this._carModel,
-            id: `3d-model`,
-            type: 'custom',
-            coordinates: carPosition,
-            scale: 20
-          })
+        let carLayers: Object3DLayer[] = this.props.cars.map((car: MapPropsCars, index: number) => {
+          return this.createCarLayer(car, `3d-model-${index + 1}`)
         });
 
-        let carControllers: Object3DMapController[] = carLayers.map((layer: Object3DLayer) => (new Object3DMapController(this.state._map, layer)));
-
-        console.log(carControllers)
+        let carControllers: Object3DMapController[] = carLayers.map((layer: Object3DLayer) => this.createCarController(layer));
 
         this.setState({ cars: carControllers });
 
         carLayers.forEach((layer: Object3DLayer) => {
-          console.log("LAERY", layer)
-          this.state._map.addLayer(layer, "waterway-label");
+          this.addCarLayerToMap(layer);
         });
       }
     }
