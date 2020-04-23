@@ -55,10 +55,13 @@ export class RoutingForm extends Component<RoutingFormProps, RoutingFormState> {
 
   render() {
     return (
-      <form className="route-form">
-        <input onChange={this.setLat} type="text" value={this.props.lat || ""} placeholder="Latitude..."/>
-        <input onChange={this.setLng} type="text" value={this.props.lng || ""} placeholder="Longitude..."/>
-      </form>
+      <div className="map-router-form">
+        <form className="route-form">
+          <input onChange={this.setLat} type="text" value={this.props.lat || ""} placeholder="Latitude..."/>
+          <input onChange={this.setLng} type="text" value={this.props.lng || ""} placeholder="Longitude..."/>
+        </form>
+        {this.props.children}
+      </div>
     );
   }
 }
@@ -136,8 +139,14 @@ export interface MapProps {
   zoom?: number,
   pitch?: number,
   bearing?: number,
-  router?: any,
+  router?: MapPropsRoute,
   checkpoints?: boolean
+}
+
+export interface MapPropsRoute {
+  checkpoints?: boolean,
+  routes?: boolean,
+  onRoute?: (route: Coordinates[]) => void
 }
 
 export interface MapState {
@@ -217,21 +226,40 @@ export class MapComponent extends Component<MapProps, MapState> {
   }
 
   addCheckpoint = () => {
+    if (!this.state.checkedCoordinates || this.state.checkedCoordinates.lat == 0 && this.state.checkedCoordinates.lng == 0) {
+      alert("Enter checkpoint");
+      return;
+    }
+
     if (this.state.checkpoints.length > 0) {
       this.setState({
-        checkpoints: [...this.state.checkpoints, this.state.checkedCoordinates]
+        checkpoints: [...this.state.checkpoints, this.state.checkedCoordinates],
+        checkedCoordinates: { lng: 0, lat: 0}
       });
     } else {
-      this.setState({ checkpoints: [this.state.checkedCoordinates] });
+      this.setState({
+        checkpoints: [this.state.checkedCoordinates],
+        checkedCoordinates: { lng: 0, lat: 0}
+      });
     }
   }
 
-  buildRoute = () => {
-    this._waypointController
-      .getRoute()
-      .then(route => {
-        this._waypointController.map.moveLayer(this._waypointController.layerId);
-      });
+  buildRoute = async () => {
+    if (this.state.checkpoints && this.state.checkpoints.length <= 1) {
+      return;
+    }
+
+    const route: Coordinates[] = await this._waypointController.getRoute();
+
+    if (this.props.router && this.props.router.onRoute) {
+      try {
+        this.props.router.onRoute(route);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    this._waypointController.map.moveLayer(this._waypointController.layerId);
   }
 
   render() {
@@ -243,13 +271,18 @@ export class MapComponent extends Component<MapProps, MapState> {
             ? <RoutingForm
                 lat={this.state.checkedCoordinates ? this.state.checkedCoordinates.lat : 0}
                 lng={this.state.checkedCoordinates ? this.state.checkedCoordinates.lng : 0}
-              />
+              >
+                {
+                  this.props.router.checkpoints ? <button onClick={this.addCheckpoint}>Add checkpoint</button> : null
+                }
+                {
+                  this.props.router.routes && this.props.router.checkpoints ? <button onClick={this.buildRoute}>Build Route</button> : null
+                }
+              </RoutingForm>
             : null
         }
-        {
-          this.props.checkpoints ? <button onClick={this.addCheckpoint}>Add checkpoint</button> : null
-        }
-        <button onClick={this.buildRoute}>Build Route</button>
+
+
       </div>
     );
   }

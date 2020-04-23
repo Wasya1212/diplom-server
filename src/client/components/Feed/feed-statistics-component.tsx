@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import axios from "axios";
 
-import { MapComponent as Map } from "../../utils/map";
+import { MapComponent as Map, Coordinates } from "../../utils/map";
 
 export class StatisticComponent extends Component<any, any> {
   state = {
@@ -18,6 +18,10 @@ export class StatisticComponent extends Component<any, any> {
     console.log(e.lngLat.wrap());
   }
 
+  onRoute = (route: Coordinates[]) => {
+    console.log(route);
+  }
+
   render() {
     return (
       <div>
@@ -26,8 +30,11 @@ export class StatisticComponent extends Component<any, any> {
           center={this.state.currentPosition}
           onClick={this.handleMapClick}
           zoom={this.state.currentZoom}
-          router={true}
-          checkpoints={true}
+          router={{
+            checkpoints: true,
+            routes: true,
+            onRoute: this.onRoute
+          }}
         />
       </div>
     );
