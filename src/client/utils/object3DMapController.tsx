@@ -62,8 +62,6 @@ export class Object3DMapController {
     const distance: number = calculateDistance(start, end);
     const pointsCount: number = distance / (DEFAULT_METERS_SPLITTER / 3);
 
-    console.log("pointsCount:", pointsCount)
-
     const routeSequence: Object3DCoordinates = { lat: end.lat - start.lat, lng: end.lng - start.lng };
     const pointLength: Object3DCoordinates = { lat: routeSequence.lat / pointsCount, lng: routeSequence.lng / pointsCount };
 

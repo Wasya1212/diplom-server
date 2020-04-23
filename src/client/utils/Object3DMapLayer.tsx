@@ -99,8 +99,6 @@ export class Object3DLayer {
   }
 
   public render(gl: WebGLRenderingContext, matrix: number[]) {
-    console.log("rrr", this._scale);
-
     this._modelController.setTransformModel(this._coordinates, undefined, { x: Math.PI / 2, y: this._rotation || 0, z: 0 }, this._scale || 1);
     this._modelController.setTranslateModel(matrix);
 

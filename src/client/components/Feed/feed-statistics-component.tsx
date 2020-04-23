@@ -35,6 +35,7 @@ export class StatisticComponent extends Component<any, any> {
             routes: true,
             onRoute: this.onRoute
           }}
+          cars={[this.state.currentPosition]}
         />
       </div>
     );

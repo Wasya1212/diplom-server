@@ -146,7 +146,7 @@ export class Object3DMapComponent {
   }
 
   public static getTransformModel(coordinates: Object3DCoordinates, modelAltitude: number, modelRotate: Object3DRotate, scale?: number): Object3DTransformModel {
-    const modelAsMercatorCoordinate: MercatorCoordinate = MercatorCoordinate.fromLngLat([coordinates.lat, coordinates.lng], modelAltitude);
+    const modelAsMercatorCoordinate: MercatorCoordinate = MercatorCoordinate.fromLngLat([coordinates.lng, coordinates.lat], modelAltitude);
 
     return {
       translateX: modelAsMercatorCoordinate.x,

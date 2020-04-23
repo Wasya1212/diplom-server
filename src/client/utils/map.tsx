@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 
-import mapboxgl from "mapbox-gl";
+import "../assets/models/audi/RS7.obj";
+import "../assets/images/map-marker-icon.png";
+import "../assets/images/map-current-marker-icon.png";
+
 import ReactMapboxGl from "react-mapbox-gl";
+import mapboxgl from "mapbox-gl";
+
 import {
   Layer,
   Source,
@@ -15,6 +20,10 @@ import { ENVIRONMENT } from "../environment";
 import { ICONS } from "../data";
 
 import { WaypointController } from "./waypointMapController";
+
+import { Object3D as ModelLoader } from "./Object3D";
+import { Object3DLayer } from "./Object3DMapLayer";
+import { Object3DMapController } from "./object3DMapController";
 
 mapboxgl.accessToken = ENVIRONMENT.mapbox.accessToken;
 
@@ -140,7 +149,8 @@ export interface MapProps {
   pitch?: number,
   bearing?: number,
   router?: MapPropsRoute,
-  checkpoints?: boolean
+  checkpoints?: boolean,
+  cars?: Coordinates[]
 }
 
 export interface MapPropsRoute {
@@ -149,22 +159,72 @@ export interface MapPropsRoute {
   onRoute?: (route: Coordinates[]) => void
 }
 
+export interface MapPropsCars {
+  position: Coordinates
+}
+
 export interface MapState {
   _map?: any,
   checkedCoordinates?: Coordinates,
-  checkpoints?: Coordinates[]
+  checkpoints?: Coordinates[],
+  cars?: Object3DMapController[]
 }
 
 export class MapComponent extends Component<MapProps, MapState> {
   private _waypointController: WaypointController | any = {};
+  private _carModel: ModelLoader;
 
-  state = {
-    _map: undefined,
-    checkedCoordinates: { lat: 0, lng: 0 },
-    checkpoints: []
+  constructor(props) {
+    super(props);
+
+    // this.setState({
+    //   // _map: {},
+    //   checkedCoordinates: { lat: 0, lng: 0 },
+    //   checkpoints: []
+    // })
+
+    this._carModel = new ModelLoader({
+      model: 'models/RS7.obj',
+      onLoadProgress: (item: string, loaded: number, total: number) => {
+        console.log("load texture:", item, loaded, total);
+      },
+      setLoadURLModifier: (url: string): string => (`${url}`),
+      textures: ['/img/tex1_DSP.png', '/img/tex1.png', '/img/texLOD1.png', '/img/texMain_DSP.png', '/img/texMain.png', '/img/texMain_NRM.png']
+    });
+
+    this.state = {
+      _map: undefined,
+      checkedCoordinates: { lat: 0, lng: 0 },
+      checkpoints: []
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (this.state._map != undefined && this.state._map != prevState._map) {
+      if (this.props.cars) {
+        let carLayers: Object3DLayer[] = this.props.cars.map((carPosition: Coordinates, index: number) => {
+          return new Object3DLayer({
+            model: this._carModel,
+            id: `3d-model`,
+            type: 'custom',
+            coordinates: carPosition,
+            scale: 20
+          })
+        });
+
+        let carControllers: Object3DMapController[] = carLayers.map((layer: Object3DLayer) => (new Object3DMapController(this.state._map, layer)));
+
+        console.log(carControllers)
+
+        this.setState({ cars: carControllers });
+
+        carLayers.forEach((layer: Object3DLayer) => {
+          console.log("LAERY", layer)
+          this.state._map.addLayer(layer, "waterway-label");
+        });
+      }
+    }
+
     if (
       this.props.center && (
         this.props.center != prevProps.center
@@ -174,7 +234,6 @@ export class MapComponent extends Component<MapProps, MapState> {
       )
     ) {
       if (!this.state._map) return;
-      //@ts-ignore
       this.state._map.flyTo({
         center: [this.props.center.lng, this.props.center.lat],
         zoom: [this.props.zoom],
@@ -231,7 +290,7 @@ export class MapComponent extends Component<MapProps, MapState> {
       return;
     }
 
-    if (this.state.checkpoints.length > 0) {
+    if (this.state.checkpoints && this.state.checkpoints.length > 0) {
       this.setState({
         checkpoints: [...this.state.checkpoints, this.state.checkedCoordinates],
         checkedCoordinates: { lng: 0, lat: 0}
@@ -241,6 +300,19 @@ export class MapComponent extends Component<MapProps, MapState> {
         checkpoints: [this.state.checkedCoordinates],
         checkedCoordinates: { lng: 0, lat: 0}
       });
+    }
+  }
+
+  addCar = (car: Object3DLayer) => {
+    try {
+      // this.state.cars.object.setCoordinates(this.props.center || {lat: 0, lng: 0});
+      this.state._map.addLayer(car, "waterway-label");
+      // this.state.cars.object.setScale(20);
+      // this.state.cars.object.id = "3dcar2"
+      // this.state._map.addLayer(this._carLayer, "waterway-label");
+
+    } catch (err) {
+      console.error(err);
     }
   }
 
