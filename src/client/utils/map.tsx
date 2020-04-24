@@ -234,36 +234,56 @@ export class MapComponent extends Component<MapProps, MapState> {
     const newPropsCars: MapPropsCars[] = (nextProps.cars || []);
     const currentStateCars: Object3DMapController[] = (this.state.cars || []);
 
-    if (oldPropsCars != newPropsCars) {
-      if (currentStateCars.length < newPropsCars.length) {
-        oldPropsCars.forEach((car: MapPropsCars, index: number) => {
-          if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
-            this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
-          }
-        });
+    if (currentStateCars.length < newPropsCars.length) {
+      currentStateCars.forEach((car: Object3DMapController, index: number) => {
+        if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
+          this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+        }
+      });
 
-        let newCarLayers: Object3DLayer[] = [];
-        let newCarControllers: Object3DMapController[] = [];
+      let newCarLayers: Object3DLayer[] = [];
+      let newCarControllers: Object3DMapController[] = [];
 
-        for (let i = currentStateCars.length; i <  newPropsCars.length; i++) {
-          newCarLayers.push(this.createCarLayer(newPropsCars[i], `3d-model-${i + 1}`));
-          newCarControllers.push(this.createCarController(newCarLayers[newCarLayers.length - 1]));
+      for (let i = currentStateCars.length; i <  newPropsCars.length; i++) {
+        newCarLayers.push(this.createCarLayer(newPropsCars[i], `3d-model-${i + 1}`));
+        newCarControllers.push(this.createCarController(newCarLayers[newCarLayers.length - 1]));
+      }
+
+      newCarLayers.forEach(layer => {
+        this.addCarLayerToMap(layer);
+      });
+
+      this.setState({
+        cars: [...currentStateCars, ...newCarControllers]
+      });
+    }
+    if (currentStateCars.length > newPropsCars.length) {
+      newPropsCars.forEach((car: MapPropsCars, index: number) => {
+        if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
+          this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+        }
+      });
+
+      for (let i = newPropsCars.length; i <  currentStateCars.length; i++) {
+        try {
+          this.state._map.removeLayer(`3d-model-${i + 1}`);
+          // console.log(newPropsCars, newPropsCars.length, i);
+          // console.log(currentStateCars[i]);
+        } catch (err) {
+          console.error(err);
         }
 
-        newCarLayers.forEach(layer => {
-          this.addCarLayerToMap(layer);
-        });
-
-        this.setState({
-          cars: [...currentStateCars, ...newCarControllers]
-        });
+        delete currentStateCars[i];
       }
-      if (this.state.cars && this.state.cars.length > nextProps.cars.length) {
 
-      }
-      if (this.state.cars && this.state.cars.length == nextProps.cars.length) {
-
-      }
+      this.setState({ cars: currentStateCars.splice(0, newPropsCars.length) });
+    }
+    if (currentStateCars.length == newPropsCars.length) {
+      currentStateCars.forEach((car: Object3DMapController, index: number) => {
+        if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
+          this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+        }
+      });
     }
   }
 

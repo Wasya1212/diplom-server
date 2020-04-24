@@ -9,29 +9,18 @@ export class StatisticComponent extends Component<any, any> {
     currentPosition: { lng: 24.021847295117936, lat: 49.85496650618947 },
     currentZoom: 15,
     cars: [
-      { position: { lng: 24.021847295117936, lat: 49.85496650618947 } }
+      { position: { lng: 24.021847295117936, lat: 49.85496650618947 } },
+      { position: { lng: 24.027847295117936, lat: 49.85896650618947 } },
+      { position: { lng: 24.015847295117936, lat: 49.86296650618947 } },
+      { position: { lng: 24.031847295117936, lat: 49.86696650618947 } },
+      { position: { lng: 24.011847295117936, lat: 49.87296650618947 } },
+      { position: { lng: 24.001847295117936, lat: 49.87296650618947 } },
+      { position: { lng: 24.041847295117936, lat: 49.87296650618947 } }
     ]
   }
 
   componentDidMount() {
-    // setInterval(() => {
-    //   this.setState({
-    //     cars: [...this.state.cars, {position: { lng: 24.032478769838917, lat: 49.856060237752814 }}]
-    //   });
-    // }, 2500)
-    setInterval(() => {
-      this.setState({
-        cars: [
-          ...this.state.cars,
-          {
-            position: {
-              lng: this.state.cars[this.state.cars.length - 1].position.lng + 0.005,
-              lat: this.state.cars[this.state.cars.length - 1].position.lat + 0.005
-            }
-          }
-        ]
-      });
-    }, 2500);
+
   }
 
   handleMapClick = (e: any) => {
@@ -55,7 +44,6 @@ export class StatisticComponent extends Component<any, any> {
             routes: true,
             onRoute: this.onRoute
           }}
-          cars={this.state.cars}
         />
       </div>
     );

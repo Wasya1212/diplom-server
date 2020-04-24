@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import WorkerComponent from "./feed-workers-component";
 import OrderComponent from "./feed-orders-component";
-import { RouteComponent } from "./feed-routes-component";
+import RouteComponent from "./feed-routes-component";
 import { StatisticComponent } from "./feed-statistics-component";
 import WarehouseComponent from "./feed-warehouse-component";
 
