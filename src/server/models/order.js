@@ -2,7 +2,7 @@ const { Schema, Model, Types } = require('../middleware/mongoose');
 
 const orderSchema = new Schema({
   project: { required: true, type: Types.ObjectId },
-  oprator: { required: true, type: Types.ObjectId },
+  operator: { required: true, type: Types.ObjectId },
   workers: [{ required: true, type: Types.ObjectId }],
   address: { required: true, type: Types.String, trim: true },
   pointOnMap: {

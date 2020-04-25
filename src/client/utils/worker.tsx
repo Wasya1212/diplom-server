@@ -132,8 +132,6 @@ export class Worker {
       data: { projectId }
     });
 
-    console.log("WORKERS", response.data)
-
     try {
       if (Array.isArray(response.data)) {
         response.data.forEach((workerInfo: any) => {

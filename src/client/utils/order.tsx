@@ -19,7 +19,7 @@ export interface OrderParameters {
   address?: string,
   pointOnMap?: Coordinate,
   description?: string,
-  products?: Product[],
+  products?: { product: Product, count: number }[],
   id?: string,
   deliveryDate?: Date,
   operator?: Worker,
@@ -30,9 +30,10 @@ export class Order {
   private _headers: { title: string, value: string }[] = [];
   private _parameters: OrderParameters;
 
-  protected declare(parameters: any): OrderParameters {
+  protected declare(parameters: OrderParameters): OrderParameters {
     return {
-      id: parameters._id,
+      //@ts-ignore
+      id: parameters._id || parameters.id,
       workers: parameters.workers,
       address: parameters.address,
       pointOnMap: parameters.pointOnMap,
@@ -72,7 +73,7 @@ export class Order {
     return this._parameters.deliveryDate;
   }
 
-  public get products(): Product[] | undefined {
+  public get products(): { product: Product, count: number }[] | undefined {
     return this._parameters.products || [];
   }
 
@@ -109,9 +110,6 @@ export class Order {
       data: { projectId, ...(orderDetails instanceof Order ? orderDetails.parameters : orderDetails) }
     });
 
-    console.log("NEW Order:", response.data);
-    console.log("created ORDER:", new Order(response.data.order, opts))
-
     try {
       order = new Order(response.data.order, opts);
     } catch(err) {
@@ -137,8 +135,6 @@ export class Order {
       url: `/orders?projectId=${projectId}`,
       headers: headers
     });
-
-    console.log("PFDAS", response.data);
 
     try {
       if (Array.isArray(response.data)) {

@@ -267,8 +267,6 @@ export class MapComponent extends Component<MapProps, MapState> {
       for (let i = newPropsCars.length; i <  currentStateCars.length; i++) {
         try {
           this.state._map.removeLayer(`3d-model-${i + 1}`);
-          // console.log(newPropsCars, newPropsCars.length, i);
-          // console.log(currentStateCars[i]);
         } catch (err) {
           console.error(err);
         }
