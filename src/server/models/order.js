@@ -1,4 +1,4 @@
-const { Schema, Model, Types } = require('../middleware/mongoose');
+const { Schema, Model, Types, AutoIncrement } = require('../middleware/mongoose');
 
 const orderSchema = new Schema({
   project: { required: true, type: Types.ObjectId },
@@ -18,6 +18,8 @@ const orderSchema = new Schema({
   route: { required: false, type: Types.ObjectId },
   status: { required: false, type: Types.String, default: "processing" }
 });
+
+orderSchema.plugin(AutoIncrement, {inc_field: 'number'});
 
 const orderModel = new Model('Order', orderSchema);
 

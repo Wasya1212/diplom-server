@@ -24,11 +24,10 @@ router.get('/orders', async (ctx) => {
       deliveryDate: orders[i].deliveryDate,
       route: orders[i].route,
       status: orders[i].status,
-      address: orders[i].address
+      address: orders[i].address,
+      number: orders[i].number
     });
   }
-
-  console.log(responseOrders);
 
   ctx.body = responseOrders;
 });

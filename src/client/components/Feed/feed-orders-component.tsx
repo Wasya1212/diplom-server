@@ -286,6 +286,10 @@ class OrderComponent extends Component<any, OrderComponentState> {
   }
 
   componentDidMount() {
+    this.findAllOrders();
+  }
+
+  findAllOrders() {
     Order
       .getOrders(
         this.props.store.current_project._id,
@@ -318,7 +322,7 @@ class OrderComponent extends Component<any, OrderComponentState> {
   }
 
   addOrder = (order: Order) => {
-    this.setState({ orders: [ order, ...this.state.orders ] });
+    this.findAllOrders();
   }
 
   render() {
@@ -348,7 +352,7 @@ class OrderComponent extends Component<any, OrderComponentState> {
             {
               ...this.state.orders.map((order: Order) => (
                 <li key={`order-${order.id}`} className={`orders__list__product-${order.id}`}>
-                  <div>id {order.id}</div>
+                  <div>number #{order.number}</div>
                   <div>address {order.address}</div>
                   <div>workers {(order.workers || []).length}</div>
                   <div>products {(order.products || []).length}</div>

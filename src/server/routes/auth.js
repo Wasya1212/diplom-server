@@ -171,6 +171,10 @@ router.post('/project/workers', async (ctx) => {
   ctx.body = workers;
 });
 
+router.get('/project/worker', async (ctx) => {
+  console.log(ctx.request.query);
+});
+
 router.post('/worker/create', async (ctx) => {
   const worker = await User.findOne({
     "workInfo.additionalInfo.worker": true,

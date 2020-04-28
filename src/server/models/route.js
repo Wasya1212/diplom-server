@@ -1,9 +1,9 @@
 const { Schema, Model, Types } = require('../middleware/mongoose');
 
 const routeSchema = new Schema({
-  user: { required: true, type: Types.ObjectId },
-  title: { required: true, type: Types.String },
+  users: [{ required: true, type: Types.ObjectId }],
   date: Types.Date,
+  orders: [{ required: true, type: Types.ObjectId }],
   waypoints: [{ lat: Types.Number, lng: Types.Number }],
   plannedRoute: { required: false, type: Types.String },
   currentRoute: { required: false, type: Types.String },

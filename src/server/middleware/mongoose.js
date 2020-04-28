@@ -3,6 +3,7 @@ const mongodb = require('mongodb')
 // const MongoStore = require("koa-session2-mongostore/index.mongoose");
 // const MongoStore = require('../libs/session-store');
 const MongoStore = require('koa-session2-mongostore');
+const AutoIncrement = require('mongoose-sequence')(mongoose);
 
 require('mongoose-type-email');
 require('mongoose-type-phone');
@@ -11,6 +12,10 @@ require('mongoose-type-url');
 let mongoClient = null;
 
 mongoose.set('useFindAndModify', false);
+
+module.exports.mongoose = mongoose;
+
+module.exports.AutoIncrement = AutoIncrement;
 
 module.exports.createStore = () => {
   return new MongoStore({

@@ -114,6 +114,32 @@ export class Worker {
     return worker;
   }
 
+  public static async findWorker(projectId: string, queryParams: WorkerParameters, opts: WorkerOptions = { connection: {} }): Promise<Worker>  {
+    let worker: Worker;
+
+    let headers = {};
+
+    if (opts.connection && opts.connection.headers && Array.isArray(opts.connection.headers)) {
+      opts.connection.headers.forEach(header => {
+        headers[header.title] = header.value;
+      })
+    }
+
+    const response: any = await axios({
+      method: 'GET',
+      url: `/project/worker?projectId=${projectId}&query=${JSON.stringify(queryParams)}`,
+      headers: headers
+    });
+
+    try {
+      worker = new Worker(response.data, opts);
+    } catch (err) {
+      throw new Error(err);
+    }
+
+    return worker;
+  }
+
   public static async getWorkers(projectId: string, opts: WorkerOptions = { connection: {} }): Promise<Worker[]> {
     let workers: Worker[] = [];
 

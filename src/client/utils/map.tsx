@@ -33,6 +33,23 @@ let Map = ReactMapboxGl({
   accessToken: ENVIRONMENT.mapbox.accessToken
 });
 
+const BuildingsLayer3DComponent = () => (
+  <Layer
+    id="3d-buildings"
+    minZoom={15}
+    sourceLayer="building"
+    type="fill-extrusion"
+    paint={{
+      'fill-extrusion-color': '#aaa',
+      'fill-extrusion-height': [ 'interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['get', 'height'] ],
+      'fill-extrusion-base': [ 'interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['get', 'min_height'] ],
+      'fill-extrusion-opacity': 0.6
+    }}
+    filter={['==', 'extrude', 'true']}
+    sourceId="composite"
+  />
+);
+
 interface RoutingFormState {
   lat: number,
   lng: number
@@ -134,6 +151,7 @@ class MapController extends Component<MapControllerProps, any> {
             }}
           </MapContext.Consumer>
           <ScaleControl position="top-right"/>
+          <BuildingsLayer3DComponent />
           <div>{this.props.children}</div>
         </Map>
       </div>
@@ -150,6 +168,7 @@ export interface MapProps {
   bearing?: number,
   router?: MapPropsRoute,
   checkpoints?: boolean,
+  markers?: Coordinates[],
   cars?: MapPropsCars[]
 }
 
@@ -230,6 +249,12 @@ export class MapComponent extends Component<MapProps, MapState> {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (this.props.markers && this._waypointController) {
+      // this._waypointController.waypoints = [...(this._waypointController.waypoints || []), ...(nextProps.markers || [])];
+      // console.log("WAYPOINTS2:", nextProps.markers);
+      this._waypointController.waypoints = [...(nextProps.markers || [])]
+    }
+
     const oldPropsCars: MapPropsCars[] = (this.props.cars || []);
     const newPropsCars: MapPropsCars[] = (nextProps.cars || []);
     const currentStateCars: Object3DMapController[] = (this.state.cars || []);
@@ -322,7 +347,7 @@ export class MapComponent extends Component<MapProps, MapState> {
 
   componentWillUpdate(nextProps, nextState) {
     if (this.state.checkpoints !== nextState.checkpoints) {
-      this._waypointController.waypoints = nextState.checkpoints;
+      this._waypointController.waypoints = [...nextState.checkpoints, ...(nextProps.markers || [])];
     }
   }
 
@@ -341,6 +366,12 @@ export class MapComponent extends Component<MapProps, MapState> {
     });
 
     this.setState({ _map: map });
+
+    if (this.props.markers) {
+      console.log(this.props.markers)
+      this._waypointController.waypoints = [...(this.props.markers || [])];
+    }
+
     if (this.props.onLoad) this.props.onLoad(map);
   }
 
