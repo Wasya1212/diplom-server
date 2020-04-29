@@ -49,6 +49,10 @@ export class Worker {
     this._parameters = this.declare(parameters);
   }
 
+  public get parameters(): WorkerParameters | undefined {
+    return this._parameters;
+  }
+
   public get name(): string | undefined {
     return this._parameters.fullName;
   }

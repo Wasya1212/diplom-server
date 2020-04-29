@@ -4,10 +4,12 @@ import { connect } from "react-redux";
 
 import { Order } from "../../utils/order";
 import { Worker } from "../../utils/worker";
+import { Route } from "../../utils/route";
 
 import axios from "axios";
 
 import { MapComponent as Map, Coordinates } from "../../utils/map";
+import { WaypointController } from "../../utils/waypointMapController";
 
 import Modal from "../Modal";
 
@@ -18,15 +20,21 @@ interface AddRouteFormProps {
 
 interface AddRouteFormState {
   ordersList: Order[],
+  selectedOrdersList: Order[],
   connParams?: any,
   checkpoints: Coordinates[],
   mapCenter?: Coordinates,
   mapZoom?: number,
   ordersSelectedWorkersList: Worker[],
-  ordersWorkersList: Worker[]
+  ordersWorkersList: Worker[],
+  _map: any,
+  checkedRoute: string,
+  connection: any
 }
 
 class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
+  routeDeliveryDateInputRef: React.RefObject<HTMLInputElement> = React.createRef<HTMLInputElement>();
+
   state = {
     connParams: this.props.authToken ? { connection: { headers: [ { title: 'authorization', value: this.props.authToken } ] } } : undefined,
     ordersList: [],
@@ -34,13 +42,18 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
     mapCenter: undefined,
     mapZoom: undefined,
     ordersSelectedWorkersList: [],
-    ordersWorkersList: []
+    ordersWorkersList: [],
+    checkedRoute: '',
+    _map: undefined,
+    connection: this.props.authToken ? { connection: { headers: [{ title: 'authorization', value: this.props.authToken }] } } : undefined,
+    selectedOrdersList: []
   }
 
   componentDidMount() {
     Order
       .getOrders(this.props.projectId, this.state.connParams)
       .then((orders: Order[]) => {
+        console.log("ORDERS", orders)
         this.setState({
           ordersList: orders
         });
@@ -85,6 +98,16 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
       mapCenter: JSON.parse(e.currentTarget.value),
       mapZoom: 15
     });
+
+    if (e.currentTarget.checked) {
+      this.setState({
+        selectedOrdersList: [...this.state.selectedOrdersList, this.state.ordersList[this.state.ordersList.findIndex((o: Order) => `order-checkbox-${o.id}` == e.currentTarget.id)]]
+      });
+    } else {
+      let orders = this.state.selectedOrdersList;
+      orders.splice(orders.findIndex((o: Order) => `order-checkbox-${o.id}` == e.currentTarget.id), 1);
+      this.setState({ selectedOrdersList: orders });
+    }
   }
 
   onOrderWorkerCheckboxChange = (e: React.FormEvent<HTMLInputElement>) => {
@@ -99,16 +122,52 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
     }
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.checkpoints != this.state.checkpoints) {
+      if (this.state._map && this.state._map != undefined && this.state.checkpoints) {
+        if (this.state.checkpoints && this.state.checkpoints.length < 2) {
+          return;
+        }
+
+        WaypointController
+          .createRoute(this.state.checkpoints)
+          .then(route => {
+            WaypointController.drawRoute(this.state._map, route);
+
+            this.setState({ checkedRoute: WaypointController.encodeRoute(route) });
+          });
+      }
+    }
+  }
+
+  onLoadMap = (map: any) => {
+    this.setState({ _map: map });
+  }
+
+  addRoute = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const deliveryDateInput: HTMLInputElement = this.routeDeliveryDateInputRef.current || new HTMLInputElement();
+
+    Route.addRoute(this.props.projectId, {
+      users: this.state.ordersSelectedWorkersList,
+      orders: this.state.selectedOrdersList,
+      plannedRoute: this.state.checkedRoute,
+      waypoints: this.state.checkpoints,
+      date: deliveryDateInput.value
+    }, this.state.connection);
+  }
+
   render() {
     return (
       <section>
-        <form>
+        <form onSubmit={this.addRoute}>
           <header>
 
           </header>
           <section>
             <p>
-              <input name="routeDate" type="date" />
+              <input ref={this.routeDeliveryDateInputRef} name="routeDate" type="date" />
             </p>
             <p>
               {
@@ -131,8 +190,10 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
               ))
             }
           </aside>
+          <button>Confirm</button>
         </form>
         <Map
+          onLoad={this.onLoadMap}
           center={this.state.mapCenter}
           zoom={this.state.mapZoom}
           markers={this.state.checkpoints}
@@ -145,14 +206,16 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
 interface RouteComponentState {
   addRouteModalIsOpen: boolean,
   currentZoom: number,
-  currentPosition: Coordinates
+  currentPosition: Coordinates,
+  routes: Route[]
 }
 
 class RouteComponent extends Component<any, RouteComponentState> {
   state = {
     currentPosition: { lng: 24.021847295117936, lat: 49.85496650618947 },
     currentZoom: 15,
-    addRouteModalIsOpen: false
+    addRouteModalIsOpen: false,
+    routes: []
     // cars: [
     //   { position: { lng: 24.021847295117936, lat: 49.85496650618947 } },
     //   { position: { lng: 24.027847295117936, lat: 49.85896650618947 } },
@@ -165,7 +228,13 @@ class RouteComponent extends Component<any, RouteComponentState> {
   }
 
   componentDidMount() {
+    this.getAllRoutes();
+  }
 
+  async getAllRoutes() {
+    this.setState({
+      routes: await Route.getRoutes(this.props.store.current_project._id)
+    });
   }
 
   handleMapClick = (e: any) => {
@@ -183,7 +252,13 @@ class RouteComponent extends Component<any, RouteComponentState> {
   render() {
     return (
       <div>
-        Hello routes
+        <ul>
+          {
+            ...this.state.routes.map((route: Route) => (
+              <li>{`${route.date} ${route.users.map(user => new Worker(user).name).join(', ')}`}</li>
+            ))
+          }
+        </ul>
         <Map
           center={this.state.currentPosition}
           onClick={this.handleMapClick}

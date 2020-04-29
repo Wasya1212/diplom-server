@@ -80,6 +80,14 @@ export class WaypointController {
     return this._layerId;
   }
 
+  public static encodeRoute(route: any) {
+    return polyline.encode(route);
+  }
+
+  public static decodeRoute(route: string) {
+    return polyline.decode(route);
+  }
+
   public static declareIcon(map: any, icon: Icon) {
     try {
       map.loadImage(`${icon.path}.${icon.ext}`, (err: any, image: any) => {
@@ -167,31 +175,24 @@ export class WaypointController {
   private addSourceLayer() {
     this._layerId = 'layer-' + 'checkpoint';
     this._sourceId = 'source-' + 'checkpoint';
-    
+
     WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
   }
 
-  public async getRoute() {
-    if (this._waypoints.length < 2) {
-      return;
+  public static clearRoute(map: any) {
+    map.removeLayer('layer-route');
+    map.removeSource('source-route');
+  }
+
+  public static drawRoute(map: any, route: string) {
+    if (map.getLayer('layer-route') !== undefined) {
+      map.removeLayer('layer-route');
+    }
+    if (map.getSource('source-route') !== undefined) {
+      map.removeSource('source-route');
     }
 
-    if (this._waypoints.length > 12) {
-      alert("Maximum waypoints!");
-      return;
-    }
-
-    let routeData = await axios.get(`https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${this._waypoints.map((waypoint: Waypoint) => (`${waypoint.lng},${waypoint.lat}`)).join(';')}?access_token=${ENVIRONMENT.mapbox.accessToken}`).then(({data}) => data);
-    let routeWay = polyline.decode(routeData.trips[0].geometry.toString()).map(el => ([el[1], el[0]]));
-
-    if (this._map.getLayer('layer-route') !== undefined) {
-      this._map.removeLayer('layer-route');
-    }
-    if (this._map.getSource('source-route') !== undefined) {
-      this._map.removeSource('source-route');
-    }
-
-    this._map.addSource('source-route', {
+    map.addSource('source-route', {
       type: 'geojson',
       lineMetrics: true,
       data: {
@@ -201,7 +202,7 @@ export class WaypointController {
             type: 'Feature',
             properties: {},
             geometry: {
-              coordinates: routeWay,
+              coordinates: route,
               type: 'LineString'
             }
           }
@@ -209,15 +210,13 @@ export class WaypointController {
       }
     });
 
-    this._map.addLayer({
+    map.addLayer({
       type: 'line',
       source: 'source-route',
       id: 'layer-route',
       paint: {
         'line-color': 'red',
         'line-width': 14,
-        // 'line-gradient' must be specified using an expression
-        // with the special 'line-progress' property
         'line-gradient': [
           'interpolate',
           ['linear'],
@@ -231,7 +230,29 @@ export class WaypointController {
         'line-join': 'round'
       }
     });
+  }
+
+  public static async createRoute(waypoints: Waypoint[]) {
+    if (waypoints.length < 2) {
+      return;
+    }
+
+    if (waypoints.length > 12) {
+      alert("Maximum waypoints!");
+      return;
+    }
+
+    let routeData = await axios.get(`https://api.mapbox.com/optimized-trips/v1/mapbox/driving/${waypoints.map((waypoint: Waypoint) => (`${waypoint.lng},${waypoint.lat}`)).join(';')}?access_token=${ENVIRONMENT.mapbox.accessToken}`).then(({data}) => data);
+    let routeWay = polyline.decode(routeData.trips[0].geometry.toString()).map(el => ([el[1], el[0]]));
 
     return routeWay;
+  }
+
+  public async getRoute() {
+    const route = await WaypointController.createRoute(this._waypoints);
+
+    WaypointController.drawRoute(this._map, route);
+
+    return route;
   }
 }
