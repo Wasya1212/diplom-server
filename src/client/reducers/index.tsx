@@ -13,7 +13,8 @@ export default function(state = initialState, action) {
     case "AUTHENTICATE": {
       return {
         ...state,
-        auth_token: action.payload
+        auth_token: action.payload.auth_token,
+        web_socket: action.payload.web_socket
       };
     } break;
     case "CHOOSE_PROJECT": {

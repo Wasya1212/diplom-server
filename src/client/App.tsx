@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import io from 'socket.io-client';
+
 import mapboxgl from 'mapbox-gl';
 
 import { Greeter } from "./components/Greeter";
@@ -16,6 +18,8 @@ import { connect } from "react-redux";
 
 import axios from "axios";
 
+const ENDPOINT = "http://127.0.0.1:5000";
+
 class App extends Component<any, {}> {
   mapContainer: any;
 
@@ -28,12 +32,18 @@ class App extends Component<any, {}> {
       const authResponse: any = await axios.post('/authenticate', {});
       const {user, token} = authResponse.data;
 
+      const socket = io(ENDPOINT);
+
+      socket.on('connect', () => {
+        console.log("SOCKET CONNECTED");
+      })
+
       const userProjectsResponse: any = await axios.get('/user/projects');
       user.projects = userProjectsResponse.data;
 
       this.props.addUser(user);
       this.props.chooseProject(user.projects[0]);
-      this.props.authenticate(token);
+      this.props.authenticate({auth_token: token, web_socket: socket});
 
       if (authResponse.data == {} || authResponse.data == "") {
         this.props.addUser(null);
@@ -128,8 +138,8 @@ function mapDispatchToProps(dispatch) {
     chooseProject: (project) => {
       dispatch({ type: "CHOOSE_PROJECT", payload: project })
     },
-    authenticate: (token) => {
-      dispatch({ type: "AUTHENTICATE", payload: token });
+    authenticate: (authData) => {
+      dispatch({ type: "AUTHENTICATE", payload: authData });
     }
   };
 }

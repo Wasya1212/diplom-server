@@ -4,6 +4,7 @@ import WorkerComponent from "./feed-workers-component";
 import OrderComponent from "./feed-orders-component";
 import RouteComponent from "./feed-routes-component";
 import { StatisticComponent } from "./feed-statistics-component";
+import DriveComponent from "./feed-drive-component";
 import WarehouseComponent from "./feed-warehouse-component";
 
 interface Item {
@@ -83,7 +84,8 @@ const NAVIGATION_ITEMS: Item[] = [
   { to: 'statistic', title: 'statistic', component: <StatisticComponent /> },
   { to: 'routes', title: 'routes', component: <RouteComponent /> },
   { to: 'orders', title: 'orders', component: <OrderComponent /> },
-  { to: 'warehouse', title: 'warehouse', component: <WarehouseComponent /> }
+  { to: 'warehouse', title: 'warehouse', component: <WarehouseComponent /> },
+  { to: 'drive', title: 'drive', component: <DriveComponent /> }
 ];
 
 interface FeedState {

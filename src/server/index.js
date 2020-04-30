@@ -15,7 +15,11 @@ const HttpsServer = Https.createServer(Server.callback());
 HttpServer.listen(HTTP_PORT, listeningReporter);
 // HttpsServer.listen(HTTPS_PORT, HOST, listeningReporter);
 
+const io = require('socket.io')(HttpServer);
+const WebSockets = require('./socket')(io);
+
 Mongoose.connect();
+WebSockets.connect()
 
 process.on('exit', (code) => {
    Mongoose.closeConnection();

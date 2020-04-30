@@ -28,7 +28,8 @@ export interface RouteParameters {
   plannedRoute?: string,
   waypoints?: Coordinate[],
   currentRoute?: string,
-  timeline?: Timeline[]
+  timeline?: Timeline[],
+  status?: string
 }
 
 export class Route {
@@ -45,7 +46,8 @@ export class Route {
       plannedRoute: parameters.plannedRoute,
       waypoints: parameters.waypoints,
       currentRoute: parameters.currentRoute,
-      timeline: parameters.timeline
+      timeline: parameters.timeline,
+      status: parameters.status
     };
   }
 
@@ -83,6 +85,10 @@ export class Route {
 
   public get timeline(): Timeline[] {
     return this._parameters.timeline || [];
+  }
+
+  public get status(): string | undefined {
+    return this._parameters.status;
   }
 
   public get parameters(): RouteParameters | undefined {

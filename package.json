@@ -41,7 +41,7 @@
     "koa-session2-mongostore": "0.0.5",
     "koa-static": "^5.0.0",
     "loaders.gl": "^0.3.5",
-    "mapbox-gl": "^1.7.0",
+    "mapbox-gl": "^1.10.0",
     "mapbox-gl-directions": "^3.0.3",
     "mongodb-autoincrement": "^1.0.1",
     "mongoose": "^5.8.9",
@@ -58,6 +58,8 @@
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
     "redux": "^4.0.5",
+    "socket.io": "^2.3.0",
+    "socket.io-client": "^2.3.0",
     "three": "^0.113.2",
     "uuid": "^7.0.3",
     "winston": "^3.2.1"

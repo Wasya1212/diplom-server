@@ -27,7 +27,7 @@ class Login extends Component<any, LoginState> {
     console.log("USER data:", user);
 
     this.props.onAddUser(user);
-    this.props.authenticate(user.token);
+    this.props.authenticate({auth_token: user.token});
 
     if (user.projects && user.projects.length > 0) {
       this.props.chooseProject(user.projects[0]);
