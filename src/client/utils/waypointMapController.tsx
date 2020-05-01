@@ -4,6 +4,8 @@ import { ENVIRONMENT } from "../environment";
 import axios from "axios";
 const polyline = require('@mapbox/polyline');
 
+import mapboxgl from "mapbox-gl";
+
 export interface Waypoint {
   lat: number,
   lng: number
@@ -177,11 +179,23 @@ export class WaypointController {
     this._sourceId = 'source-' + 'checkpoint';
 
     WaypointController.addIcon(this._map, { name: this._waypointIconStyle.name }, 'checkpoint', this._waypoints);
+
+    this._map.on('mouseenter', 'layer-' + 'checkpoint', () => {
+      this._map.getCanvas().style.cursor = 'pointer'
+    });
+
+    this._map.on('mouseleave', 'layer-' + 'checkpoint', () => {
+      this._map.getCanvas().style.cursor = ''
+    });
   }
 
   public static clearRoute(map: any) {
-    map.removeLayer('layer-route');
-    map.removeSource('source-route');
+    try {
+      map.removeLayer('layer-route');
+      map.removeSource('source-route');
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   public static drawRoute(map: any, route: string) {
@@ -200,7 +214,7 @@ export class WaypointController {
         features: [
           {
             type: 'Feature',
-            properties: {},
+            properties: { },
             geometry: {
               coordinates: route,
               type: 'LineString'

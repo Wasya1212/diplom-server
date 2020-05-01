@@ -6,6 +6,8 @@ import { createStore } from "redux";
 
 import reducer from "./reducers/index";
 
+import "./public/index.sass";
+
 import App from "./App";
 
 const AppContainer = document.querySelector('#app');

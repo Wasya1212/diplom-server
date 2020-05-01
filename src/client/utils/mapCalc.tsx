@@ -21,8 +21,8 @@ export function parseToCoordsArray(coord: Coordinates): number[] {
 
 export function parseToCoordsObject(coord: number[]): Coordinates {
   return {
-    lat: coord[0],
-    lng: coord[1]
+    lng: coord[0],
+    lat: coord[1]
   }
 }
 

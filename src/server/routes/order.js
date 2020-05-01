@@ -32,6 +32,30 @@ router.get('/orders', async (ctx) => {
   ctx.body = responseOrders;
 });
 
+router.get('/order', async (ctx) => {
+  const {projectId} = ctx.request.query;
+  const query = {...ctx.request.query};
+
+  delete query.projectId;
+
+  if (query.id) {
+    query._id = query.id;
+    delete query.id;
+  }
+
+  const order = await Order.findOne({ project: projectId, ...query });
+  const operator = await User.findById(order.operator);
+  const workers = await User.find({ _id: { $in: order.workers } });
+  const products = await Product.find({ _id: { $in: order.products.map(p => p.productId) } });
+
+  const completeOrder = Object.assign(order._doc, {
+    operator, workers,
+    products: products.map((p, index) => ({ product: p, count: order.products[index].count }))
+  });
+
+  ctx.body = completeOrder;
+});
+
 router.post('/order/create', async (ctx) => {
   const order = await Order.create({
     project: ctx.request.body.projectId,

@@ -179,7 +179,8 @@ export interface MapPropsRoute {
 }
 
 export interface MapPropsCars {
-  position: Coordinates
+  position: Coordinates,
+  rotation?: number
 }
 
 export interface MapState {
@@ -195,12 +196,6 @@ export class MapComponent extends Component<MapProps, MapState> {
 
   constructor(props) {
     super(props);
-
-    // this.setState({
-    //   // _map: {},
-    //   checkedCoordinates: { lat: 0, lng: 0 },
-    //   checkpoints: []
-    // })
 
     this._carModel = new ModelLoader({
       model: 'models/RS7.obj',
@@ -226,13 +221,21 @@ export class MapComponent extends Component<MapProps, MapState> {
     }
   }
 
+  private changeCarRotation(car: Object3DMapController, rotation: number) {
+    try {
+      car.object.setRotation(rotation);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   private createCarLayer(car: MapPropsCars, id: string): Object3DLayer {
     return new Object3DLayer({
       model: this._carModel,
       id: id,
       type: 'custom',
       coordinates: car.position,
-      scale: 20
+      scale: 0.2
     })
   }
 
@@ -263,6 +266,7 @@ export class MapComponent extends Component<MapProps, MapState> {
       currentStateCars.forEach((car: Object3DMapController, index: number) => {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+          this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
         }
       });
 
@@ -286,6 +290,7 @@ export class MapComponent extends Component<MapProps, MapState> {
       newPropsCars.forEach((car: MapPropsCars, index: number) => {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+          this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
         }
       });
 
@@ -305,9 +310,14 @@ export class MapComponent extends Component<MapProps, MapState> {
       currentStateCars.forEach((car: Object3DMapController, index: number) => {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
+          this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
         }
       });
     }
+
+    currentStateCars.forEach((car, index) => {
+      this.state._map.moveLayer(`3d-model-${index + 1}`);
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
