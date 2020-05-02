@@ -126,6 +126,7 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
     if (prevState.checkpoints != this.state.checkpoints) {
       if (this.state._map && this.state._map != undefined && this.state.checkpoints) {
         if (this.state.checkpoints && this.state.checkpoints.length < 2) {
+          WaypointController.clearRoute(this.state._map);
           return;
         }
 
@@ -207,15 +208,22 @@ interface RouteComponentState {
   addRouteModalIsOpen: boolean,
   currentZoom: number,
   currentPosition: Coordinates,
-  routes: Route[]
+  routes: Route[],
+  activeDrivers: any[],
+  carsSize: number
 }
 
 class RouteComponent extends Component<any, RouteComponentState> {
+  private _socket = this.props.store.web_socket;
+
   state = {
     currentPosition: { lng: 24.021847295117936, lat: 49.85496650618947 },
     currentZoom: 15,
     addRouteModalIsOpen: false,
-    routes: []
+    routes: [],
+    activeDrivers: [],
+    cars: [],
+    carsSize: 1
     // cars: [
     //   { position: { lng: 24.021847295117936, lat: 49.85496650618947 } },
     //   { position: { lng: 24.027847295117936, lat: 49.85896650618947 } },
@@ -225,6 +233,39 @@ class RouteComponent extends Component<any, RouteComponentState> {
     //   { position: { lng: 24.001847295117936, lat: 49.87296650618947 } },
     //   { position: { lng: 24.041847295117936, lat: 49.87296650618947 } }
     // ]
+  }
+
+  constructor(props) {
+    super(props);
+
+    this._socket.emit('join', this.props.store.current_project._id);
+    this._socket.on('join', result => {
+      console.log(result);
+    });
+    this._socket.on('drive', driveData => {
+      const driverIndex = this.state.activeDrivers.findIndex((d: any) => d.workerId == driveData.workerId);
+
+      if (driverIndex >= 0) {
+        let updatedDriveInfo: any[] = this.state.activeDrivers;
+        updatedDriveInfo[driverIndex] = driveData;
+
+        this.setState({ activeDrivers: updatedDriveInfo });
+      } else {
+        this.setState({
+          activeDrivers: [...this.state.activeDrivers, driveData],
+        });
+      }
+    });
+  }
+
+  onMapZoom = (map) => {
+    if (map.getZoom() >= 16) {
+      this.setState({ carsSize: 0.2 });
+    } else if (map.getZoom() >= 13.5) {
+      this.setState({ carsSize: 2.2 });
+    } else if (map.getZoom() >= 12.2) {
+      this.setState({ carsSize: 10 });
+    }
   }
 
   componentDidMount() {
@@ -260,10 +301,14 @@ class RouteComponent extends Component<any, RouteComponentState> {
           }
         </ul>
         <Map
+          onZoom={this.onMapZoom}
           center={this.state.currentPosition}
           onClick={this.handleMapClick}
           zoom={this.state.currentZoom}
-          // cars={this.state.cars}
+          cars={this.state.activeDrivers.map((d: any) => ({
+            position: d.timeline.waypoint,
+            size: this.state.carsSize
+          }))}
         />
         <button onClick={this.showAddRouteModal}>Add Route</button>
         <Modal isOpen={this.state.addRouteModalIsOpen} onClose={this.closeAddRouteModal}>

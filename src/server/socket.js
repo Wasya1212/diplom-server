@@ -24,6 +24,7 @@ class WebSockets {
         //   },
         //   { new: true }
         // );
+        socket.broadcast.to(`project: ${driveData.projectId.toString()}`).emit('drive', driveData);
         console.log(driveData);
       });
     });

@@ -162,6 +162,7 @@ class MapController extends Component<MapControllerProps, any> {
 export interface MapProps {
   onClick?: (map: any) => void,
   onLoad?: (map: any) => void,
+  onZoom?: (map: any) => void,
   center?: Coordinates,
   zoom?: number,
   pitch?: number,
@@ -180,7 +181,8 @@ export interface MapPropsRoute {
 
 export interface MapPropsCars {
   position: Coordinates,
-  rotation?: number
+  rotation?: number,
+  size?: number
 }
 
 export interface MapState {
@@ -229,6 +231,14 @@ export class MapComponent extends Component<MapProps, MapState> {
     }
   }
 
+  private changeCarSize(car: Object3DMapController, size: number) {
+    try {
+      car.object.setScale(size);
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   private createCarLayer(car: MapPropsCars, id: string): Object3DLayer {
     return new Object3DLayer({
       model: this._carModel,
@@ -267,6 +277,7 @@ export class MapComponent extends Component<MapProps, MapState> {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
           this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
+          this.changeCarSize(currentStateCars[index], newPropsCars[index].size || 0.2);
         }
       });
 
@@ -291,6 +302,7 @@ export class MapComponent extends Component<MapProps, MapState> {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
           this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
+          this.changeCarSize(currentStateCars[index], newPropsCars[index].size || 0.2);
         }
       });
 
@@ -311,6 +323,7 @@ export class MapComponent extends Component<MapProps, MapState> {
         if (currentStateCars[index].object.coordinates != newPropsCars[index].position) {
           this.changeCarCoordinates(currentStateCars[index], newPropsCars[index].position);
           this.changeCarRotation(currentStateCars[index], newPropsCars[index].rotation || 0);
+          this.changeCarSize(currentStateCars[index], newPropsCars[index].size || 0.2);
         }
       });
     }
@@ -455,7 +468,7 @@ export class MapComponent extends Component<MapProps, MapState> {
   render() {
     return (
       <div id="map-container">
-        <MapController {...this.props} onClick={this.onClick} onLoad={this.onLoad}>{this.props.children}</MapController>
+        <MapController {...this.props} onZoom={this.props.onZoom} onClick={this.onClick} onLoad={this.onLoad}>{this.props.children}</MapController>
         {
           this.props.router
             ? <RoutingForm

@@ -31,6 +31,7 @@ interface DriveState {
 
 class DriveComponent extends Component<any, DriveState> {
   private _timer;
+  private _drivetimer;
   private _socket = this.props.store.web_socket;
 
   state = {
@@ -38,15 +39,7 @@ class DriveComponent extends Component<any, DriveState> {
     selectedRoute: undefined,
     selectedOrder: undefined,
     _map: undefined,
-    cars: [
-      // { position: { lng: 24.021847295117936, lat: 49.85496650618947 } },
-      // { position: { lng: 24.027847295117936, lat: 49.85896650618947 } },
-      // { position: { lng: 24.015847295117936, lat: 49.86296650618947 } },
-      // { position: { lng: 24.031847295117936, lat: 49.86696650618947 } },
-      // { position: { lng: 24.011847295117936, lat: 49.87296650618947 } },
-      // { position: { lng: 24.001847295117936, lat: 49.87296650618947 } },
-      // { position: { lng: 24.041847295117936, lat: 49.87296650618947 } }
-    ],
+    cars: [],
     drivingMode: false,
     mapCenter: undefined,
     mapBearing: undefined,
@@ -145,13 +138,27 @@ class DriveComponent extends Component<any, DriveState> {
         mapZoom: 20,
         mapBearing: -driveImitation[startPosition].angle,
         mapPitch: 65
-    });
-  }, 300);
+      });
+    }, 300);
+
+    this._drivetimer = setInterval(() => {
+      this._socket.emit('drive', {
+        route: this.state.selectedRoute,
+        projectId: this.props.store.current_project._id,
+        timeline: {
+          waypoint: points[currentIndex],
+          speed: 45,
+          date: Date.now()
+        },
+        workerId: this.props.store.user._id
+      });
+    }, 10000);
   }
 
   private endDriveImitation = () => {
     try {
       clearInterval(this._timer);
+      clearInterval(this._drivetimer);
       WaypointController.clearRoute(this.state._map);
       this.setState({ cars: [], drivingMode: false });
     } catch (err) {
