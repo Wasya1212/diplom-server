@@ -8,6 +8,7 @@ const { Route, Order, User } = require('../models');
 const router = new Router();
 
 router.get('/routes', async (ctx) => {
+  console.log("HER", ctx.request.query.projectId)
   const routes = await Route.find({ project: ctx.request.query.projectId });
 
   const responseRoutes = [];

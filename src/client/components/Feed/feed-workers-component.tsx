@@ -22,11 +22,12 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
   constructor(props) {
     super(props);
 
+    console.log("PROPS", this.props.store)
+
     this.workerIdInputRef = React.createRef<HTMLInputElement>();
   }
 
   componentDidMount() {
-    console.log({ title: 'authorization', value: this.props.store })
     Worker
       .getWorkers(
         this.props.store.current_project._id,

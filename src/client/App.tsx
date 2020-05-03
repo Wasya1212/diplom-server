@@ -9,6 +9,7 @@ import { Map } from "./components/Map";
 import Header from "./components/Header";
 import Login from "./components/Login";
 import Feed from "./components/Feed";
+import Project from "./components/Project";
 import { SignUp } from "./components/Signup";
 import { Profile } from "./components/Profile";
 
@@ -40,6 +41,8 @@ class App extends Component<any, {}> {
 
       const userProjectsResponse: any = await axios.get('/user/projects');
       user.projects = userProjectsResponse.data;
+
+      console.log("DA", user.projects)
 
       this.props.addUser(user);
       this.props.chooseProject(user.projects[0]);
@@ -115,6 +118,9 @@ class App extends Component<any, {}> {
               </Route>
               <Route path="/profile">
                 <Profile />
+              </Route>
+              <Route path="/project">
+                <Project />
               </Route>
             </Switch>
           </BrowserRouter>

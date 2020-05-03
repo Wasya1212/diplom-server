@@ -1,5 +1,9 @@
 import React, { Component } from "react";
 
+import { Redirect } from "react-router-dom";
+
+import { connect } from "react-redux";
+
 import WorkerComponent from "./feed-workers-component";
 import OrderComponent from "./feed-orders-component";
 import RouteComponent from "./feed-routes-component";
@@ -102,6 +106,14 @@ class Feed extends Component<any, any> {
   }
 
   render() {
+    console.log("CURENT PROJ", this.props.store.current_project);
+
+    if (!this.props.store.current_project) {
+      return (
+        <Redirect to="project" />
+      );
+    }
+
     return (
       <main className="feed">
         <Navigation onChoose={this.chooseNavigationItem} items={NAVIGATION_ITEMS} />
@@ -117,4 +129,10 @@ class Feed extends Component<any, any> {
   }
 }
 
-export default Feed;
+function mapStateToProps(state) {
+  return {
+    store: state
+  }
+}
+
+export default connect(mapStateToProps, () => {})(Feed);

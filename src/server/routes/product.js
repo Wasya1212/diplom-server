@@ -12,7 +12,7 @@ router.all('/*', async (ctx, next) => {
 
   if (projectId) {
     const project = await Project.findOne({
-      owner: ctx.state.user._id,
+      users: ctx.state.user._id,
       _id: projectId
     });
 

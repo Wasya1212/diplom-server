@@ -145,8 +145,7 @@ router.all('/*', async (ctx, next) => {
 });
 
 router.get('/user/projects', async (ctx, next) => {
-  console.log("USDA", ctx.state.user)
-  ctx.body = await Project.find({ owner: ctx.state.user._id });
+  ctx.body = await Project.find({ users: ctx.state.user._id });
 });
 
 router.get('/profile', async (ctx) => {
