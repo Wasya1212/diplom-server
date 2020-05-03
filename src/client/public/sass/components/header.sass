@@ -35,12 +35,16 @@
     position: relative
     list-style-type: none
     button
+      font-family: sans-serif
       padding: .5rem 1rem
       border-radius: 10px
       border: 1px solid #909090
       background-color: #efefef
       cursor: pointer
       outline: none
+      white-space: nowrap
+      &:hover
+        background-color: #e0e0e0
   &__projects-list
     position: relative
     list-style-type: none
@@ -79,7 +83,7 @@
     display: flex
     justify-content: center
     align-items: center
-    margin: 0 1rem
+    margin-right: 1rem
     user-select: none
     &__photo
       position: relative
