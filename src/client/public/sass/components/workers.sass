@@ -31,10 +31,15 @@
     border-top: 1px solid #909090
     border-bottom: 1px solid #909090
     box-sizing: border-box
-  &__item:first-child
+  &__title
     text-align: center
     font-weight: bold
     text-transform: capitalize
+    &:hover
+      cursor: default !important
+      user-select: none !important
+      &>div
+        background-color: #fff !important
   &__item
     width: 100%
     display: table-row
