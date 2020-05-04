@@ -1,0 +1,37 @@
+.routes-section
+  ul
+    list-style-type: none
+    margin: 0
+    padding: 0
+  &>div
+    display: -webkit-flex
+    display: -ms-flex
+    display: flex
+    justify-content: space-around
+    flex-direction: row-reverse
+    flex-wrap: wrap
+  .routes-map
+    width: calc(100% - 200px)
+  .routes__control
+    width: 100%
+  .routes-list-container
+    border: 2px solid #909090
+    height: calc(100vh - 120px)
+    width: 200px
+    box-sizing: border-box
+  .routes-list
+    list-style-type: none
+    &__item
+      padding: .5rem 1rem
+      cursor: pointer
+      width: 100%
+      border-bottom: 1px solid #909090
+      background-color: #fff
+      &:hover
+        background-color: #eee
+    .route-date
+      font-family: monospace
+      text-align: right
+      display: block
+    .route-workers
+      text-transform: capitalize

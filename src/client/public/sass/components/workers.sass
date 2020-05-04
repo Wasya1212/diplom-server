@@ -1,57 +1,6 @@
-.workers__control
-  height: auto
-  width: 100%
-  display: -webkit-flex
-  display: -ms-flex
-  display: flex
-  justify-content: flex-end
-  align-items: center
-  padding: .5rem 1rem
-  box-sizing: border-box
-  button
-    padding: .5rem 1rem
-    border-radius: 10px
-    border: 1px solid #909090
-    outline: none
-    background-color: #eee
-    cursor: pointer
-    &:hover
-      background-color: #e0e0e0
-
 .workers__list
   position: relative
   width: 100%
   font-family: Calibri
-  ul
-    list-style-type: none
-    padding: 0
-    margin: 0
-    display: table
-    width: 100%
-    border-top: 1px solid #909090
-    border-bottom: 1px solid #909090
-    box-sizing: border-box
-  &__title
-    text-align: center
-    font-weight: bold
+  .worker-name
     text-transform: capitalize
-    &:hover
-      cursor: default !important
-      user-select: none !important
-      &>div
-        background-color: #fff !important
-  &__item
-    width: 100%
-    display: table-row
-    cursor: pointer
-    &:hover
-      &>div
-        background-color: #eee
-    &>div
-      padding: .5rem
-      display: table-cell
-      min-width: 150px
-      box-sizing: border-box
-      border: 1px solid #909090
-    .worker-name
-      text-transform: capitalize

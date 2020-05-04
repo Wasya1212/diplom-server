@@ -46,7 +46,6 @@ router.get('/login', async (ctx, next) => {
     }
   });
 }, async (ctx) => {
-  // console.log("SESSION DATA:", ctx.session.token);
   ctx.type = "html";
   ctx.body = fs.readFileSync(path.resolve(__dirname, '../../../dist/public/html/index.html'));
 });
@@ -57,15 +56,12 @@ router.get('/sign-up', async (ctx, next) => {
 });
 
 router.post('/authenticate', async (ctx, next) => {
-  console.log('axios')
   await passport.checkAuthentication(ctx, next, {
     success: (user) => {
-      console.log('finded user', user)
       ctx.status = 200;
       ctx.body = user;
     },
     failure: () => {
-      console.log('no finded user')
       ctx.throw(401, 'Unauthorized');
     },
     withoutSession: true
@@ -95,8 +91,6 @@ router.post('/sign-up', async (ctx) => {
     isWorker
   } = ctx.request.body;
 
-  console.log("is worker", isWorker);
-
   const newUser = await User.create({
     name: { fName, mName, lName },
     email,
@@ -114,7 +108,7 @@ router.get('/ss', async (ctx, next) => {
       ctx.body = "hello " + user.email;
     } else {
       ctx.body = "No such user";
-      console.log("err", err) // получаю вывод только здесь
+      console.log("err", err)
     }
   } )(ctx, next);
 });
@@ -122,19 +116,16 @@ router.get('/ss', async (ctx, next) => {
 router.get('/logout', async (ctx, next) => {
   await passport.logout(ctx);
 
-  console.log('REDIRECT')
   ctx.redirect('/login');
   await next();
 });
 
 router.all('/*', async (ctx, next) => {
-  console.log("all")
   await passport.checkAuthentication(ctx, next, {
     success: () => {
-      console.log("AUTH!!!!!!")
+
     },
     failure: () => {
-      console.log("NON AUTH")
       if (ctx.method === "GET") {
         ctx.redirect('/login');
       } else {
@@ -205,7 +196,6 @@ router.post('/worker/create', async (ctx) => {
 });
 
 router.post('/project/create', async (ctx) => {
-  console.log(ctx.state.user.id);
   const newProject = await Project.create({
     owner: ctx.state.user.id,
     name: ctx.request.body.name,

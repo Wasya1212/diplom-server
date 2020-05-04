@@ -293,24 +293,53 @@ class RouteComponent extends Component<any, RouteComponentState> {
   render() {
     return (
       <div>
-        <ul>
-          {
-            ...this.state.routes.map((route: Route) => (
-              <li>{`${route.date} ${route.users.map(user => new Worker(user).name).join(', ')}`}</li>
-            ))
-          }
-        </ul>
-        <Map
-          onZoom={this.onMapZoom}
-          center={this.state.currentPosition}
-          onClick={this.handleMapClick}
-          zoom={this.state.currentZoom}
-          cars={this.state.activeDrivers.map((d: any) => ({
-            position: d.timeline.waypoint,
-            size: this.state.carsSize
-          }))}
-        />
-        <button onClick={this.showAddRouteModal}>Add Route</button>
+        <article className="control-panel routes__control">
+          <menu>
+            <div>
+              <input id="current-routes-checkbox" name="routes" type="checkbox" />
+              <label htmlFor="current-routes-checkbox">Show current routes</label>
+            </div>
+            <div>
+              <input id="current-routes-plannedRoute" name="plannedRoute" type="checkbox" />
+              <label htmlFor="current-routes-plannedRoute">Show planned route</label>
+            </div>
+            <div>
+              <input id="current-routes-waypoints" name="waypoint" type="checkbox" />
+              <label htmlFor="current-routes-waypoints">Show waypoints</label>
+            </div>
+          </menu>
+          <button onClick={this.showAddRouteModal}>Add Route</button>
+        </article>
+        <article className="routes-list-container">
+          <ul className="routes-list">
+            {
+              ...this.state.routes.map((route: Route) => (
+                <li className="routes-list__item">
+                  <span className="route-date">{(route.date || '').toString().slice(0, 10)}</span>
+                  <ul className="route-workers">
+                    {
+                      ...route.users.map(user => (
+                        <li>{new Worker(user).name}</li>
+                      ))
+                    }
+                  </ul>
+                </li>
+              ))
+            }
+          </ul>
+        </article>
+        <article className="routes-map">
+          <Map
+            onZoom={this.onMapZoom}
+            center={this.state.currentPosition}
+            onClick={this.handleMapClick}
+            zoom={this.state.currentZoom}
+            cars={this.state.activeDrivers.map((d: any) => ({
+              position: d.timeline.waypoint,
+              size: this.state.carsSize
+            }))}
+          />
+        </article>
         <Modal isOpen={this.state.addRouteModalIsOpen} onClose={this.closeAddRouteModal}>
           <AddRouteForm authToken={this.props.store.auth_token} projectId={this.props.store.current_project._id} />
         </Modal>

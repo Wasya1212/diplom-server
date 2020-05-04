@@ -1,0 +1,38 @@
+.routes-list
+  display: -webkit-flex
+  display: -ms-flex
+  display: flex
+  justify-content: space-around
+  align-items: flex-start
+  flex-wrap: wrap
+  .route-info
+    cursor: pointer
+    border-radius: 10px
+    border: 1px solid #909090
+    margin: 1rem
+    height: auto
+    width: 300px
+    background-color: #fff
+    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.12)
+    &:hover
+      background-color: #eee
+    &__status
+      padding: 1rem
+      border-bottom: 1px solid #909090
+    &__workers-list
+      ul
+        list-style-type: none
+        margin: 0
+        padding: 0
+      &__item
+        padding: .5rem 1rem
+    &__date
+      border-top: 1px solid #909090
+      text-align: center
+      font-family: monospace
+      padding: 1rem
+
+.drive-section
+  min-height: calc(100vh - 120px)
+  &>div
+    height: calc(100vh - 120px)

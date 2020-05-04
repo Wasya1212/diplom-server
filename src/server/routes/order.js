@@ -8,7 +8,10 @@ const { Order, Project, Product, User } = require('../models');
 const router = new Router();
 
 router.get('/orders', async (ctx) => {
-  const orders = await Order.find({ project: ctx.request.query.projectId });
+  const query = {...ctx.request.query};
+  delete query.projectId;
+
+  const orders = await Order.find({ project: ctx.request.query.projectId, ...query });
 
   const responseOrders = [];
 

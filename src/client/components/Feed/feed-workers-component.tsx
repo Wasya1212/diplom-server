@@ -91,15 +91,15 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
   render() {
     return (
       <div className="workers">
-        <article className="workers__control">
+        <article className="control-panel workers__control">
           <button className="add-worker-btn" onClick={this.showModal}>Add worker</button>
         </article>
         <article className="workers__list">
-          <ul>
+          <ul className="table">
             {
               this.state.workers.length > 0
                 ? (
-                  <li className="workers__list__item workers__list__title">
+                  <li className="table__item table__title workers__list__item workers__list__title">
                     <div>name</div>
                     <div>email</div>
                     <div>address</div>
@@ -113,7 +113,7 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
             }
             {
               ...this.state.workers.map((worker: Worker) => (
-                <li key={`worker-${worker.id}`} className={`workers__list__item workers__list__worker-${worker.id}`}>
+                <li key={`worker-${worker.id}`} className={`table__item workers__list__item workers__list__worker-${worker.id}`}>
                   <div className="worker-name">{worker.name}</div>
                   <div className="worker-email">{worker.email}</div>
                   <div className="worker-address">{worker.address}</div>

@@ -117,93 +117,95 @@ class Profile extends Component<any, any> {
     } else {
       return (
         <main>
-          {
-            (this.props.store.user.photo && !this.state.userPictureEdit)
-              ? <div>
-                  <img className="user-avatar-img" src={this.props.store.user.photo} />
-                  <button name="userPicture" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : (
-                  <form onSubmit={this.handleSubmit}>
-                    <input onChange={this.handleFileChange} name="photo" type="file" />
+          <div>
+            {
+              (this.props.store.user.photo && !this.state.userPictureEdit)
+                ? <div>
+                    <img className="user-avatar-img" src={this.props.store.user.photo} />
+                    <button name="userPicture" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : (
+                    <form onSubmit={this.handleSubmit}>
+                      <input onChange={this.handleFileChange} name="photo" type="file" />
+                      <button type="submit">upload</button>
+                    </form>
+                  )
+            }
+            {
+              (this.props.store.user.name && !this.state.usernameEdit)
+                ? <div>
+                    <p>{this.props.store.user.name.fName} {this.props.store.user.name.mName} {this.props.store.user.name.lName}</p>
+                    <button name="username" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.fName || "first name"} name="name.fName" type="text" />
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.mName || "middle name"} name="name.mName" type="text" />
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.lName || "last name"} name="name.lName" type="text" />
                     <button type="submit">upload</button>
                   </form>
-                )
-          }
-          {
-            (this.props.store.user.name && !this.state.usernameEdit)
-              ? <div>
-                  <p>{this.props.store.user.name.fName} {this.props.store.user.name.mName} {this.props.store.user.name.lName}</p>
-                  <button name="username" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.fName || "first name"} name="name.fName" type="text" />
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.mName || "middle name"} name="name.mName" type="text" />
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.name.lName || "last name"} name="name.lName" type="text" />
-                  <button type="submit">upload</button>
-                </form>
-          }
-          {
-            <div><p>Email: {this.props.store.user.email}</p></div>
-          }
-          {
-            (this.props.store.user.phone && !this.state.userPhoneEdit)
-              ? <div>
-                  <p>Phone: {this.props.store.user.phone}</p>
-                  <button name="userPhone" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.phone || "phone number"} name="phone" type="text" />
-                  <button type="submit">upload</button>
-                </form>
-          }
-          {
-            (this.props.store.user.personalInfo.birthDate && !this.state.userBirthEdit)
-              ? <div>
-                  <p>Birth date: {this.props.store.user.personalInfo.birthDate}</p>
-                  <button name="userBirth" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.birthDate} name="personalInfo.birthDate" type="date" />
-                  <button type="submit">upload</button>
-                </form>
-          }
-          {
-            (this.props.store.user.personalInfo.childrens && !this.state.userChildrensEdit)
-              ? <div>
-                  <p>Childrens: {this.props.store.user.personalInfo.childrens}</p>
-                  <button name="userChildrens" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.childrens || "childrens count"} name="personalInfo.childrensCount" type="number" />
-                  <button type="submit">upload</button>
-                </form>
-          }
-          {
-            (this.props.store.user.personalInfo.address && !this.state.userAddressEdit)
-              ? <div>
-                  <p>{this.props.store.user.personalInfo.address.country} {this.props.store.user.personalInfo.address.city} {this.props.store.user.personalInfo.address.street} {this.props.store.user.personalInfo.address.apartments}</p>
-                  <button name="userAddress" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.country : "country"} name="personalInfo.address.country" type="text" />
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.city : "city"} name="personalInfo.address.city" type="text" />
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.street : "street"} name="personalInfo.address.street" type="text" />
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.apartments : "apartments"} name="personalInfo.address.apartments" type="text" />
-                  <button type="submit">upload</button>
-                </form>
-          }
-          {
-            (this.props.store.user.workInfo.post && !this.state.userPostEdit)
-              ? <div>
-                  <p>{this.props.store.user.workInfo.post}</p>
-                  <button name="userPost" onClick={this.chooseEdit}>Edit</button>
-                </div>
-              : <form onSubmit={this.handleSubmit}>
-                  <input onChange={this.handleTextChange} placeholder={this.props.store.user.workInfo.post || "post"} name="workInfo.post" type="text" />
-                  <button type="submit">upload</button>
-                </form>
-          }
+            }
+            {
+              <div><p>Email: {this.props.store.user.email}</p></div>
+            }
+            {
+              (this.props.store.user.phone && !this.state.userPhoneEdit)
+                ? <div>
+                    <p>Phone: {this.props.store.user.phone}</p>
+                    <button name="userPhone" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.phone || "phone number"} name="phone" type="text" />
+                    <button type="submit">upload</button>
+                  </form>
+            }
+            {
+              (this.props.store.user.personalInfo.birthDate && !this.state.userBirthEdit)
+                ? <div>
+                    <p>Birth date: {this.props.store.user.personalInfo.birthDate}</p>
+                    <button name="userBirth" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.birthDate} name="personalInfo.birthDate" type="date" />
+                    <button type="submit">upload</button>
+                  </form>
+            }
+            {
+              (this.props.store.user.personalInfo.childrens && !this.state.userChildrensEdit)
+                ? <div>
+                    <p>Childrens: {this.props.store.user.personalInfo.childrens}</p>
+                    <button name="userChildrens" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.childrens || "childrens count"} name="personalInfo.childrensCount" type="number" />
+                    <button type="submit">upload</button>
+                  </form>
+            }
+            {
+              (this.props.store.user.personalInfo.address && !this.state.userAddressEdit)
+                ? <div>
+                    <p>{this.props.store.user.personalInfo.address.country} {this.props.store.user.personalInfo.address.city} {this.props.store.user.personalInfo.address.street} {this.props.store.user.personalInfo.address.apartments}</p>
+                    <button name="userAddress" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.country : "country"} name="personalInfo.address.country" type="text" />
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.city : "city"} name="personalInfo.address.city" type="text" />
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.street : "street"} name="personalInfo.address.street" type="text" />
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.address ? this.props.store.user.personalInfo.address.apartments : "apartments"} name="personalInfo.address.apartments" type="text" />
+                    <button type="submit">upload</button>
+                  </form>
+            }
+            {
+              (this.props.store.user.workInfo.post && !this.state.userPostEdit)
+                ? <div>
+                    <p>{this.props.store.user.workInfo.post}</p>
+                    <button name="userPost" onClick={this.chooseEdit}>Edit</button>
+                  </div>
+                : <form onSubmit={this.handleSubmit}>
+                    <input onChange={this.handleTextChange} placeholder={this.props.store.user.workInfo.post || "post"} name="workInfo.post" type="text" />
+                    <button type="submit">upload</button>
+                  </form>
+            }
+          </div>
         </main>
       );
     }

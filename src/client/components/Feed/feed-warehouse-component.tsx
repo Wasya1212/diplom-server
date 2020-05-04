@@ -105,15 +105,15 @@ class WarehouseComponent extends Component<any, WorkerComponentState> {
   render() {
     return (
       <div>
-        <article className="warehouse__control">
+        <article className="control-panel warehouse__control">
           <button onClick={this.showAddProductModal}>Add product</button>
         </article>
         <article className="products__list">
-          <ul>
+          <ul className="table">
             {
               this.state.products.length > 0
                 ? (
-                  <li className="workers__list__title">
+                  <li className="table__item table__title workers__list__title">
                     <div>code</div>
                     <div>name</div>
                     <div>category</div>
@@ -127,12 +127,12 @@ class WarehouseComponent extends Component<any, WorkerComponentState> {
             }
             {
               ...this.state.products.map((product: Product) => (
-                <li key={`product-${product.id}`} className={`products__list__product-${product.id}`}>
-                  <div>{product.code}</div>
-                  <div>{product.name}</div>
-                  <div>{product.category}</div>
-                  <div>{product.actualCount}</div>
-                  <div>{product.reserved}</div>
+                <li key={`product-${product.id}`} className={`table__item products__list__product-${product.id}`}>
+                  <div className="product-code">{product.code}</div>
+                  <div className="product-name">{product.name}</div>
+                  <div className="product-category">{product.category}</div>
+                  <div className="product-actialCount">{product.actualCount}</div>
+                  <div className="product-reserved">{product.reserved}</div>
                 </li>
               ))
             }

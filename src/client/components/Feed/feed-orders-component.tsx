@@ -328,20 +328,21 @@ class OrderComponent extends Component<any, OrderComponentState> {
   render() {
     return (
       <div>
-        <article className="orders__control">
+        <article className="control-panel orders__control">
           <button onClick={this.showAddOrderModal}>Add order</button>
         </article>
         <article className="orders__list">
-          <ul>
+          <ul className="table">
             {
               this.state.orders.length > 0
                 ? (
-                  <li className="orders__list__title">
+                  <li className="table__item table__title orders__list__title">
                     <div>number #</div>
                     <div>address</div>
                     <div>workers</div>
                     <div>products</div>
                     <div>delivery date</div>
+                    <div>description</div>
                     <div>operator</div>
                   </li>
                 )
@@ -351,14 +352,14 @@ class OrderComponent extends Component<any, OrderComponentState> {
             }
             {
               ...this.state.orders.map((order: Order) => (
-                <li key={`order-${order.id}`} className={`orders__list__product-${order.id}`}>
-                  <div>number #{order.number}</div>
-                  <div>address {order.address}</div>
-                  <div>workers {(order.workers || []).length}</div>
-                  <div>products {(order.products || []).length}</div>
-                  <div>delivery date {order.deliveryDate}</div>
-                  <div>description {order.description}</div>
-                  <div>operator { new Worker(order.operator || {}).name }</div>
+                <li key={`order-${order.id}`} className={`table__item orders__list__product-${order.id}`}>
+                  <div>#{order.number}</div>
+                  <div>{order.address}</div>
+                  <div>{(order.workers || []).length}</div>
+                  <div>{(order.products || []).length}</div>
+                  <div>{(order.deliveryDate || '').toString().slice(0, 10)}</div>
+                  <div>{order.description}</div>
+                  <div>{ new Worker(order.operator || {}).name }</div>
                 </li>
               ))
             }

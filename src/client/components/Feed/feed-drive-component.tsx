@@ -197,12 +197,14 @@ class DriveComponent extends Component<any, DriveState> {
       const route = this.state.selectedRoute || new Route({});
       return (
         <div>
-          <button onClick={this.deselectRoute}>Back</button>
-          {
-            this.state.drivingMode
-              ?<button onClick={this.endDriveImitation}>End drive</button>
-              : <button onClick={this.startDrive}>Start drive</button>
-          }
+          <article className="control-panel drive__control">
+            <button onClick={this.deselectRoute}>Back</button>
+            {
+              this.state.drivingMode
+                ?<button onClick={this.endDriveImitation}>End drive</button>
+                : <button onClick={this.startDrive}>Start drive</button>
+            }
+          </article>
           <Map
             center={this.state.mapCenter || route.waypoints[0]}
             markers={route.waypoints}
@@ -258,22 +260,23 @@ class DriveComponent extends Component<any, DriveState> {
 
     return (
       <div>
-        Hello drive
-        <section>
+        <section className="routes-list">
           {
             ...this.state.userRoutes.map((route: Route) => (
-              <article key={`route-${route.id}`} onClick={() => { this.selectRoute(route) }}>
-                <header>{route.status}</header>
-                <section>
+              <article className="route-info route-container" key={`route-${route.id}`} onClick={() => { this.selectRoute(route) }}>
+                <header className="route-info__status">
+                  <span className={route.status == "active" ? "active-span" : ""}>{route.status}</span>
+                </header>
+                <section className="route-info__workers-list">
                   <ul>
                     {
                       ...route.users.map((user: Worker) => (
-                        <li>{new Worker(user).name}</li>
+                        <li className="route-info__workers-list__item">{new Worker(user).name}</li>
                       ))
                     }
                   </ul>
                 </section>
-                <footer>{route.date}</footer>
+                <footer className="route-info__date">{(route.date || '').toString().slice(0, 10)}</footer>
               </article>
             ))
           }

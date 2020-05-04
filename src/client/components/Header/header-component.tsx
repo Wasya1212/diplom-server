@@ -59,7 +59,7 @@ class Header extends Component<any, {}> {
             <div className="header__profile__photo"><img src={this.props.store.user.photo} alt={this.props.store.user.name.fName} /></div>
           </section>
           <nav className={`header__navigation${this.state.navigationIsOpen ? '' : ' hidden'}`}>
-            <li className="header__navigation__item"><Link to="/">Profile</Link></li>
+            <li className="header__navigation__item"><Link to="/profile">Profile</Link></li>
             <li className="header__navigation__item"><Link to="/">Control panel</Link></li>
             <li className="header__navigation__item"><Link to="/settings">Settings</Link></li>
             <li className="header__navigation__item"><a href="logout">logout</a></li>

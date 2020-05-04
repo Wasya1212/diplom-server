@@ -89,6 +89,31 @@ export class Order {
     return this._parameters.number;
   }
 
+  public static async find(projectId: string, query: any, opts: OrderOptions = { connection: {} }): Promise<Order[]> {
+    let orders: Order[] = [];
+    let headers = {};
+
+    if (opts.connection && opts.connection.headers && Array.isArray(opts.connection.headers)) {
+      opts.connection.headers.forEach(header => {
+        headers[header.title] = header.value;
+      })
+    }
+
+    const response: any = await axios({
+      method: 'GET',
+      url: `orders?${Object.keys(query).map(o => `${o}=${query[o].toString()}`).join('&')}&projectId=${projectId}`,
+      headers: headers
+    });
+
+    try {
+      orders = response.data.map(order => new Order(order));
+    } catch (err) {
+      console.error(err);
+    }
+
+    return orders;
+  }
+
   public static async findById(projectId: string, orderId: string, opts: OrderOptions = { connection: {} }): Promise<Order> {
     let order: Order = new Order({});
     let headers = {};

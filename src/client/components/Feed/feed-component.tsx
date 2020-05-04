@@ -11,6 +11,8 @@ import { StatisticComponent } from "./feed-statistics-component";
 import DriveComponent from "./feed-drive-component";
 import WarehouseComponent from "./feed-warehouse-component";
 
+import { Order } from "../../utils/order";
+
 interface Item {
   to: string,
   title: string,
@@ -41,7 +43,7 @@ class Navigation extends Component<NavigationProps, NavigationState> {
   }
 
   chooseItem = (e) => {
-    this.setState({ currentItem: e.currentTarget.to });
+    this.setState({ currentItem: e.to });
 
     if (this.props.onChoose) {
       this.props.onChoose(e.to);
@@ -51,11 +53,14 @@ class Navigation extends Component<NavigationProps, NavigationState> {
   render() {
     return (
       <nav className="main-navigation">
-      {
-        ...this.props.items.map((item: Item) => (
-          <NavigationItem key={`${item.title}-nav-item`} checked={this.state.currentItem == item.to} to={item.to} onClick={this.chooseItem}>{item.title}</NavigationItem>
-        ))
-      }
+        <ul>
+        {
+          ...this.props.items.map((item: Item) => (
+            <NavigationItem key={`${item.title}-nav-item`} checked={(this.state.currentItem || '').toString() == item.to.toString()} to={item.to} onClick={this.chooseItem}>{item.title}</NavigationItem>
+          ))
+        }
+        </ul>
+        {this.props.children}
       </nav>
     );
   }
@@ -78,7 +83,7 @@ class NavigationItem extends Component<NavigationItemProps> {
 
   render() {
     return (
-      <div className={`main-navigation__item${this.props.checked ? ' checked' : ''}`} onClick={this.handleClick}>{this.props.children}</div>
+      <li className={`main-navigation__item${this.props.checked ? ' checked' : ''}`} onClick={this.handleClick}>{this.props.children}</li>
     );
   }
 }
@@ -93,21 +98,29 @@ const NAVIGATION_ITEMS: Item[] = [
 ];
 
 interface FeedState {
-  checkedNavigationItem: number
+  checkedNavigationItem: number,
+  activeOrders: Order[]
 }
 
 class Feed extends Component<any, any> {
   state = {
-    checkedNavigationItem: 0
+    checkedNavigationItem: 0,
+    activeOrders: []
   }
 
   chooseNavigationItem = (item: string) => {
     this.setState({ checkedNavigationItem: NAVIGATION_ITEMS.findIndex(nav_el => nav_el.to == item) });
   }
 
-  render() {
-    console.log("CURENT PROJ", this.props.store.current_project);
+  componentDidMount() {
+    Order
+      .find(this.props.store.current_project._id, { status: 'confirmed' })
+      .then((activeOrders: Order[]) => {
+        this.setState({ activeOrders });
+      });
+  }
 
+  render() {
     if (!this.props.store.current_project) {
       return (
         <Redirect to="project" />
@@ -116,7 +129,16 @@ class Feed extends Component<any, any> {
 
     return (
       <main className="feed">
-        <Navigation onChoose={this.chooseNavigationItem} items={NAVIGATION_ITEMS} />
+        <Navigation onChoose={this.chooseNavigationItem} items={NAVIGATION_ITEMS}>
+          <ul>
+            <h3 className="main-navigation__title">Latest Orders</h3>
+            {
+              ...this.state.activeOrders.map((order: Order) => (
+                <li className="main-navigation__item">#{order.number}<span className="active-span right"></span></li>
+              ))
+            }
+          </ul>
+        </Navigation>
         {
           ...NAVIGATION_ITEMS.map((item: Item, index: number) => (
             this.state.checkedNavigationItem == index
