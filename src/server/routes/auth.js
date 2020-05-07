@@ -12,30 +12,8 @@ const router = new Router();
 
 const jwtsecret = "mysecretkey";
 
-// router.post('/login', async(ctx, next) => {
-//   await passport.authenticate('local', function (err, user) {
-//     if (user == false) {
-//       ctx.body = "Login failed";
-//     } else {
-//       const payload = {
-//         id: user._id,
-//         email: user.email
-//       };
-//       console.log(payload)
-//
-//       const token = jwt.sign(payload, jwtsecret);
-//
-//       console.log("SECRET TOKEN:", token)
-//
-//       ctx.session.token = token;
-//
-//       ctx.body = {user: user, token: "JWT " + token};
-//     }
-//   })(ctx, next);
-// });
-
-
 router.post('/login', async (ctx) => {
+  console.log("SUKA BLYAT")
   await passport.login(ctx);
 });
 

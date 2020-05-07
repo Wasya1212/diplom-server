@@ -8,6 +8,16 @@ class WebSockets {
   connect() {
     this._io.on('connection', (socket) => {
 
+      socket.on('disconnect', async () => {
+        let room = Object.keys(socket.rooms)[1];
+
+        try {
+          socket.leave(room);
+        } catch (e) {
+          console.error(err);
+        }
+      });
+
       socket.on('join', projectId => {
         socket.join(`project: ${projectId.toString()}`, () => {
           socket.emit('join', 'Done!');
@@ -15,17 +25,17 @@ class WebSockets {
       });
 
       socket.on('drive', async (driveData) => {
-        // const updatedroute = await Route.update(
-        //   { projectId: driveData.projectId, driveData.route.id },
-        //   {
-        //     $push: {
-        //       timeline: driveData.timeline
-        //     }
-        //   },
-        //   { new: true }
-        // );
+        await Route.update(
+          { projectId: driveData.project, _id: driveData.route._parameters.id },
+          {
+            status: 'processing',
+            $push: {
+              timeline: driveData.timeline
+            }
+          },
+          { new: true }
+        );
         socket.broadcast.to(`project: ${driveData.projectId.toString()}`).emit('drive', driveData);
-        console.log(driveData);
       });
     });
   }

@@ -139,12 +139,12 @@ class WarehouseComponent extends Component<any, WorkerComponentState> {
           </ul>
         </article>
         <Modal isOpen={this.state.addProductModal} onClose={this.closeAddProductModal}>
-          <form onSubmit={this.addProduct}>
-            <input type="text" ref={this.productCodeInputRef} name="code" placeholder="Product code" />
-            <input type="text" ref={this.productCategoryInputRef} name="category" placeholder="Product category" />
-            <input type="text" ref={this.productNameInputRef} name="name" placeholder="Product name" />
-            <input type="text" ref={this.productCountInputRef} name="count" placeholder="Products count" />
-            <button>confirm</button>
+          <form className="form" onSubmit={this.addProduct}>
+            <p><input className="input" type="text" ref={this.productCodeInputRef} name="code" placeholder="Product code" /></p>
+            <p><input className="input" type="text" ref={this.productCategoryInputRef} name="category" placeholder="Product category" /></p>
+            <p><input className="input" type="text" ref={this.productNameInputRef} name="name" placeholder="Product name" /></p>
+            <p><input className="input" type="text" ref={this.productCountInputRef} name="count" placeholder="Products count" /></p>
+            <button className="button">confirm</button>
           </form>
         </Modal>
       </div>

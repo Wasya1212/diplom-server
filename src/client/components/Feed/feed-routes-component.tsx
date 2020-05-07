@@ -162,18 +162,19 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
   render() {
     return (
       <section>
-        <form onSubmit={this.addRoute}>
+        <form className="form" onSubmit={this.addRoute}>
           <header>
 
           </header>
           <section>
             <p>
-              <input ref={this.routeDeliveryDateInputRef} name="routeDate" type="date" />
+              <input className="input" ref={this.routeDeliveryDateInputRef} name="routeDate" type="date" />
             </p>
             <p>
+              <h4>Workers:</h4>
               {
                 ...this.state.ordersWorkersList.map((worker: Worker) => (
-                  <p key={`order-worker-checkbox-container-${worker.id}`}>
+                  <p className="checkbox" key={`order-worker-checkbox-container-${worker.id}`}>
                     <label className="order-worker-checkbox-label" htmlFor={`order-worker-checkbox-${worker.id}`}>{`${worker.name}`}</label>
                     <input onChange={this.onOrderWorkerCheckboxChange} value={worker.id} className="order-worker-checkbox-input" id={`order-worker-checkbox-${worker.id}`} type="checkbox" />
                   </p>
@@ -182,23 +183,26 @@ class AddRouteForm extends Component<AddRouteFormProps, AddRouteFormState> {
             </p>
           </section>
           <aside>
+            <h4>Waypoints:</h4>
             {
               ...this.state.ordersList.map((order: Order) => (
-                <p key={`order-checkbox-container-${order.id}`}>
+                <p className="checkbox" key={`order-checkbox-container-${order.id}`}>
                   <label className="order-checkbox-label" htmlFor={`order-checkbox-${order.id}`}>{`#${order.number} (${order.address})`}</label>
                   <input onChange={this.onOrderCheckboxChange} value={JSON.stringify(order.pointOnMap)} className="order-checkbox-input" id={`order-checkbox-${order.id}`} type="checkbox" />
                 </p>
               ))
             }
           </aside>
-          <button>Confirm</button>
+          <button className="button">Confirm</button>
         </form>
-        <Map
-          onLoad={this.onLoadMap}
-          center={this.state.mapCenter}
-          zoom={this.state.mapZoom}
-          markers={this.state.checkpoints}
-        />
+        <article className="form-map">
+          <Map
+            onLoad={this.onLoadMap}
+            center={this.state.mapCenter}
+            zoom={this.state.mapZoom}
+            markers={this.state.checkpoints}
+          />
+        </article>
       </section>
     );
   }
@@ -224,15 +228,6 @@ class RouteComponent extends Component<any, RouteComponentState> {
     activeDrivers: [],
     cars: [],
     carsSize: 1
-    // cars: [
-    //   { position: { lng: 24.021847295117936, lat: 49.85496650618947 } },
-    //   { position: { lng: 24.027847295117936, lat: 49.85896650618947 } },
-    //   { position: { lng: 24.015847295117936, lat: 49.86296650618947 } },
-    //   { position: { lng: 24.031847295117936, lat: 49.86696650618947 } },
-    //   { position: { lng: 24.011847295117936, lat: 49.87296650618947 } },
-    //   { position: { lng: 24.001847295117936, lat: 49.87296650618947 } },
-    //   { position: { lng: 24.041847295117936, lat: 49.87296650618947 } }
-    // ]
   }
 
   constructor(props) {
@@ -274,7 +269,7 @@ class RouteComponent extends Component<any, RouteComponentState> {
 
   async getAllRoutes() {
     this.setState({
-      routes: await Route.getRoutes(this.props.store.current_project._id)
+      routes: await Route.find(this.props.store.current_project._id, { status: 'processing' })
     });
   }
 
@@ -288,6 +283,14 @@ class RouteComponent extends Component<any, RouteComponentState> {
 
   closeAddRouteModal = () => {
     this.setState({ addRouteModalIsOpen: false });
+  }
+
+  goToSelectedRoute = (routeId: string) => {
+    const selectedRoute: any = this.state.activeDrivers.filter((info: any) => info.route._parameters.id == routeId)[0];
+
+    if (selectedRoute) {
+      this.setState({ currentPosition: selectedRoute.timeline.waypoint });
+    }
   }
 
   render() {
@@ -314,7 +317,7 @@ class RouteComponent extends Component<any, RouteComponentState> {
           <ul className="routes-list">
             {
               ...this.state.routes.map((route: Route) => (
-                <li className="routes-list__item">
+                <li onClick={() => { this.goToSelectedRoute(route.id || ''); }} className="routes-list__item">
                   <span className="route-date">{(route.date || '').toString().slice(0, 10)}</span>
                   <ul className="route-workers">
                     {

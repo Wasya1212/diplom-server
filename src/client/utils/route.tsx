@@ -95,6 +95,57 @@ export class Route {
     return this._parameters;
   }
 
+  public static async closeRoute(projectId: string, routeId: string, opts: RouteOptions = { connection: {} }): Promise<Route> {
+    let route: Route = new Route({});
+    let headers = {};
+
+    if (opts.connection && opts.connection.headers && Array.isArray(opts.connection.headers)) {
+      opts.connection.headers.forEach(header => {
+        headers[header.title] = header.value;
+      })
+    }
+
+    const response: any = await axios({
+      method: 'POST',
+      url: '/route/close',
+      headers: headers,
+      data: { projectId, routeId }
+    });
+
+    try {
+      route = new Route(response.data, opts);
+    } catch(err) {
+      throw new Error(err);
+    }
+
+    return route;
+  }
+
+  public static async find(projectId: string, query: any, opts: RouteOptions = { connection: {} }): Promise<Route[]> {
+    let routes: Route[] = [];
+    let headers = {};
+
+    if (opts.connection && opts.connection.headers && Array.isArray(opts.connection.headers)) {
+      opts.connection.headers.forEach(header => {
+        headers[header.title] = header.value;
+      })
+    }
+
+    const response: any = await axios({
+      method: 'GET',
+      url: `routes?${Object.keys(query).map(o => `${o}=${query[o].toString()}`).join('&')}&projectId=${projectId}`,
+      headers: headers
+    });
+
+    try {
+      routes = response.data.map(route => new Route(route));
+    } catch (err) {
+      console.error(err);
+    }
+
+    return routes;
+  }
+
   public static async addRoute(
     projectId: string,
     routeDetails: Route | RouteParameters,
@@ -115,8 +166,6 @@ export class Route {
       headers: headers,
       data: { projectId, ...(routeDetails instanceof Route ? routeDetails.parameters : routeDetails) }
     });
-
-    console.log(response.data.route)
 
     try {
       route = new Route(response.data.route, opts);

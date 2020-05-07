@@ -204,18 +204,18 @@ class CreateOrderForm extends Component<CreateOrderFormProps, CreateOrderFormSta
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <form className="form" onSubmit={this.handleSubmit}>
         <p>
           <label>Order delivery date</label>
-          <input type="date" ref={this.orderDeliveryDateInputRef} name="deliveryDate" placeholder="Delivery date" />
+          <input className="input" type="date" ref={this.orderDeliveryDateInputRef} name="deliveryDate" placeholder="Delivery date" />
         </p>
         <p>
           <label>Order description</label>
-          <textarea ref={this.descriptionTextAreaRef} name="description" placeholder="Description"></textarea>
+          <textarea className="input" ref={this.descriptionTextAreaRef} name="description" placeholder="Description"></textarea>
         </p>
         <p>
           <label>Workers</label>
-          <select name="orderWorkers" ref={this.workersSelectRef}>
+          <select className="input" name="orderWorkers" ref={this.workersSelectRef}>
             {
               ...this.state.workersList.map((worker: Worker) => {
                 return (
@@ -224,14 +224,14 @@ class CreateOrderForm extends Component<CreateOrderFormProps, CreateOrderFormSta
               })
             }
           </select>
-          <input type="button" onClick={this.addWorkerToListOfSelectedProducts} value="Select Worker" />
+          <input className="button" type="button" onClick={this.addWorkerToListOfSelectedProducts} value="Select Worker" />
           <ul>
             {
               ...this.state.selectedWorkersList.map((selectedWorker: Worker, index: number) => {
                 return (
                   <li key={`selected-product-${index}`}>
                     {`${selectedWorker.name}`}
-                    <input type="button" onClick={() => {this.removeWorkerFromListOfSelectedWorkers(selectedWorker.id || '')}} value="X" />
+                    <input className="button" type="button" onClick={() => {this.removeWorkerFromListOfSelectedWorkers(selectedWorker.id || '')}} value="X" />
                   </li>
                 );
               })
@@ -240,7 +240,7 @@ class CreateOrderForm extends Component<CreateOrderFormProps, CreateOrderFormSta
         </p>
         <p>
           <label>Products</label>
-          <select name="orderProducts" ref={this.productsSelectRef}>
+          <select className="input" name="orderProducts" ref={this.productsSelectRef}>
             {
               ...this.state.productsList.map((product: Product) => {
                 return (
@@ -249,27 +249,29 @@ class CreateOrderForm extends Component<CreateOrderFormProps, CreateOrderFormSta
               })
             }
           </select>
-          <input ref={this.productCountInputRef} type="number" placeholder="Products count..." required />
-          <input type="button" onClick={this.addProductToListOfSelectedProducts} value="Select Product" />
+          <input className="input" ref={this.productCountInputRef} type="number" placeholder="Products count..." required />
+          <input className="button" type="button" onClick={this.addProductToListOfSelectedProducts} value="Select Product" />
           <ul>
             {
               ...this.state.selectedProductsList.map((selectedProduct: SelectedProduct, index: number) => {
                 return (
                   <li key={`selected-product-${index}`}>
                     {`${selectedProduct.product.name} x:${selectedProduct.count}`}
-                    <input type="button" onClick={() => {this.removeProductFromListOfSelectedProducts(selectedProduct.product.id || '')}} value="X" />
+                    <input className="button" type="button" onClick={() => {this.removeProductFromListOfSelectedProducts(selectedProduct.product.id || '')}} value="X" />
                   </li>
                 );
               })
             }
           </ul>
         </p>
-        <Map
-          center={this.state.mapCenter}
-          onClick={this.handleMapClick}
-          router={{}}
-        />
-        <button>confirm</button>
+        <article className="form-map">
+          <Map
+            center={this.state.mapCenter}
+            onClick={this.handleMapClick}
+            router={{}}
+          />
+        </article>
+        <button className="button">confirm</button>
       </form>
     );
   }

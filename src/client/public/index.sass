@@ -14,11 +14,52 @@ body
 .hidden
   display: none
 
+.form
+  padding: 1rem
+  box-sizing: border-box
+  border-radius: 10px
+  overflow: hidden
+  background-color: #fff
+
+.input
+  margin: 0
+  min-width: 100px
+  border: 1px solid #909090
+  width: 100%
+  padding: .5rem 1rem
+  border-radius: 10px
+  outline: none
+  box-sizing: border-box
+
+.button
+  font-family: sans-serif
+  padding: .5rem 1rem
+  border-radius: 10px
+  border: 1px solid #909090
+  background-color: #efefef
+  cursor: pointer
+  outline: none
+  white-space: nowrap
+  &:hover
+    background-color: #e0e0e0
+
+.checkbox
+  &>*
+    cursor: pointer
+
+.form-map
+  width: 800px
+  max-width: 800px
+  min-width: 100px
+  max-height: 400px
+  margin: 1rem 0
+  overflow: hidden
+
 #map-container
   position: relative
   width: 100%
   height: 100%
-  min-height: 500px
+  min-height: 400px
 
 .mapboxgl-map
   position: absolute

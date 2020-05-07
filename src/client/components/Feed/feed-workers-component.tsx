@@ -92,6 +92,7 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
     return (
       <div className="workers">
         <article className="control-panel workers__control">
+          <button className="access-worker-btn" onClick={this.showModal}>Set access</button>
           <button className="add-worker-btn" onClick={this.showModal}>Add worker</button>
         </article>
         <article className="workers__list">
@@ -125,9 +126,9 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
           </ul>
         </article>
         <Modal isOpen={this.state.addWorkerModal} onClose={this.closeModal}>
-          <form onSubmit={this.addWorker}>
-            <input type="text" ref={this.workerIdInputRef} name="workerId" placeholder="Worker ID" />
-            <button>confirm</button>
+          <form className="form" onSubmit={this.addWorker}>
+            <p><input className="input" type="text" ref={this.workerIdInputRef} name="workerId" placeholder="Worker ID" /></p>
+            <button className="button">confirm</button>
           </form>
         </Modal>
       </div>

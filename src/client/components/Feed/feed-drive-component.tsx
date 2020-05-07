@@ -155,8 +155,9 @@ class DriveComponent extends Component<any, DriveState> {
     }, 10000);
   }
 
-  private endDriveImitation = () => {
+  private endDriveImitation = async () => {
     try {
+      await Route.closeRoute(this.props.store.current_project._id, (this.state.selectedRoute || new Route({})).id || '');
       clearInterval(this._timer);
       clearInterval(this._drivetimer);
       WaypointController.clearRoute(this.state._map);
@@ -179,7 +180,9 @@ class DriveComponent extends Component<any, DriveState> {
 
       let routeDistance = calculateDistance(currentPoint, nextPoint);
       let routeRotationAngle = calculateAngle(currentPoint, nextPoint);
-      routeRotationAngle = routeRotationAngle > 30 ? routeRotationAngle - 55 : routeRotationAngle;
+      // routeRotationAngle = routeRotationAngle > 30 ? routeRotationAngle - 55 : routeRotationAngle;
+
+      routeRotationAngle -= 90;
 
       driveImitation.push({
         from: currentPoint,

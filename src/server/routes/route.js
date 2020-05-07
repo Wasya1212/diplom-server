@@ -7,9 +7,21 @@ const { Route, Order, User } = require('../models');
 
 const router = new Router();
 
+router.post('/route/close', async (ctx) => {
+  const closedRoute = await Route.update(
+    { project: ctx.request.body.projectId, _id: ctx.request.body.routeId },
+    { status: 'closed' },
+    { new: true }
+  );
+
+  ctx.body = closedRoute;
+});
+
 router.get('/routes', async (ctx) => {
-  console.log("HER", ctx.request.query.projectId)
-  const routes = await Route.find({ project: ctx.request.query.projectId });
+  const query = {...ctx.request.query};
+  delete query.projectId;
+
+  const routes = await Route.find({ project: ctx.request.query.projectId, ...query });
 
   const responseRoutes = [];
 

@@ -33,14 +33,14 @@ export class CreateProjectForm extends Component<any, any> {
 
   render() {
     return (
-      <form onSubmit={this.createProject}>
+      <form className="form" onSubmit={this.createProject}>
         <p>
-          <input onChange={this.handleChange} type="text" name="name" placeholder="Title" />
+          <input className="input" onChange={this.handleChange} type="text" name="name" placeholder="Title" />
         </p>
         <p>
-          <input type="text" onChange={this.handleChange} name="description" placeholder="description" />
+          <input className="input" type="text" onChange={this.handleChange} name="description" placeholder="description" />
         </p>
-        <button>create project</button>
+        <button className="button">create project</button>
       </form>
     );
   }
