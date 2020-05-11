@@ -361,7 +361,7 @@ class OrderComponent extends Component<any, OrderComponentState> {
                   <div>{(order.products || []).length}</div>
                   <div>{(order.deliveryDate || '').toString().slice(0, 10)}</div>
                   <div>{order.description}</div>
-                  <div>{ new Worker(order.operator || {}).name }</div>
+                  <div>{ (new Worker(order.operator || {})).name}</div>
                 </li>
               ))
             }

@@ -32,7 +32,7 @@ export class Worker {
     console.log("PARAMETERS:", parameters);
     return {
       id: parameters._id || undefined,
-      fullName: parameters.name.fName + ' ' + parameters.name.mName + ' ' + parameters.name.lName,
+      fullName: parameters.name ? (parameters.name.fName || '') + ' ' + (parameters.name.mName || '') + ' ' + (parameters.name.lName || '') : '',
       name: parameters.name,
       email: parameters.email,
       phoneNumber: parameters.phone || parameters.phoneNumber,
@@ -40,8 +40,8 @@ export class Worker {
       birthDate: parameters.birth || parameters.birthDate,
       childrensCount: parameters.childrensCount,
       address: !parameters.address ? undefined : `${parameters.address.country} ${parameters.address.city} ${parameters.address.street} ${parameters.address.apartments}`,
-      post: parameters.workInfo.post,
-      salary: parameters.workInfo.salary || parameters.workInfo.currentSalary
+      post: parameters.workInfo ? parameters.workInfo.post : undefined,
+      salary: parameters.workInfo ? (parameters.workInfo.salary || parameters.workInfo.currentSalary) : undefined
     };
   }
 

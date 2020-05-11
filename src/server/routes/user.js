@@ -23,13 +23,7 @@ router.post('/user', async (ctx, next) => {
 });
 
 router.put('/update/user', async (ctx, next) => {
-
-
-  // console.log(ctx.request.body)
-  // console.log(ctx.request.files)
   const filesKeys = Object.keys(ctx.request.files || {});
-  // console.log(ctx.request.body);
-
   let query = {};
 
   Object.keys(ctx.request.body).forEach(key => {
@@ -44,19 +38,9 @@ router.put('/update/user', async (ctx, next) => {
     ctx.throw(404, "Any user not found!");
   }
 
-  // const newUser = await User.findByIdAndUpdate(query.userId, query, { new: true });
-  //
-  // console.log(newUser);
-  // ctx.body = {user: newUser};
-
-  // console.log(query)
-
   for (let i = 0; i < filesKeys.length; i++) {
-    // console.log(User.schema.obj.hasOwnProperty(filesKeys[i]))
     if (User.schema.obj.hasOwnProperty(filesKeys[i])) {
       const img = await Cloudinary.uploadImage(ctx.request.files[filesKeys[i]].path)
-
-      // console.log(img)
 
       query[filesKeys[i]] = img.secure_url;
     }
@@ -70,14 +54,26 @@ router.put('/update/user', async (ctx, next) => {
     });
   });
 
-  // console.log('findUser')
-  // const users =  await User.find({});
-  // console.log('users', users)
-  // ctx.body = await User.findByIdAndUpdate(query.userId, query, { new: true });
+  const userId = query.userId;
+  delete query.userId;
 
-  const newUser = await User.findByIdAndUpdate(query.userId, query, { new: true });
-  //
-  // console.log(newUser);
+  try {
+    if (query.personalInfo.childrensCount && query.personalInfo.childrensCount > 0) {
+      query.personalInfo.childrens = true;
+    }
+  } catch (e) {}
+
+
+  console.log(query);
+
+  const oldUser = await User.findById(userId);
+  const newUser = await User.findByIdAndUpdate(userId, {
+    ...query,
+    personalInfo: Object.assign(oldUser.personalInfo, {...query.personalInfo}),
+    workInfo: Object.assign(oldUser.workInfo, {...query.workInfo})
+  }, { new: true });
+
+  console.log(newUser);
   ctx.body = newUser;
 
   await next();
