@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { Link } from "react-router-dom";
+
 import axios from "axios";
 
 interface SignUpFormState {
@@ -31,7 +33,7 @@ export class SignUpForm extends Component<SignUpFormProps, SignUpFormState> {
     e.preventDefault();
 
     axios
-      .post('http://localhost:5000/sign-up', Object.assign(this.state, { isWorker: this.props.isWorker }))
+      .post('/sign-up', Object.assign(this.state, { isWorker: this.props.isWorker }))
       .then(({ data }) => {
         console.log(data);
       })
@@ -49,16 +51,19 @@ export class SignUpForm extends Component<SignUpFormProps, SignUpFormState> {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input value={this.state.fName} onChange={this.handleChange} name="fName" type="text" placeholder="first name" />
-        <input value={this.state.mName} onChange={this.handleChange} name="mName" type="text" placeholder="middle name" />
-        <input value={this.state.lName} onChange={this.handleChange} name="lName" type="text" placeholder="last name" />
-        <input value={this.state.email} onChange={this.handleChange} name="email" type="email" placeholder="email" />
-        <input value={this.state.phone} onChange={this.handleChange} name="phone" type="text" placeholder="phone number" />
-        <input value={this.state.password} onChange={this.handleChange} name="password" type="password" placeholder="password" />
-        <input value={this.state.retypePassword} onChange={this.handleChange} name="retypePassword" type="password" placeholder="retype password" />
-        <button type="submit">Sign in</button>
-      </form>
+      <div className="auth">
+        <form className="sign-up-form form" onSubmit={this.handleSubmit}>
+          <p><input className="input" value={this.state.fName} onChange={this.handleChange} name="fName" type="text" placeholder="first name" /></p>
+          <p><input className="input" value={this.state.mName} onChange={this.handleChange} name="mName" type="text" placeholder="middle name" /></p>
+          <p><input className="input" value={this.state.lName} onChange={this.handleChange} name="lName" type="text" placeholder="last name" /></p>
+          <p><input className="input" value={this.state.email} onChange={this.handleChange} name="email" type="email" placeholder="email" /></p>
+          <p><input className="input" value={this.state.phone} onChange={this.handleChange} name="phone" type="text" placeholder="phone number" /></p>
+          <p><input className="input" value={this.state.password} onChange={this.handleChange} name="password" type="password" placeholder="password" /></p>
+          <p><input className="input" value={this.state.retypePassword} onChange={this.handleChange} name="retypePassword" type="password" placeholder="retype password" /></p>
+          <p className="sign-up-link"><Link to="/login">Login</Link></p>
+          <button className="button" type="submit">Sign in</button>
+        </form>
+      </div>
     );
   }
 }

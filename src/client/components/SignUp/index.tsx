@@ -22,9 +22,10 @@ export class SignUp extends Component<{}, SignUpState> {
   render() {
     return (
       <main className="sign-up-component">
-        {this.state.isWorker.toString()}
-        <button disabled={!this.state.isWorker} onClick={this.chooseOwner}>Owner</button>
-        <button disabled={this.state.isWorker}  onClick={this.chooseWorker}>Worker</button>
+        <section className="sign-up-component__control">
+          <button className="button" disabled={!this.state.isWorker} onClick={this.chooseOwner}>Owner</button>
+          <button className="button" disabled={this.state.isWorker}  onClick={this.chooseWorker}>Worker</button>
+        </section>
         <SignUpForm isWorker={this.state.isWorker} />
       </main>
     );

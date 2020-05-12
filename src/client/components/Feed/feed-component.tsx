@@ -134,7 +134,7 @@ class Feed extends Component<any, any> {
             <h3 className="main-navigation__title">Latest Orders</h3>
             {
               ...this.state.activeOrders.map((order: Order) => (
-                <li className="main-navigation__item">#{order.number}<span className="active-span right"></span></li>
+                <li className="main-navigation__item">#{order.number}<span className={`status-span right`}></span></li>
               ))
             }
           </ul>

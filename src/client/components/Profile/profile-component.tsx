@@ -176,7 +176,7 @@ class Profile extends Component<any, any> {
                     <button className="button" name="userChildrens" onClick={this.chooseEdit}>Edit</button>
                   </div>
                 : <form className="form" onSubmit={this.handleSubmit}>
-                    <input className="input" onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.childrens || "childrens count"} name="personalInfo.childrensCount" type="number" />
+                    <input className="input" onChange={this.handleTextChange} placeholder={this.props.store.user.personalInfo.childrensCount || "childrens count"} name="personalInfo.childrensCount" type="number" />
                     <button className="button" type="submit">upload</button>
                   </form>
             }

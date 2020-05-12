@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { Link } from "react-router-dom";
+
 import axios from "axios";
 
 interface LoginFormState {
@@ -58,11 +60,14 @@ export class LoginForm extends Component<LoginFormProps, LoginFormState> {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
-        <input value={this.state.login} onChange={this.handleChange} name="login" type="text" placeholder="email or phone number" />
-        <input value={this.state.password} onChange={this.handleChange} name="password" type="password" placeholder="password" />
-        <button type="submit">Sign in</button>
-      </form>
+      <div className="auth">
+        <form className="form login-form" onSubmit={this.handleSubmit}>
+          <p><input className="input" value={this.state.login} onChange={this.handleChange} name="login" type="text" placeholder="email or phone number" /></p>
+          <p><input className="input" value={this.state.password} onChange={this.handleChange} name="password" type="password" placeholder="password" /></p>
+          <p className="sign-up-link"><Link to="/sign-up">Registration</Link></p>
+          <button className="button" type="submit">Sign in</button>
+        </form>
+      </div>
     );
   }
 }

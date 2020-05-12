@@ -103,7 +103,7 @@ canvas
 a
   color: inherit
 
-.active-span
+.status-span
   position: relative
   &.right
     &::before
@@ -118,6 +118,15 @@ a
     overflow: hidden
     position: absolute
     left: calc(-5px - .5rem)
+
+.active-span::before
+  background-color: gray
+
+.closed-span::before
+  background-color: red
+
+.processed-span::before
+  background-color: green
 
 .control-panel
   height: auto

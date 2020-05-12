@@ -268,7 +268,7 @@ class DriveComponent extends Component<any, DriveState> {
             ...this.state.userRoutes.map((route: Route) => (
               <article className="route-info route-container" key={`route-${route.id}`} onClick={() => { this.selectRoute(route) }}>
                 <header className="route-info__status">
-                  <span className={route.status == "active" ? "active-span" : ""}>{route.status}</span>
+                  <span className={`${route.status}-span status-span`}>{route.status}</span>
                 </header>
                 <section className="route-info__workers-list">
                   <ul>
