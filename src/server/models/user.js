@@ -16,9 +16,9 @@ const userSchema = new Schema({
   accessLevel: { required: true, type: Types.Number, min: 1, default: 1 },
   personalInfo: {
     birthDate: { required: false, type: Types.Date },
-    childrens: { required: true, type: Types.Boolean },
+    childrens: { required: false, type: Types.Boolean },
     childrensCount: { required: false, type: Types.Number },
-    married: { required: true, type: Types.Boolean },
+    married: { required: false, type: Types.Boolean },
     address: {
       country: { required: false, type: Types.String, max: 70, lowercase: true, trim: true },
       city: { required: false, type: Types.String, max: 100, lowercase: true, trim: true },

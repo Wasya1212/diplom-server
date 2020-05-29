@@ -74,7 +74,8 @@ router.post('/sign-up', async (ctx) => {
     email,
     password,
     phone,
-    workInfo: isWorker ? { additionalInfo: { worker: true, workerID: uuidv4() } } : undefined
+    workInfo: isWorker ? { additionalInfo: { worker: true, workerID: uuidv4() } } : undefined,
+    personalInfo: {}
   });
 
   ctx.body = newUser;
