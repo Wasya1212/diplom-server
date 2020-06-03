@@ -16,6 +16,8 @@ import {
   calculateAngle
 } from "../../utils/mapCalc";
 
+// import "../../assets/images/way.png";
+
 interface DriveState {
   userRoutes: Route[],
   selectedRoute?: Route,
@@ -26,7 +28,10 @@ interface DriveState {
   mapCenter?: Coordinates,
   mapBearing?: number,
   mapZoom?: number,
-  mapPitch?: number
+  mapPitch?: number,
+  leftWay: number,
+  drivingSpeed: number,
+  nextWayDirection: string
 }
 
 class DriveComponent extends Component<any, DriveState> {
@@ -44,7 +49,10 @@ class DriveComponent extends Component<any, DriveState> {
     mapCenter: undefined,
     mapBearing: undefined,
     mapZoom: undefined,
-    mapPitch: undefined
+    mapPitch: undefined,
+    leftWay: 0,
+    drivingSpeed: 0,
+    nextWayDirection: 'throught'
   }
 
   constructor(props) {
@@ -74,6 +82,8 @@ class DriveComponent extends Component<any, DriveState> {
 
   handleMapLoad = (map) => {
     this.setState({ _map: map });
+
+    console.log(map);
 
     map.on('click', 'layer-' + 'checkpoint', async (e) => {
       const waypointIndex = +e.features[0].properties.title - 1;
@@ -112,8 +122,21 @@ class DriveComponent extends Component<any, DriveState> {
     let startPosition = 0;
     let currentIndex = 0;
     let points = Object3DMapController.breakRouteToPoints(driveImitation[0].from, driveImitation[0].to);;
+    let pointWeight = driveImitation[startPosition].distance / points.length;
+    let nextRotateRouteAngle = driveImitation[startPosition].angle - driveImitation[startPosition + 1].angle;
 
-    this.setState({cars: [{ position: driveImitation[0].from }]});
+    if (nextRotateRouteAngle < 30) {
+      this.setState({ nextWayDirection: 'left' });
+    } else if (nextRotateRouteAngle > 30) {
+      this.setState({ nextWayDirection: 'right' });
+    } else {
+      this.setState({ nextWayDirection: 'throught' });
+    }
+
+    this.setState({
+      cars: [{ position: driveImitation[0].from }],
+      drivingSpeed: 45
+    });
 
     this._timer = setInterval(() => {
       if (startPosition >= driveImitation.length) {
@@ -121,12 +144,28 @@ class DriveComponent extends Component<any, DriveState> {
         return;
       }
 
-      if (currentIndex + 1 >= points.length) {
+      if (currentIndex + 2 >= points.length) {
         startPosition++;
         points = Object3DMapController.breakRouteToPoints(driveImitation[startPosition].from, driveImitation[startPosition].to);
-        currentIndex = 0
+        currentIndex = 0;
+
+        if (startPosition < driveImitation.length) {
+          try {
+            const nextRotateRouteAngle = driveImitation[startPosition].angle - driveImitation[startPosition - 1].angle;
+            if (nextRotateRouteAngle < 30) {
+              this.setState({ nextWayDirection: 'left' });
+            } else if (nextRotateRouteAngle > 30) {
+              this.setState({ nextWayDirection: 'right' });
+            } else {
+              this.setState({ nextWayDirection: 'throught' });
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        }
       } else {
-        currentIndex++;
+        currentIndex += 2;
+        pointWeight = driveImitation[startPosition].distance / points.length;
       }
 
       this.setState({
@@ -137,7 +176,8 @@ class DriveComponent extends Component<any, DriveState> {
         mapCenter: points[currentIndex],
         mapZoom: 20,
         mapBearing: -driveImitation[startPosition].angle,
-        mapPitch: 65
+        mapPitch: 65,
+        leftWay: +(driveImitation[startPosition].distance - (pointWeight * currentIndex)).toFixed(0)
       });
     }, 300);
 
@@ -161,7 +201,11 @@ class DriveComponent extends Component<any, DriveState> {
       clearInterval(this._timer);
       clearInterval(this._drivetimer);
       WaypointController.clearRoute(this.state._map);
-      this.setState({ cars: [], drivingMode: false });
+      this.setState({
+        cars: [], drivingMode: false,
+        leftWay: 0,
+        drivingSpeed: 0
+      });
     } catch (err) {
       console.error(err);
     }
@@ -208,15 +252,19 @@ class DriveComponent extends Component<any, DriveState> {
                 : <button onClick={this.startDrive}>Start drive</button>
             }
           </article>
-          <Map
-            center={this.state.mapCenter || route.waypoints[0]}
-            markers={route.waypoints}
-            zoom={this.state.mapZoom || 15}
-            onLoad={this.handleMapLoad}
-            cars={this.state.cars}
-            bearing={this.state.mapBearing || 0}
-            pitch={this.state.mapPitch || 0}
-          />
+          <div className="drive-map__control">
+            <Map
+              center={this.state.mapCenter || route.waypoints[0]}
+              markers={route.waypoints}
+              zoom={this.state.mapZoom || 15}
+              onLoad={this.handleMapLoad}
+              cars={this.state.cars}
+              bearing={this.state.mapBearing || 0}
+              pitch={this.state.mapPitch || 0}
+            />
+            {this.state.leftWay != 0 ? <div className={`drive-map__control__road-way ${this.state.nextWayDirection}`}>{this.state.leftWay} m.</div> : null}
+            {this.state.drivingSpeed ? <div className="drive-map__control__speed">{this.state.drivingSpeed}</div> : null}
+          </div>
           {
             this.state.selectedOrder
               ? (

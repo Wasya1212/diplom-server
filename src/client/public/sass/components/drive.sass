@@ -36,3 +36,66 @@
   min-height: calc(100vh - 120px)
   &>div
     height: calc(100vh - 120px)
+
+.drive-map__control
+  position: relative
+  width: 100%
+  height: 100%
+  overflow: hidden
+  &__speed
+    font-size: 90px
+    position: absolute
+    bottom: 6rem
+    right: 6rem
+    font-size: 75px
+    font-weight: bold
+    color: #7edc28
+    text-shadow: 0px 2px 10px black
+    z-index: 999
+    cursor: default
+    user-select: none
+    &::after
+      content: 'km/h'
+      font-size: 35px
+      position: absolute
+      left: 0%
+      top: 100%
+    &::before
+      content: ''
+      background-color: #fff
+      opacity: 50%
+      border-radius: 50%
+      width: 170px
+      height: 170px
+      position: absolute
+      border: 2px solid black
+      left: -47px
+      top: -17px
+      z-index: -1
+  &__road-way
+    position: absolute
+    top: 1rem
+    left: 50%
+    user-select: none
+    cursor: default
+    font-size: 75px
+    font-weight: bold
+    color: #7edc28
+    text-shadow: 0px 2px 10px black
+    transform: translateX(-50%)
+    &::after
+      content: ''
+      display: inline-block
+      width: 100px
+      height: 100px
+      background-image: url(img/way.png)
+      background-size: auto 100%
+    &.right
+      &::after
+        background-position: center
+    &.left
+      &::after
+        background-position: left
+    &.throught
+      &::after
+        opacity: 0
