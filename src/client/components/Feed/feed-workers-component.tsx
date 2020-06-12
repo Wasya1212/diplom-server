@@ -6,9 +6,81 @@ import { Worker } from "../../utils/worker";
 
 import Modal from "../Modal";
 
+interface WorkersAccessState {
+  workers: Worker[],
+  features: any
+}
+
+interface WorkersAccessProps {
+  projectId: string
+}
+
+class WorkerAccess extends Component<WorkersAccessProps, WorkersAccessState> {
+  state = {
+    workers: [],
+    features: {}
+  }
+
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount = async () => {
+    const workers: Worker[] = await Worker.getWorkers(this.props.projectId);
+
+    this.setState({ workers: workers });
+
+    if (workers.length >= 1) {
+      await this.getFeatures(workers[0].id || "");
+    }
+  }
+
+  private getFeatures = async (workerId: string) => {
+    const workersFeatures: any = await Worker.getFeatures(this.props.projectId, workerId);
+    this.setState({ features: workersFeatures });
+  }
+
+  private handleUserAccessSelect = (e: any) => {
+    this.getFeatures(e.target.value);
+  }
+
+  private handleUserAccessChange = (e: any) => {
+    e.preventDefault();
+    alert("sdfsdf");
+  }
+
+  render() {
+    return (
+      <form onSubmit={this.handleUserAccessChange}>
+        <div>
+          <select onChange={this.handleUserAccessSelect}>
+            {
+              ...this.state.workers.map((w: any) => (
+                <option value={w.id}>{w.name}</option>
+              ))
+            }
+          </select>
+        </div>
+        <div>
+          {
+            ...Object.keys(this.state.features).map((feature: any, index: number) => (
+              <p>
+                <label htmlFor={`feature-${index}`}>{feature}</label>
+                <input id={`feature-${index}`} type="checkbox" checked={this.state.features[feature]} />
+              </p>
+            ))
+          }
+        </div>
+        <button>Confirm changes</button>
+      </form>
+    );
+  }
+}
+
 interface WorkerComponentState {
   workers: Worker[],
-  addWorkerModal: boolean
+  addWorkerModal: boolean,
+  setWorkerAccessModal: boolean
 }
 
 class WorkerComponent extends Component<any, WorkerComponentState> {
@@ -16,7 +88,8 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
 
   state = {
     workers: [],
-    addWorkerModal: false
+    addWorkerModal: false,
+    setWorkerAccessModal: false
   }
 
   constructor(props) {
@@ -78,7 +151,8 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
 
   closeModal = () => {
     this.setState({
-      addWorkerModal: false
+      addWorkerModal: false,
+      setWorkerAccessModal: false
     });
   }
 
@@ -88,11 +162,17 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
     });
   }
 
+  showSetAccessModal = () => {
+    this.setState({
+      setWorkerAccessModal: true
+    });
+  }
+
   render() {
     return (
       <div className="workers">
         <article className="control-panel workers__control">
-          <button className="access-worker-btn" onClick={this.showModal}>Set access</button>
+          <button className="access-worker-btn" onClick={this.showSetAccessModal}>Set access</button>
           <button className="add-worker-btn" onClick={this.showModal}>Add worker</button>
         </article>
         <article className="workers__list">
@@ -130,6 +210,9 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
             <p><input className="input" type="text" ref={this.workerIdInputRef} name="workerId" placeholder="Worker ID" /></p>
             <button className="button">confirm</button>
           </form>
+        </Modal>
+        <Modal isOpen={this.state.setWorkerAccessModal} onClose={this.closeModal}>
+          <WorkerAccess projectId={this.props.store.current_project._id}></WorkerAccess>
         </Modal>
       </div>
     );
