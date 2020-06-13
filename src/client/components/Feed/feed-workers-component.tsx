@@ -16,6 +16,8 @@ interface WorkersAccessProps {
 }
 
 class WorkerAccess extends Component<WorkersAccessProps, WorkersAccessState> {
+  workerSelectRef: React.RefObject<HTMLSelectElement>;
+
   state = {
     workers: [],
     features: {}
@@ -23,6 +25,7 @@ class WorkerAccess extends Component<WorkersAccessProps, WorkersAccessState> {
 
   constructor(props) {
     super(props);
+    this.workerSelectRef = React.createRef<HTMLSelectElement>();
   }
 
   componentDidMount = async () => {
@@ -46,14 +49,22 @@ class WorkerAccess extends Component<WorkersAccessProps, WorkersAccessState> {
 
   private handleUserAccessChange = (e: any) => {
     e.preventDefault();
-    alert("sdfsdf");
+    const workerSelectRef: HTMLSelectElement = this.workerSelectRef.current || new HTMLSelectElement();
+    Worker.setFeatures(this.props.projectId, workerSelectRef.value, this.state.features);
+  }
+
+  private changeFeature = (e: any) => {
+    let newFeaturesState = this.state.features;
+    newFeaturesState[e.currentTarget.name] = e.currentTarget.checked;
+
+    this.setState({ features: newFeaturesState });
   }
 
   render() {
     return (
-      <form onSubmit={this.handleUserAccessChange}>
+      <form onSubmit={this.handleUserAccessChange} className="form">
         <div>
-          <select onChange={this.handleUserAccessSelect}>
+          <select className="select" ref={this.workerSelectRef} onChange={this.handleUserAccessSelect}>
             {
               ...this.state.workers.map((w: any) => (
                 <option value={w.id}>{w.name}</option>
@@ -64,14 +75,14 @@ class WorkerAccess extends Component<WorkersAccessProps, WorkersAccessState> {
         <div>
           {
             ...Object.keys(this.state.features).map((feature: any, index: number) => (
-              <p>
+              <p className="checkbox">
                 <label htmlFor={`feature-${index}`}>{feature}</label>
-                <input id={`feature-${index}`} type="checkbox" checked={this.state.features[feature]} />
+                <input onChange={this.changeFeature} name={feature} id={`feature-${index}`} type="checkbox" checked={this.state.features[feature]} />
               </p>
             ))
           }
         </div>
-        <button>Confirm changes</button>
+        <button className="button">Confirm changes</button>
       </form>
     );
   }

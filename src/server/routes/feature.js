@@ -13,4 +13,14 @@ router.get('/worker/features', async (ctx, next) => {
   ctx.body = feature.permissions;
 });
 
+router.post('/worker/feature', async (ctx, next) => {
+  const features = await Feature.findOneAndUpdate(
+    { user:ctx.request.body.workerId || "" },
+    { permissions: ctx.request.body.features },
+    { new: true }
+  );
+
+  ctx.body = features.permissions;
+});
+
 module.exports = router;

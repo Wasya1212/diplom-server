@@ -144,6 +144,25 @@ export class Worker {
     return worker;
   }
 
+  public static async setFeatures(projectId: string, workerId: string, features: any, opts: WorkerOptions = { connection: {} }):  Promise<any> {
+    let headers = {};
+
+    if (opts.connection && opts.connection.headers && Array.isArray(opts.connection.headers)) {
+      opts.connection.headers.forEach(header => {
+        headers[header.title] = header.value;
+      })
+    }
+
+    const response: any = await axios({
+      method: 'POST',
+      url: `/worker/feature`,
+      headers: headers,
+      data: { projectId, workerId, features }
+    });
+
+    return response.data;
+  }
+
   public static async getFeatures(projectId: string, workerId: string, opts: WorkerOptions = { connection: {} }):  Promise<any> {
     let features: any;
 
