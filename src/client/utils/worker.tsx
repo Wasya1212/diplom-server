@@ -39,7 +39,7 @@ export class Worker {
       photo: parameters.photo,
       birthDate: parameters.birth || parameters.birthDate,
       childrensCount: parameters.childrensCount,
-      address: !parameters.address ? undefined : `${parameters.address.country} ${parameters.address.city} ${parameters.address.street} ${parameters.address.apartments}`,
+      address: !parameters.personalInfo.address ? undefined : `${parameters.personalInfo.address.country} ${parameters.personalInfo.address.city} ${parameters.personalInfo.address.street} ${parameters.personalInfo.address.apartments || ''}`,
       post: parameters.workInfo ? parameters.workInfo.post : undefined,
       salary: parameters.workInfo ? (parameters.workInfo.salary || parameters.workInfo.currentSalary) : undefined
     };

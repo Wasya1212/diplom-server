@@ -10,6 +10,7 @@ import Header from "./components/Header";
 import Login from "./components/Login";
 import Feed from "./components/Feed";
 import Project from "./components/Project";
+import Settings from "./components/Settings";
 import { SignUp } from "./components/Signup";
 import { Profile } from "./components/Profile";
 
@@ -121,6 +122,9 @@ class App extends Component<any, {}> {
               </Route>
               <Route path="/project">
                 <Project />
+              </Route>
+              <Route path="/settings">
+                <Settings />
               </Route>
             </Switch>
           </BrowserRouter>

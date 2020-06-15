@@ -268,34 +268,34 @@ class DriveComponent extends Component<any, DriveState> {
           {
             this.state.selectedOrder
               ? (
-                <aside>
-                  <button onClick={this.deselectWaypoint}>Close</button>
-                  <p>Order #{(this.state.selectedOrder || new Order({})).number}</p>
-                  <p>Registred by: {new Worker((this.state.selectedOrder || new Order({})).operator).name}</p>
+                <aside className="drive-point-details">
+                  <button className="button" onClick={this.deselectWaypoint}>Close</button>
+                  <p className="drive-point-details__order-details">Order #{(this.state.selectedOrder || new Order({})).number}</p>
+                  <p className="drive-point-details__order-details">>Registred by: {new Worker((this.state.selectedOrder || new Order({})).operator).name}</p>
                   <ul>
                     {
                       ...(this.state.selectedOrder || new Order({})).workers.map(w => {
                         const worker = new Worker(w);
                         return (
                           <li key={`order-worker-${worker.id}`}>
-                            <span>{worker.name}</span>
-                            <img src={worker.photo}/>
+                            <span className="drive-point-details__user-name">{worker.name}</span>
+                            <div className="drive-point-details__user-img"><img src={worker.photo}/></div>
                           </li>
                         );
                       })
                     }
                   </ul>
-                  <p>{(this.state.selectedOrder || new Order({})).address}</p>
-                  <p>{(this.state.selectedOrder || new Order({})).description}</p>
-                  <p>{(this.state.selectedOrder || new Order({})).deliveryDate}</p>
-                  <ul>
+                  <p className="drive-point-details__order-details">{'>'}Delivery address: {(this.state.selectedOrder || new Order({})).address}</p>
+                  <p className="drive-point-details__order-details">{'>'}Description: {(this.state.selectedOrder || new Order({})).description}</p>
+                  <p className="drive-point-details__order-details">{'>'}Delivery date: {((this.state.selectedOrder || new Order({})).deliveryDate || '').toString().slice(0, 10)}</p>
+                  <ul className="drive-point-details__product-list">
                     {
                       ...((this.state.selectedOrder || new Order({})).products || []).map(p => {
                         const product = new Product(p.product);
                         return (
                           <li key={`order-product-${product.id}`}>
-                            <span>{product.name}</span>
-                            <span>x{product.actualCount}</span>
+                            <span className="drive-point-details__order-name">{product.name}</span>
+                            <span className="drive-point-details__order-count">x{product.actualCount}</span>
                           </li>
                         );
                       })

@@ -49,6 +49,10 @@ class Header extends Component<any, {}> {
     this.setState({ addProjectModalIsOpen: false });
   }
 
+  changeProject(project: any) {
+    this.props.chooseProject(project);
+  }
+
   render() {
     if (this.props.store.user && this.props.store.user != {}) {
       return (
@@ -68,7 +72,7 @@ class Header extends Component<any, {}> {
             <div className="wrapper">
               {
                 ...this.props.store.user.projects.map((project, index) => (
-                  <li className="header__projects-list__item" key={`project-menu-item-${index}`}>{project.name}</li>
+                  <li className="header__projects-list__item" key={`project-menu-item-${index}`} onClick={() => { this.changeProject(project); }}>{project.name}</li>
                 ))
               }
             </div>
@@ -103,6 +107,9 @@ function mapDispatchToProps(dispatch) {
   return {
     onAddUser: (user) => {
       dispatch({ type: "ADD_USER", payload: user});
+    },
+    chooseProject: (project) => {
+      dispatch({ type: "CHOOSE_PROJECT", payload: project })
     }
   };
 }

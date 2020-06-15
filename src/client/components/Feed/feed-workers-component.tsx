@@ -180,6 +180,9 @@ class WorkerComponent extends Component<any, WorkerComponentState> {
   }
 
   render() {
+    //@ts-ignore
+    console.log("WWWSAS", this.state.workers.length > 0 ? (this.state.workers[0].address || "address") : 0);
+
     return (
       <div className="workers">
         <article className="control-panel workers__control">
